@@ -1,0 +1,9 @@
+---
+- name: Setup Calico on k3s
+  hosts: "{{ target | default('localhost') }}"
+  vars_files:
+    - ./vars/common.yml
+    - ./vars/calico.yml
+
+  roles:
+    - setup_k3s_calico

@@ -1,0 +1,2 @@
+[minikube-calico]
+localhost ansible_connection=local

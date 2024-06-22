@@ -1,0 +1,14 @@
+- name: Install k3s
+  shell: curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--flannel-backend=none --disable-network-policy --cluster-cidr={{ CIDR }}" sh -
+
+- name: Create ~/.kube
+  file:
+    path: ~/.kube
+    state: directory
+    mode: '0755'
+
+- name: Copy k3s config to ~/.kube/config
+  shell: sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+
+- name: Change ~/.kube/config ownership
+  shell: sudo chown kmakara:kmakara ~/.kube/config
