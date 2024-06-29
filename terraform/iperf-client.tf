@@ -1,4 +1,5 @@
 resource "kubernetes_job" "iperf_client" {
+
   metadata {
     name      = "iperf-client"
     namespace = "iperf-namespace"
@@ -15,9 +16,9 @@ resource "kubernetes_job" "iperf_client" {
       spec {
         container {
           name  = "iperf-client"
-          image = "karolmakara/iperf-statexec:latest"
-          command = ["sh", "-c", "statexec iperf3 -c iperf-server -t ${var.test_duraction} && cp statexec_metrics.prom ${var.volume_mount_path}/statexec_metrics_client.prom"]
-
+          image = "${var.image}"
+          # command = ["/bin/sh", "-c", "/usr/local/bin/statexec --sync-until-succeed -c iperf-server -- iperf3 -c iperf-server -t ${var.test_duraction} > ${local.iperf_client_log_path} 2>&1 && cp statexec_metrics.prom ${local.statexec_iperf_client_metrics_path}"]
+          command = ["sh", "-c", "ping -c 333 iperf-server-service"]
           resources {
             limits = {
               cpu    = "500m"
@@ -27,7 +28,7 @@ resource "kubernetes_job" "iperf_client" {
 
           volume_mount {
             name       = "metrics-volume"
-            mount_path = "/mnt/k3s/metrics"
+            mount_path = "${var.volume_mount_path}"
           }
         }
 

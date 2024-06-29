@@ -12,7 +12,7 @@ resource "kubernetes_persistent_volume" "iperf-pv" {
 
     persistent_volume_source {
       host_path {
-        path = "/mnt/k3s/metrics"
+        path = "${var.volume_mount_path}"
       }
     }
   }

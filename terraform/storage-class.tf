@@ -7,5 +7,5 @@ resource "kubernetes_storage_class" "local_path" {
 
   volume_binding_mode = "Immediate"
 
-  reclaim_policy = "Retain"
+  reclaim_policy = "Delete"
 }

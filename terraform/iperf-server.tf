@@ -1,4 +1,4 @@
-resource "kubernetes_job" "iperf_server" {
+resource "kubernetes_deployment" "iperf_server" {
   metadata {
     name      = "iperf-server"
     namespace = "iperf-namespace"
@@ -8,6 +8,14 @@ resource "kubernetes_job" "iperf_server" {
   }
 
   spec {
+    replicas = 1
+
+    selector {
+      match_labels = {
+        app = "iperf-server"
+      }
+    }
+
     template {
       metadata {
         labels = {
@@ -18,8 +26,9 @@ resource "kubernetes_job" "iperf_server" {
       spec {
         container {
           name  = "iperf-server"
-          image = "karolmakara/iperf-statexec:latest"
-          command = ["sh", "-c", "statexec iperf3 -c iperf-server -t ${var.test_duraction} && cp statexec_metrics.prom ${var.volume_mount_path}/statexec_metrics_client.prom"]
+          image = "${var.image}"
+          # command = ["/bin/sh", "-c", "/usr/local/bin/statexec -s --command-timeout ${var.test_duraction} -- /usr/local/bin/iperf3 -s > ${local.iperf_server_log_path} 2>&1 && cp statexec_metrics.prom ${local.statexec_iperf_client_metrics_path}"]
+          command = ["ping", "localhost", "-c", "100"]
 
           port {
             container_port = 5201
@@ -27,7 +36,7 @@ resource "kubernetes_job" "iperf_server" {
 
           volume_mount {
             name       = "metrics-volume"
-            mount_path = "/mnt/k3s/metrics"
+            mount_path = "${var.volume_mount_path}"
           }
         }
 
@@ -38,10 +47,28 @@ resource "kubernetes_job" "iperf_server" {
           }
         }
 
-        restart_policy = "Never"
+        restart_policy = "Always"
       }
     }
+  }
+}
 
-    backoff_limit = 4
+resource "kubernetes_service" "iperf_server_service" {
+  metadata {
+    name = "iperf-server-service"
+    namespace = "iperf-namespace"
+  }
+
+  spec {
+    selector = {
+      app = "iperf-server"
+    }
+
+    port {
+      port        = 80
+      target_port = 5201
+    }
+
+    type = "ClusterIP"
   }
 }

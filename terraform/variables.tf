@@ -9,3 +9,9 @@ variable "volume_mount_path" {
   type        = string
 }
 
+variable "image" {
+  description = "Docker image name"
+  default     = "karolmakara/iperf-statexec:1.1.2"
+  type        = string
+}
+
