@@ -1,6 +1,11 @@
-variable "test_duraction" {
+variable "client_test_duraction" {
   description = "Duration in seconds for the iperf test to run"
-  default     = 30
+  default     = 10
+}
+
+variable "server_test_duraction" {
+  description = "Duration in seconds for the iperf test to run"
+  default     = 15
 }
 
 variable "volume_mount_path" {
@@ -11,7 +16,7 @@ variable "volume_mount_path" {
 
 variable "image" {
   description = "Docker image name"
-  default     = "karolmakara/iperf-statexec:1.1.2"
+  default     = "karolmakara/iperf-statexec:2.0.0"
   type        = string
 }
 

@@ -1,5 +1,5 @@
 - name: Install k3s
-  shell: curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--flannel-backend=none --disable-network-policy --cluster-cidr={{ CIDR }}" sh -
+  shell: curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--flannel-backend=none --disable-network-policy --cluster-cidr={{ CIDR }}" sh -s
 
 - name: Create ~/.kube
   file:

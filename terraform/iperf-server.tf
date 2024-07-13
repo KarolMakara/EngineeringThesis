@@ -26,17 +26,23 @@ resource "kubernetes_deployment" "iperf_server" {
       spec {
         container {
           name  = "iperf-server"
-          image = "${var.image}"
-          # command = ["/bin/sh", "-c", "/usr/local/bin/statexec -s --command-timeout ${var.test_duraction} -- /usr/local/bin/iperf3 -s > ${local.iperf_server_log_path} 2>&1 && cp statexec_metrics.prom ${local.statexec_iperf_client_metrics_path}"]
-          command = ["ping", "localhost", "-c", "100"]
+          image = var.image
+          command = [
+            "/bin/sh",
+            "-c",
+            "/usr/local/bin/statexec -s --file ${local.statexec_iperf_server_metrics_path} --log-file ${local.statexec_server_output_path} -- /usr/local/bin/iperf3 -s --json ${local.iperf_server_json_path}"
+          ]
 
+          port {
+            container_port = 8080
+          }
           port {
             container_port = 5201
           }
 
           volume_mount {
             name       = "metrics-volume"
-            mount_path = "${var.volume_mount_path}"
+            mount_path = var.volume_mount_path
           }
         }
 
@@ -53,9 +59,9 @@ resource "kubernetes_deployment" "iperf_server" {
   }
 }
 
-resource "kubernetes_service" "iperf_server_service" {
+resource "kubernetes_service" "iperf_server_service_statexec" {
   metadata {
-    name = "iperf-server-service"
+    name      = "iperf-server-statexec"
     namespace = "iperf-namespace"
   }
 
@@ -65,7 +71,14 @@ resource "kubernetes_service" "iperf_server_service" {
     }
 
     port {
-      port        = 80
+      name        = "statexec"
+      port        = 8080
+      target_port = 8080
+    }
+
+    port {
+      name        = "iperf"
+      port        = 5201
       target_port = 5201
     }
 
