@@ -1,0 +1,33 @@
+---
+- name: Get Cilium CLI version
+  uri:
+    url: https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt
+    return_content: yes
+  register: cilium_version
+
+- name: Download Cilium CLI tarball and checksum
+  get_url:
+    url: "https://github.com/cilium/cilium-cli/releases/download/{{ cilium_version.content.strip() }}/cilium-linux-amd64.tar.gz"
+    dest: "/tmp/cilium-linux-amd64.tar.gz"
+  register: cilium_tarball
+
+- name: Download Cilium CLI checksum file
+  get_url:
+    url: "https://github.com/cilium/cilium-cli/releases/download/{{ cilium_version.content.strip() }}/cilium-linux-amd64.tar.gz.sha256sum"
+    dest: "/tmp/cilium-linux-amd64.tar.gz.sha256sum"
+  register: cilium_checksum
+
+- name: Validate checksum
+  shell: |
+    cd /tmp
+    sha256sum --check /tmp/cilium-linux-amd64.tar.gz.sha256sum
+  register: sha256sum_result
+  failed_when: "'OK' not in sha256sum_result.stdout"
+
+- name: Install Cilium CLI
+  ansible.builtin.unarchive:
+    src: /tmp/cilium-linux-amd64.tar.gz
+    dest: /usr/local/bin
+    remote_src: yes
+  when: "'OK' in sha256sum_result.stdout"
+  notify: restart cilium

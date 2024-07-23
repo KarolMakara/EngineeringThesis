@@ -1,0 +1,9 @@
+---
+- name: Delete calico
+  hosts: "{{ target | default('localhost') }}"
+  vars_files:
+    - ./vars/common.yml
+
+  roles:
+    - delete_calico
+    - uninstall_k3s

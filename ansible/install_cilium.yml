@@ -1,0 +1,12 @@
+---
+- name: Setup Calico on k3s
+  hosts: "{{ target | default('localhost') }}"
+  vars_files:
+    - ./vars/common.yml
+
+  roles:
+    - delete_calico
+    - delete_cilium
+    - uninstall_k3s
+    - install_cilium_cli
+    - setup_k3s_cilium

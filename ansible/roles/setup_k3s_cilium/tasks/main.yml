@@ -1,0 +1,4 @@
+- name: Install specific version of Cilium CLI
+  command: cilium install --version 1.15.7 --set=ipam.operator.clusterPoolIPv4PodCIDRList="10.42.0.0/16"
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml

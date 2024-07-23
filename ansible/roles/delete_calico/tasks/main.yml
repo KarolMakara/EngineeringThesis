@@ -1,0 +1,7 @@
+- name: Delete the Calico operator
+  command: kubectl delete -f roles/common_calico/templates/tigera-operator.yaml
+  ignore_errors: yes
+
+- name: Delete Calico custom resource
+  command: kubectl delete -f roles/common_calico/templates/custom-resources.yaml
+  ignore_errors: yes

@@ -6,9 +6,8 @@
   register: pods_info
 
 - name: Install the Calico operator
-  command: kubectl create -f roles/setup_k3s_calico/templates/tigera-operator.yaml
+  command: kubectl create -f roles/common_calico/templates/tigera-operator.yaml
   when: pods_info.resources | length == 0
-
 
 - name: Get information about all pods in calico-system namespace
   kubernetes.core.k8s_info:
@@ -18,7 +17,7 @@
   register: pods_info
 
 - name: Install calico custom resource
-  shell: kubectl create -f roles/setup_k3s_calico/templates/custom-resources.yaml
+  shell: kubectl create -f roles/common_calico/templates/custom-resources.yaml
   when: pods_info.resources | length == 0
 
 - name: Check node status
