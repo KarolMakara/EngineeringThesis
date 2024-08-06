@@ -5,3 +5,9 @@
 - name: Delete Calico custom resource
   command: kubectl delete -f roles/common_calico/templates/custom-resources.yaml
   ignore_errors: yes
+
+- name: Remove CNI
+  command: sudo rm -f /etc/cni/net.d/10-calico.conflist
+
+- name: Remove CNI
+  command: sudo rm -f /etc/cni/net.d/calico-kubeconfig

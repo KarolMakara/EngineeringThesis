@@ -1,0 +1,6 @@
+- name: Delete Antrea
+  command: kubectl delete -f roles/setup_k3s_antrea/templates/antrea.yml
+  ignore_errors: yes
+
+- name: Remove CNI
+  command: sudo rm -f /etc/cni/net.d/10-antrea.conflist

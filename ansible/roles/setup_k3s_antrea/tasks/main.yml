@@ -1,0 +1,2 @@
+- name: Install the Antrea
+  command: kubectl create -f roles/setup_k3s_antrea/templates/antrea.yml

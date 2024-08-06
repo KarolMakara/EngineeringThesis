@@ -9,6 +9,6 @@
     - delete_cilium
     - delete_antrea
     - uninstall_k3s
-    - install_k3s
     - delete_cni
-    - setup_k3s_calico
+    - install_k3s
+    - setup_k3s_antrea

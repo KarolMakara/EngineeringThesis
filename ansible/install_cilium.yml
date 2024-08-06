@@ -5,8 +5,11 @@
     - ./vars/common.yml
 
   roles:
-    - delete_calico
-    - delete_cilium
-    - uninstall_k3s
+    # - delete_calico
+    # - delete_cilium
+    # - delete_antrea
+    # - uninstall_k3s
     - install_cilium_cli
+    - install_k3s
+    # - delete_cni
     - setup_k3s_cilium

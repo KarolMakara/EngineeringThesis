@@ -3,7 +3,13 @@
   hosts: "{{ target | default('localhost') }}"
   vars_files:
     - ./vars/common.yml
-    - ./vars/calico.yml
 
   roles:
+    - delete_calico
+    - delete_cilium
+    - delete_antrea
+    - uninstall_k3s
+    - delete_cni
+    - install_k3s
     - setup_k3s_calico
+    - setup_k3s_calico_eBPF

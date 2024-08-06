@@ -2,3 +2,9 @@
   command: cilium uninstall
   environment:
     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  ignore_errors: yes
+
+- name: Remove CNI
+  command: rm -f /etc/cni/net.d/05-cilium.conflist
+  become: yes
+

@@ -1,0 +1,11 @@
+# - name: Terraform apply direct API
+#   command: terraform apply -auto-approve -chdir=roles/setup_k3s_calico_eBPF/templates/
+
+- name: Install config map
+  command: kubectl create -f roles/setup_k3s_calico_eBPF/templates/config-map.yaml
+
+- name: Install dataplane bpf
+  command: kubectl patch installation.operator.tigera.io default --type merge -p '{"spec":{"calicoNetwork":{"linuxDataplane":"BPF"}}}'
+
+- name: Install operato API server
+  command: kubectl create -f roles/setup_k3s_calico_eBPF/templates/operator-api-server.yaml
