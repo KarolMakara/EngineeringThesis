@@ -20,7 +20,7 @@ resource "kubernetes_job" "iperf_client" {
           command = [
             "/bin/sh",
             "-c",
-            "/usr/local/bin/statexec --sync-until-succeed -c iperf-server-statexec --log-file ${local.iperf_client_log_path} --file ${local.statexec_iperf_client_metrics_path} -- /usr/local/bin/iperf3 -c iperf-server-statexec --json ${local.iperf_client_json_path}"
+            "/usr/local/bin/statexec --sync-until-succeed -c iperf-server-statexec --log-file ${local.iperf_client_json_path} --file ${local.statexec_iperf_client_metrics_path} -- /usr/local/bin/iperf3 -c iperf-server-statexec --json"
           ]
           resources {
             limits = {

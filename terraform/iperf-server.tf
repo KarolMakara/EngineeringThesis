@@ -30,7 +30,7 @@ resource "kubernetes_deployment" "iperf_server" {
           command = [
             "/bin/sh",
             "-c",
-            "/usr/local/bin/statexec -s --file ${local.statexec_iperf_server_metrics_path} --log-file ${local.statexec_server_output_path} -- /usr/local/bin/iperf3 -s --json ${local.iperf_server_json_path}"
+            "/usr/local/bin/statexec -s --log-file ${local.iperf_server_json_path} --file ${local.statexec_iperf_server_metrics_path} -- /usr/local/bin/iperf3 -s --json"
           ]
 
           port {

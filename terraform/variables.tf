@@ -20,3 +20,8 @@ variable "image" {
   type        = string
 }
 
+variable "CNI_NAME" {
+  description = "The type of CNI to use"
+  type        = string
+}
+
