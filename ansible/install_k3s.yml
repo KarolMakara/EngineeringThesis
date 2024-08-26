@@ -5,5 +5,9 @@
     - ./vars/common.yml
 
   roles:
+    - delete_calico
+    - delete_cilium
+    - delete_antrea
+    - uninstall_k3s
     - install_kubectl
     - install_k3s
