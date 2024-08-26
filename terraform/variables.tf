@@ -25,3 +25,8 @@ variable "CNI_NAME" {
   type        = string
 }
 
+variable "metrics_reference_time" {
+  description = "Sets a fixed reference time for metrics, to see all charts in period of time"
+  default = "1013122800000"
+  type = string
+}
