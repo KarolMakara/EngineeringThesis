@@ -1,3 +1,4 @@
+---
 - name: Remove CNI
   command: rm -rf /etc/cni/net.d/*
   become: yes

@@ -1,15 +1,16 @@
 ---
-- name: Setup Calico on k3s
+- name: Install k3s
   hosts: "{{ target | default('localhost') }}"
   vars_files:
-    - ./vars/common.yml
+    - ./vars/default.yml
 
   roles:
+    - ask_for_password
     - delete_calico
     - delete_cilium
     - delete_antrea
     - uninstall_k3s
     - delete_cni
+    - delete_network_interfaces
+    - install_kubectl
     - install_k3s
-    - setup_k3s_calico
-    - setup_k3s_calico_eBPF

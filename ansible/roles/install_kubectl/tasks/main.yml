@@ -1,3 +1,4 @@
+---
 - name: Download kubectl
   shell: curl -o /tmp/kubectl -L "https://dl.k8s.io/release/v1.30.2/bin/linux/amd64/kubectl"
   args:
@@ -14,5 +15,6 @@
   failed_when: "'OK' not in sha256sum_result.stdout"
 
 - name: Install kubectl
-  command: sudo install -o root -g root -m 0755 /tmp/kubectl /usr/local/bin/kubectl
+  command: install -o root -g root -m 0755 /tmp/kubectl /usr/local/bin/kubectl
+  become: yes
   when: "'OK' in sha256sum_result.stdout"

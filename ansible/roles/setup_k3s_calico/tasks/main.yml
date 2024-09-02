@@ -1,28 +1,7 @@
-- name: Get information about all pods in tigera-operator namespace
-  kubernetes.core.k8s_info:
-    api_version: v1
-    kind: Pod
-    namespace: tigera-operator
-  register: pods_info
-
+---
 - name: Install the Calico operator
   command: kubectl create -f roles/common_calico/templates/tigera-operator.yaml
-  when: pods_info.resources | length == 0
 
-- name: Get information about all pods in calico-system namespace
-  kubernetes.core.k8s_info:
-    api_version: v1
-    kind: Pod
-    namespace: calico-system
-  register: pods_info
 
 - name: Install calico custom resource
   shell: kubectl create -f roles/common_calico/templates/custom-resources.yaml
-  when: pods_info.resources | length == 0
-
-- name: Check node status
-  command: kubectl get nodes -o wide
-  register: node_ready_status
-  until: '"Ready" in node_ready_status.stdout'
-  retries: 10
-  delay: 10

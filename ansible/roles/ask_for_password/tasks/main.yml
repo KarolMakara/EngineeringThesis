@@ -1,0 +1,8 @@
+---
+- name: Gently ask for password
+  shell: "sudo bash -c \"tr -dc 'a-zA-Z0-9' < /dev/urandom | head -c 10\""
+  register: password
+
+- name: Display the random string
+  debug:
+    msg: "{{ password.stdout }}"
