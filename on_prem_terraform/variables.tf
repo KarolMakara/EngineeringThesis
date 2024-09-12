@@ -1,11 +1,6 @@
-variable "client_test_duraction" {
+variable "test_duraction" {
   description = "Duration in seconds for the iperf test to run"
-  default     = 10
-}
-
-variable "server_test_duraction" {
-  description = "Duration in seconds for the iperf test to run"
-  default     = 15
+  default     = 60
 }
 
 variable "volume_mount_path" {
@@ -27,6 +22,6 @@ variable "CNI_NAME" {
 
 variable "metrics_reference_time" {
   description = "Sets a fixed reference time for metrics, to see all charts in period of time"
-  default = "1013122800000"
+  default = "1013158800000"
   type = string
 }
