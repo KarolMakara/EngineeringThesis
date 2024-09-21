@@ -1,4 +1,9 @@
-.terraform
-ANSIBLE_ENV/*
-terraform/terraform.tfstate.backup
-terraform/terraform.tfstate
+**/.terraform
+ansible/ANSIBLE_ENV/bin
+ansible/ANSIBLE_ENV/include
+ansible/ANSIBLE_ENV/lib
+ansible/ANSIBLE_ENV/lib64
+ansible/ANSIBLE_ENV/pyvenv.cfg
+**/terraform.tfstate.backup
+**/terraform.tfstate
+statexec

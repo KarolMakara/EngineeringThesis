@@ -1,9 +1,3 @@
-resource "kubernetes_namespace" "iperf" {
-  metadata {
-    name = "iperf-namespace"
-  }
-}
-
 resource "kubernetes_deployment" "iperf_server" {
   metadata {
     name      = "iperf-server"
@@ -46,18 +40,18 @@ resource "kubernetes_deployment" "iperf_server" {
             container_port = 5201
           }
 
-        #   volume_mount {
-        #     name       = "metrics-volume"
-        #     mount_path = var.volume_mount_path
-        #   }
+          volume_mount {
+            name       = "azure-metrics-volume"
+            mount_path = var.volume_mount_path
+          }
         }
 
-        # volume {
-        #   name = "metrics-volume"
-        #   persistent_volume_claim {
-        #     claim_name = kubernetes_persistent_volume_claim.iperf-pvc.metadata[0].name
-        #   }
-        # }
+        volume {
+          name = "azure-metrics-volume"
+          persistent_volume_claim {
+            claim_name = kubernetes_persistent_volume_claim.azure-iperf-pvc.metadata[0].name
+          }
+        }
 
         restart_policy = "Always"
       }

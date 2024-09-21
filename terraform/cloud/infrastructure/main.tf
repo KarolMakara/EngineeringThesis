@@ -1,26 +1,13 @@
-# Generate random resource group name
-resource "random_pet" "rg_name" {
-  prefix = var.resource_group_name_prefix
-}
-
 resource "azurerm_resource_group" "rg" {
   location = var.resource_group_location
-  name     = random_pet.rg_name.id
-}
-
-resource "random_pet" "azurerm_kubernetes_cluster_name" {
-  prefix = "cluster"
-}
-
-resource "random_pet" "azurerm_kubernetes_cluster_dns_prefix" {
-  prefix = "dns"
+  name     = "rg_${var.common_infix}"
 }
 
 resource "azurerm_kubernetes_cluster" "k8s" {
   location            = azurerm_resource_group.rg.location
-  name                = random_pet.azurerm_kubernetes_cluster_name.id
+  name                = "cluster_${var.common_infix}"
   resource_group_name = azurerm_resource_group.rg.name
-  dns_prefix          = random_pet.azurerm_kubernetes_cluster_dns_prefix.id
+  dns_prefix          = "dns_${var.common_infix}"
 
   identity {
     type = "SystemAssigned"
@@ -28,9 +15,10 @@ resource "azurerm_kubernetes_cluster" "k8s" {
 
   default_node_pool {
     name       = "agentpool"
-    vm_size    = "standard_b4als_v2"
+    vm_size    = var.vm_type
     node_count = var.node_count
   }
+
   linux_profile {
     admin_username = var.username
 
@@ -38,8 +26,9 @@ resource "azurerm_kubernetes_cluster" "k8s" {
       key_data = azapi_resource_action.ssh_public_key_gen.output.publicKey
     }
   }
+
   network_profile {
-    network_plugin    = "kubenet"
+    network_plugin    = "none"
     load_balancer_sku = "standard"
   }
 }

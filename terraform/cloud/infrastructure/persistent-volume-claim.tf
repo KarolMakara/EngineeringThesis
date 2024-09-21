@@ -1,13 +1,14 @@
-resource "kubernetes_persistent_volume_claim" "iperf_pvc" {
+resource "kubernetes_persistent_volume_claim" "azure-iperf-pvc" {
   metadata {
-    name      = "iperf-pvc"
+    name = "azure-iperf-pvc"
     namespace = "iperf-namespace"
   }
 
   spec {
     access_modes = ["ReadWriteOnce"]
+    storage_class_name = "azurefile-csi"
     resources {
-      requests {
+      requests = {
         storage = "1Gi"
       }
     }

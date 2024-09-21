@@ -25,11 +25,11 @@ terraform {
 }
 
 provider "kubernetes" {
-  config_path = "~/EngineeringThesis/aks_terraform/azurek8s"
+  config_path = "~/.kube/config"
 }
 
 provider "azurerm" {
-  subscription_id = "10a79cbd-9350-4de5-8011-ac3b9764fdc6"
+  subscription_id = var.SUBSCRIPTION
   features {
     resource_group {
       prevent_deletion_if_contains_resources = false
