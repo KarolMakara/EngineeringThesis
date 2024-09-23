@@ -1,13 +1,13 @@
 resource "azurerm_resource_group" "rg" {
   location = var.resource_group_location
-  name     = "rg_${var.common_infix}"
+  name     = "rg${var.common_infix}"
 }
 
 resource "azurerm_kubernetes_cluster" "k8s" {
   location            = azurerm_resource_group.rg.location
-  name                = "cluster_${var.common_infix}"
+  name                = "cluster${var.common_infix}"
   resource_group_name = azurerm_resource_group.rg.name
-  dns_prefix          = "dns_${var.common_infix}"
+  dns_prefix          = "dns${var.common_infix}"
 
   identity {
     type = "SystemAssigned"

@@ -32,10 +32,10 @@ variable "resource_group_location" {
   description = "Resources location"
 }
 
-variable "resource_group_name_prefix" {
+variable "common_infix" {
+  description = "Common infix for cloud resources"
   type        = string
-  default     = "thesis"
-  description = "Prefix of the resource group in Azure subscription."
+  default     = "EngineeringThesis"
 }
 
 variable "node_count" {
@@ -59,10 +59,4 @@ variable "vm_type" {
 variable "SUBSCRIPTION" {
   description = "Azure subscription id"
   type        = string
-}
-
-variable "common_infix" {
-  description = "Common infix for cloud resources"
-  type        = string
-  default     = "engineering_thesis"
 }
