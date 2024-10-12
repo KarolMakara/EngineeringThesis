@@ -1,2 +1,6 @@
-IP_POOL: 10.42.0.0/16
-INSTALL_K3S_EXEC: INSTALL_K3S_EXEC="--flannel-backend=none --cluster-cidr={{ IP_POOL }} --disable-network-policy"
+cilium_version: 1.16.2
+cni_name: cilium
+disable_flannel_backend: true
+disable_kube_proxy: true
+entrypoint_script: roles/create_k3d_cluster/templates/k3d-entrypoint-cilium.sh
+mount_entrypoint: true

@@ -1,0 +1,12 @@
+---
+- name: Create k8s cluster on azure
+  hosts: "{{ target | default('localhost') }}"
+  vars_files:
+    - ./vars/cloud/credentials.yml
+    - ./vars/cloud/cilium.yml
+
+  roles:
+    - create_azure_cluster
+    - role: setup_k3s_cilium
+      vars:
+        EXTRA_OPTS: --set azure.resourceGroup="{{ resource_group.stdout }}"

@@ -1,0 +1,3 @@
+---
+- name: Set server-1 as egress node
+  shell: kubectl label nodes $(kubectl get nodes | grep server-1 | awk '{ print $1}') egress-node=true

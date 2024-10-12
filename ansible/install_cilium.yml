@@ -1,17 +1,11 @@
 ---
-- name: Setup Cilium on k3s
+- name: Create cluster and install cilium cni plugin
   hosts: "{{ target | default('localhost') }}"
   vars_files:
     - ./vars/cilium.yml
+    - ./vars/common.yml
 
   roles:
-    - ask_for_password
-    - delete_calico
-    - delete_cilium
-    - delete_antrea
-    - uninstall_k3s
-    - install_cilium_cli
-    - delete_cni
-    - delete_network_interfaces
-    - install_k3s
-    - setup_k3s_cilium
+    - create_k3d_cluster
+    - install_cilium
+

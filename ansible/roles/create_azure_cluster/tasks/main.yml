@@ -1,0 +1,22 @@
+---
+- name: Create azure cluster
+  command: terraform -chdir=../terraform/cloud/infrastructure apply -auto-approve
+  environment:
+    TF_VAR_SUBSCRIPTION: "{{ SUBSCRIPTION }}"
+
+- name: Get resource group
+  command: terraform -chdir=../terraform/cloud/infrastructure output -raw resource_group_name
+  register: resource_group
+
+- name: Get resource group
+  command: terraform -chdir=../terraform/cloud/infrastructure output -raw kubernetes_cluster_name
+  register: cluster_name
+
+- name: Set kube config
+  command: az aks get-credentials --resource-group {{ resource_group.stdout }} --name {{ cluster_name.stdout }} --overwrite-existing
+
+- name: Create azure cluster
+  command: terraform -chdir=../terraform/cloud/cluster apply -auto-approve
+  environment:
+    TF_VAR_SUBSCRIPTION: "{{ SUBSCRIPTION }}"
+    TF_VAR_CNI_NAME: "cilium"

@@ -1,0 +1,15 @@
+---
+- name: Set CNI_NAME based on cni value
+  set_fact:
+    CNI_NAME: >
+      {%- if cni == '1' -%}
+        calico
+      {%- elif cni == '2' -%}
+        cilium
+      {%- else -%}
+        Invalid option selected!
+      {%- endif -%}
+
+- name: Print CNI_NAME
+  debug:
+    msg: "CNI_NAME: {{ CNI_NAME }}"
