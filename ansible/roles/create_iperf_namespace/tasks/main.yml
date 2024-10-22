@@ -1,2 +1,2 @@
 - name: Create iperf namespace
-  shell: kubectl create -f roles/create_iperf_namespace/templates/iperf-namespace.yml
+  shell: kubectl create -f roles/create_iperf_namespace/templates/iperf.yml

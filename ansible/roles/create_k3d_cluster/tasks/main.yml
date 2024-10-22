@@ -18,7 +18,8 @@
       --servers {{ k3d_servers }}
       --agents {{ k3d_agents }}
       --network {{ cni_name }}
-      {% if not disable_servicelb %}
+      --volume /mnt/k3d:/host_shared_data
+      {% if disable_servicelb %}
       --no-lb
       {% endif %}
       {% if mount_entrypoint %}
@@ -43,6 +44,7 @@
 
 - name: Create cluster
   command: "{{ k3d_command }}"
+  ignore_errors: yes
 
 - name: Register cluster network id
   shell: k3d cluster list -o json | jq -r --arg name "{{ cluster_name }}" '.[] | select(.name == $name) | .nodes | first | .runtimeLabels["k3d.cluster.network.id"]'
@@ -55,4 +57,4 @@
   when: cluster_network_id.stdout == ""
 
 - name: Write network id to cfg file
-  shell: echo {{ cluster_network_id.stout }} > {{ current_dir }}/../cluster_network.cfg
+  shell: echo {{ cluster_network_id.stdout }} > {{ current_dir }}/../cluster_network.cfg

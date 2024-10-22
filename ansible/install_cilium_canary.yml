@@ -1,0 +1,12 @@
+---
+- name: Create cluster and install cilium cni plugin for canary
+  hosts: "{{ target | default('localhost') }}"
+  vars_files:
+    - ./vars/canary.yml
+    - ./vars/cilium.yml
+    - ./vars/common.yml
+
+  roles:
+    - create_k3d_cluster
+    - install_cilium
+
