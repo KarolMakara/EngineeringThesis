@@ -1,0 +1,26 @@
+# Configuration file version
+apiVersion: 1
+
+deleteDatasources:
+  - name: datasource
+    orgId: 1
+  - name: VictoriaMetrics
+    orgId: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    uid: DS_PROMETHEUS
+    orgId: 1
+    url: http://prom-monitoring-service:9090
+    default: true
+    scrapeInterval: 2s
+
+  - name: VictoriaMetrics
+    type: prometheus
+    uid: DS_VICTORIAMETRICS
+    access: proxy
+    orgId: 1
+    url: http://victoria-metrics:8428
+    default: true
+    scrapeInterval: 2s

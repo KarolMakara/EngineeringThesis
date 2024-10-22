@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets:
+          - '172.20.0.2:30910'
+          - '172.20.0.3:30910'
+          - '172.20.0.4:30910'
+          - '172.20.0.5:30910'
