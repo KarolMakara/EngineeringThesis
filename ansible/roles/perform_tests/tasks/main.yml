@@ -1,0 +1,9 @@
+---
+- name: Perform tests
+  command: terraform -chdir=../terraform/cloud/cluster apply -auto-approve
+  environment:
+    TF_VAR_SUBSCRIPTION: "{{ SUBSCRIPTION }}"
+    TF_VAR_CNI_NAME: "{{ CNI_NAME }}"
+
+- name: Gather results
+  command: kubectl cp -n iperf $(kubectl get pods -n iperf -l app=iperf-server | tail -n 1 | awk '{print $1}'):/mnt/k3s ./data/

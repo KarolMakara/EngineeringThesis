@@ -1,0 +1,15 @@
+---
+- name: Create cluster and install cilium cni plugin for traffic splitting
+  hosts: "{{ target | default('localhost') }}"
+  vars_files:
+    - ./vars/traffic-splitting.yml
+    - ./vars/cilium.yml
+    - ./vars/common.yml
+
+  roles:
+    - create_k3d_cluster
+    - install_gateway_crd # Before cilium is a must!
+    - install_fresh_cilium_with_helm
+    - wait_for_cilium_install
+    - install_metallb
+    - deploy_cilium_gateway_api

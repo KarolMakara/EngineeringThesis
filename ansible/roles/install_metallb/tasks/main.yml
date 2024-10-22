@@ -1,0 +1,25 @@
+---
+- name: Get network ip # assume /16 subnet
+  shell: docker network inspect {{ cni_name }} -f '{{ "{{ (index .IPAM.Config 0).Subnet }}" }}' | cut -d'/' -f1
+  register: network_ip
+
+- name: Specify ip pool
+  shell: echo "$(echo {{ network_ip.stdout }} | sed 's|\.0\.0|\.0\.50|')-$(echo {{ network_ip.stdout }} | sed 's|\.0\.0|\.0\.100|')"
+  register: ip_pool
+
+- name: Inject ip pool to template
+  template:
+    src: roles/install_metallb/templates/metallb_values.yaml.j2
+    dest: /tmp/metallb_values.yaml
+  vars:
+    IP_POOL: "{{ ip_pool.stdout }}"
+
+- name: Install metallb
+  shell: helm install --namespace metallb-system --version 0.12.1 --values /tmp/metallb_values.yaml --create-namespace --repo https://metallb.github.io/metallb metallb metallb
+
+# - name: Configure metallb
+#   shell: kubectl apply -f /tmp/metallb_values.yaml
+#
+# - name: Restart metallb deployment
+#   shell: kubectl rollout restart deployment -n metallb-system
+

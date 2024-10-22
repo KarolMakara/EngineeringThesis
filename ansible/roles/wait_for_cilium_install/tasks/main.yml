@@ -1,0 +1,3 @@
+---
+- name: Wait until cilium fully installed
+  command: cilium status --wait

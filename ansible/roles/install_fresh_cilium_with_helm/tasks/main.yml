@@ -1,0 +1,4 @@
+---
+- name: Install cilium gateway with helm
+  shell: helm install cilium cilium/cilium --version {{ cilium_version }} --namespace kube-system {{ helm_extra_opts }}
+  ignore_errors: yes

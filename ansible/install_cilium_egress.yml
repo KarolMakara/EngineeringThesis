@@ -1,7 +1,8 @@
 ---
-- name: Create cluster and install cilium cni plugin
+- name: Create cluster and install cilium cni plugin for egress
   hosts: "{{ target | default('localhost') }}"
   vars_files:
+    - ./vars/egress.yml
     - ./vars/cilium.yml
     - ./vars/common.yml
 
