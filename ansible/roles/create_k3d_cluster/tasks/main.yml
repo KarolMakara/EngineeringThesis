@@ -1,4 +1,7 @@
 ---
+- name: Delete network before cluster creation
+  shell: docker network rm -f 0x5f3759df
+
 - name: Get current dir for volume mount
   set_fact:
     current_dir: "{{ lookup('pipe', 'pwd') }}"
@@ -9,7 +12,7 @@
 
 - name: Generate cluster name
   set_fact:
-    cluster_name: "{{ cluster_name_prefix }}-{{ cni_name }}"
+    cluster_name: "{{ cluster_name_prefix }}-{{ cni_name }}-{{ scenario }}"
 
 - name: Set k3d create cluster command
   set_fact:
@@ -17,13 +20,13 @@
       k3d cluster create {{ cluster_name }}
       --servers {{ k3d_servers }}
       --agents {{ k3d_agents }}
-      --network {{ cni_name }}
+      --network 0x5f3759df
       --volume /mnt/k3d:/host_shared_data
       {% if disable_servicelb %}
       --no-lb
       {% endif %}
       {% if mount_entrypoint %}
-      --volume {{ current_dir }}/{{ entrypoint_script }}:/bin/k3d-entrypoint-cilium.sh
+      --volume {{ mount_entrypoint_path }}
       {% endif %}
       --image {{ k3d_image }}
       {% if disable_network_policy %}
@@ -44,7 +47,7 @@
 
 - name: Create cluster
   command: "{{ k3d_command }}"
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Register cluster network id
   shell: k3d cluster list -o json | jq -r --arg name "{{ cluster_name }}" '.[] | select(.name == $name) | .nodes | first | .runtimeLabels["k3d.cluster.network.id"]'

@@ -1,0 +1,19 @@
+      - job_name: 'k3d-servers'
+        static_configs:
+          - targets:
+              - "{{ ip }}.2:30910"
+              - "{{ ip }}.3:30910"
+              - "{{ ip }}.4:30910"
+        relabel_configs:
+          - source_labels: [__address__]
+            regex: "{{ ip }}.2:30910"
+            target_label: instance
+            replacement: 'server-0'
+          - source_labels: [__address__]
+            regex: "{{ ip }}.3:30910"
+            target_label: instance
+            replacement: 'agent-0'
+          - source_labels: [__address__]
+            regex: "{{ ip }}.4:30910"
+            target_label: instance
+            replacement: 'agent-1'

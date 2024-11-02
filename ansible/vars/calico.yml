@@ -1,2 +1,2 @@
-IP_POOL: 192.168.0.0/16
-INSTALL_K3S_EXEC: INSTALL_K3S_EXEC="--flannel-backend=none --cluster-cidr={{ IP_POOL }} --disable-network-policy --disable=traefik"
+cni_name: calico
+mount_entrypoint: false

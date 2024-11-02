@@ -1,0 +1,6 @@
+helm_extra_opts: --set prometheus.enabled=true --set operator.prometheus.enabled=true --set hubble.enabled=true --set hubble.metrics.enableOpenMetrics=true --set hubble.metrics.enabled="{dns,drop,tcp,flow,port-distribution,icmp,httpV2:exemplars=true;labelsContext=source_ip\,source_namespace\,source_workload\,destination_ip\,destination_namespace\,destination_workload\,traffic_direction}"
+k3d_agents: 2
+launch_pod_on_node: agent-0
+scenario: egress-no-gateway
+test_duration: 60
+volume_mount_path: /host_shared_data/egress_no_gateway

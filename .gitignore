@@ -6,4 +6,6 @@ ansible/ANSIBLE_ENV/lib64
 ansible/ANSIBLE_ENV/pyvenv.cfg
 **/terraform.tfstate.backup
 **/terraform.tfstate
+**/.terraform*
 statexec
+cluster_network.cfg

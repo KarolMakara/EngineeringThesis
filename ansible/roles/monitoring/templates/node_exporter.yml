@@ -1,0 +1,66 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-monitoring
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: node-monitoring
+  template:
+    metadata:
+      labels:
+        app: node-monitoring
+    spec:
+      hostPID: true
+      hostNetwork: true
+      containers:
+        - name: node-monitoring
+          image: quay.io/prometheus/node-exporter:v1.8.2
+          command: [ "/bin/node_exporter" ]
+          args:
+            - "--path.procfs=/host/proc"
+            - "--path.sysfs=/host/sys"
+            - "--path.rootfs=/host/root"
+            - "--collector.filesystem.ignored-mount-points=^/(dev|proc|sys|var/lib/docker/.+|var/lib/kubelet/pods/.+)($|/)"
+          ports:
+            - containerPort: 9100
+          volumeMounts:
+            - name: root-volume
+              mountPath: /host
+              readOnly: true
+              mountPropagation: HostToContainer
+            - name: proc-volume
+              mountPath: /host/proc
+              readOnly: true
+              mountPropagation: HostToContainer
+            - name: sys-volume
+              mountPath: /host/sys
+              readOnly: true
+              mountPropagation: HostToContainer
+      volumes:
+        - name: root-volume
+          hostPath:
+            path: /
+        - name: proc-volume
+          hostPath:
+            path: /proc
+        - name: sys-volume
+          hostPath:
+            path: /sys
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-monitoring-service
+  namespace: monitoring
+spec:
+  selector:
+    app: node-monitoring
+  ports:
+    - port: 9100
+      targetPort: 9100
+      nodePort: 30910
+  type: NodePort
+  externalTrafficPolicy: Local

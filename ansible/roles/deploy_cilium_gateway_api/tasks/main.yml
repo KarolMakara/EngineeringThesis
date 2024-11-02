@@ -1,10 +1,3 @@
 ---
-- name: Deploy echo app
-  shell: kubectl apply -f https://raw.githubusercontent.com/cilium/cilium/1.16.3/examples/kubernetes/gateway/echo.yaml
-
-- name: Deploy splitting rules with gateway
-  shell: kubectl apply -f https://raw.githubusercontent.com/cilium/cilium/1.16.3/examples/kubernetes/gateway/splitting.yaml
-
-# ---
-# - name: Deplot traffic-splitting scenario
-  # shell: terraform -chdir=../terraform/traffic_splitting apply -auto-approve
+- name: Deploy traffic-splitting scenario
+  shell: terraform -chdir=../terraform/cilium_traffic_splitting apply -auto-approve

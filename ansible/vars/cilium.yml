@@ -1,2 +1,4 @@
-entrypoint_script: roles/create_k3d_cluster/templates/k3d-entrypoint-cilium.sh
+cilium_version: 1.16.3
+cni_name: cilium
 mount_entrypoint: true
+mount_entrypoint_path: "{{ lookup('pipe', 'pwd') }}/roles/create_k3d_cluster/templates/k3d-entrypoint-cilium.sh:/bin/k3d-entrypoint-cilium.sh"

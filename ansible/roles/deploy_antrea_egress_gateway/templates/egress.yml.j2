@@ -1,0 +1,11 @@
+---
+apiVersion: crd.antrea.io/v1beta1
+kind: Egress
+metadata:
+  name: egress-node
+spec:
+  appliedTo:
+    podSelector:
+      matchLabels:
+        role: filter
+  egressIP: {{ egress_ip }}

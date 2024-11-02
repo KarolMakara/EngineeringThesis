@@ -1,0 +1,12 @@
+---
+- name: Create antrea egress scenario without egress gateway
+  hosts: "{{ target | default('localhost') }}"
+  vars_files:
+    - ./vars/common.yml
+    - ./vars/egress_no_gateway.yml
+    - ./vars/antrea.yml
+
+  roles:
+    - create_k3d_cluster
+    - install_antrea
+#    - terraform_run_egress_iperf

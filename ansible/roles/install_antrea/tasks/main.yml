@@ -1,0 +1,3 @@
+---
+- name: Install the Antrea
+  command: kubectl create -f https://github.com/antrea-io/antrea/releases/download/v2.1.0/antrea.yml

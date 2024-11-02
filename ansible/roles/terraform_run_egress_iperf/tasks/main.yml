@@ -1,0 +1,26 @@
+---
+- name: Fillup terraform config
+  template:
+    src: ../terraform/egress_gateway/iperf-client.tf.j2
+    dest: ../terraform/egress_gateway/iperf-client.tf
+
+- name: Run iperf3 locally
+  shell: iperf3 -s > /tmp/iperf3_output.log &
+  async: 1
+  poll: 0
+
+- name: Run egress
+  shell: terraform -chdir=../terraform/egress_gateway apply -auto-approve
+  environment:
+    TF_VAR_cni_name: "{{ cni_name }}"
+    TF_VAR_real_host_ip: "{{ real_host_ip }}"
+    TF_VAR_scenario: "{{ scenario }}"
+    TF_VAR_test_duration: "{{ test_duration }}"
+    TF_VAR_volume_mount_path: "{{ volume_mount_path }}"
+
+- name: Wait for the test duration plus 10 seconds
+  pause:
+    seconds: "{{ test_duration | int + 10 }}"
+
+- name: Kill iperf3 server process
+  shell: pkill -f "iperf3 -s"

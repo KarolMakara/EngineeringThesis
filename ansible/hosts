@@ -1,2 +1,0 @@
-[k3s-calico]
-localhost ansible_connection=local

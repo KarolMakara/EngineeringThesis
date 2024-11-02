@@ -1,7 +1,0 @@
----
-- name: Install the Calico operator
-  command: kubectl create -f roles/common_calico/templates/tigera-operator.yaml
-
-
-- name: Install calico custom resource
-  shell: kubectl create -f roles/common_calico/templates/custom-resources.yaml

@@ -1,0 +1,10 @@
+---
+- name: Inject ip pool to template
+  template:
+    src: roles/deploy_cilium_egress_gateway/templates/egress.yml.j2
+    dest: /tmp/egress.yml
+  vars:
+    egress_ip: "{{ ip.stdout }}"
+
+- name: Apply egress
+  command: kubectl apply -f /tmp/egress.yml

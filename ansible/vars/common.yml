@@ -1,11 +1,11 @@
-cilium_version: 1.16.3
 cluster_name_prefix: eg
 disable_flannel_backend: true
 disable_kube_proxy: false
 disable_network_policy: true
-disable_servicelb: true
+disable_servicelb: false
 disable_traefik: true
+real_host_ip: 192.168.100.34
 k3d_agents: 2
-k3d_image: docker.io/rancher/k3s:v1.24.17-k3s1
+k3d_image: docker.io/rancher/k3s:v1.30.4-k3s1
 k3d_servers: 1
 k3d_version: v5.7.4

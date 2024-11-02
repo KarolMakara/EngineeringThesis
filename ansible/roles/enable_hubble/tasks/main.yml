@@ -1,0 +1,2 @@
+- name: Enable hubble
+  shell: cilium hubble enable

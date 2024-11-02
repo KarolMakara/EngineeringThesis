@@ -1,0 +1,44 @@
+# - name: Register cilium prometheus.yml
+#   shell: cat roles/monitoring/templates/cilium_prometheus.yml
+#   register: prom_config
+
+# - name: Fillup config from template
+#   template:
+#     src: roles/monitoring/templates/prometheus_config_map.yml.j2
+#     dest: /tmp/monitoring.yml.j2
+#   vars:
+#     prometheus_config: "{{ prom_config.stdout }}"
+
+# - name: Get ip base
+#   shell: kubectl get nodes -o wide | grep agent-0 | awk '{ print $6 }' | cut -d'.' -f1-3
+#   register: ip_base
+
+# - name: Fillup config from template
+#   template:
+#     src: /tmp/monitoring.yml.j2
+#     dest: /tmp/config_map.yml
+#   vars:
+#     ip: "{{ ip_base.stdout }}"
+
+# - name: Load configmap using terraform
+#   shell: terraform -chdir="roles/monitoring/templates/terraform" apply -auto-approve
+
+# - name: Create yaml
+#   shell: cat roles/monitoring/templates/monitoring.yml > /tmp/monitoring.yml
+
+# - name: Append prometheus
+#   shell: cat /tmp/config_map.yml >> /tmp/monitoring.yml
+
+# - name: Append node_exporter
+#   shell: cat roles/monitoring/templates/node_exporter.yml >> /tmp/monitoring.yml
+
+# - name: Apply /tmp/monitoring.yml
+#   shell: kubectl apply -f /tmp/monitoring.yml
+
+- name: Check if Grafana deployment is ready
+  shell: kubectl get deployment grafana -n monitoring | awk '{ print $4 }' | tail -n 1
+  register: grafana_ready_status
+  until: grafana_ready_status.stdout == "1"
+  retries: 40
+  delay: 5
+  changed_when: false

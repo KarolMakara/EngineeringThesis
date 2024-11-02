@@ -1,6 +1,6 @@
 ---
 - name: Get network ip # assume /16 subnet
-  shell: docker network inspect {{ cni_name }} -f '{{ "{{ (index .IPAM.Config 0).Subnet }}" }}' | cut -d'/' -f1
+  shell: docker network inspect 0x5f3759df -f '{{ "{{ (index .IPAM.Config 0).Subnet }}" }}' | cut -d'/' -f1
   register: network_ip
 
 - name: Specify ip pool
