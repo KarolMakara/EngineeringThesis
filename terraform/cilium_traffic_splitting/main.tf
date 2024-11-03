@@ -3,11 +3,11 @@ resource "kubernetes_manifest" "gateway" {
     apiVersion = "gateway.networking.k8s.io/v1"
     kind = "Gateway"
     metadata = {
-      name = "cilium-gw"
+      name = "nginx-gw"
       namespace = "default"
     }
     spec = {
-      gatewayClassName = "cilium"
+      gatewayClassName = "nginx"
       listeners = [
         {
           protocol = "HTTP"
@@ -29,7 +29,7 @@ resource "kubernetes_manifest" "splitting_route" {
     apiVersion = "gateway.networking.k8s.io/v1"
     kind = "HTTPRoute"
     metadata = {
-      name = "example-route-1"
+      name = "echo-route"
       namespace = "default"
     }
     spec = {

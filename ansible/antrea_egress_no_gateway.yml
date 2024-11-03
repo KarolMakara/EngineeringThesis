@@ -9,4 +9,4 @@
   roles:
     - create_k3d_cluster
     - install_antrea
-#    - terraform_run_egress_iperf
+   - terraform_run_egress_iperf

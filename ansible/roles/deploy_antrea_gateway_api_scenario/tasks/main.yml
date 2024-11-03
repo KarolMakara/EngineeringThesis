@@ -1,0 +1,3 @@
+---
+- name: Deploy traffic-splitting scenario
+  shell: terraform -chdir=../terraform/antrea_traffic_splitting apply -auto-approve

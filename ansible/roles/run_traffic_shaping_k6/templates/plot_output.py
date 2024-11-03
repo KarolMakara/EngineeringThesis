@@ -7,9 +7,9 @@ total_count = 0
 
 curr_ratio = []
 
-with open('output.out', 'r') as file:
+with open('output.log', 'r') as file:
     for line in file:
-        match = re.search(r'Hostname: (echo-\d)', line)
+        match = re.search(r'(echo-\d)', line)
         if match:
             hostname = match.group(1)
             total_count += 1
