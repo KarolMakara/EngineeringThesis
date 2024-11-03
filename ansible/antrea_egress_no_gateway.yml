@@ -9,4 +9,6 @@
   roles:
     - create_k3d_cluster
     - install_antrea
-   - terraform_run_egress_iperf
+    - wait_until_antrea_installed
+    - monitoring
+    - terraform_run_egress_iperf

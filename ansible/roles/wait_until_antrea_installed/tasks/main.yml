@@ -1,0 +1,2 @@
+- name: Wait until antrea ready
+  shell: kubectl wait --timeout=10m -n kube-system deployment/antrea-controller --for=condition=Available

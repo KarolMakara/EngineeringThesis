@@ -9,6 +9,7 @@
   roles:
     - create_k3d_cluster
     - install_antrea
+    - wait_until_antrea_installed
     - install_gateway_crd
     - install_nginx_gateway
     - deploy_antrea_gateway_api_scenario

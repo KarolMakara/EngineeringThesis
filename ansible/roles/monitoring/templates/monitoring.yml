@@ -335,6 +335,8 @@ data:
     deleteDatasources:
       - name: prometheus
         orgId: 1
+      - name: VictoriaMetrics
+        orgId: 1
     datasources:
     - name: prometheus
       type: prometheus
@@ -342,6 +344,14 @@ data:
       access: proxy
       orgId: 1
       url: http://prometheus:9090
+      basicAuth: false
+      editable: true
+    - name: VictoriaMetrics
+      type: prometheus
+      uid: DS_VICTORIAMETRICS
+      access: proxy
+      orgId: 1
+      url: http://victoria-metrics:8428
       basicAuth: false
       editable: true
 ---
