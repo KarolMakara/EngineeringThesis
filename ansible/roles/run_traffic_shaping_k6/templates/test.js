@@ -1,13 +1,13 @@
 import http from 'k6/http';
-import { check, sleep } from 'k6';
+import { check } from 'k6';
 
 export const options = {
-  vus: 10,
-  duration: '60s',
+  vus: "1000000",
+  duration: "5s",
 };
 
 export default function () {
-  const url = 'http://172.18.0.3/echo';
+  const url = 'http://172.18.0.50/echo';
   const res = http.get(url);
 
   check(res, {
@@ -18,5 +18,4 @@ export default function () {
   const hostname = hostnameMatch ? hostnameMatch[1] : 'Hostname not found';
 
   console.log(`Hostname: ${hostname}`);
-  sleep(0.05)
 }

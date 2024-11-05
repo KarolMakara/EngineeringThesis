@@ -8,12 +8,12 @@
           - source_labels: [__address__]
             regex: "{{ ip_addr }}.2:30910"
             target_label: instance
-            replacement: 'server-0'
+            replacement: 'control-plane'
           - source_labels: [__address__]
             regex: "{{ ip_addr }}.3:30910"
             target_label: instance
-            replacement: 'agent-0'
+            replacement: 'worker'
           - source_labels: [__address__]
             regex: "{{ ip_addr }}.4:30910"
             target_label: instance
-            replacement: 'agent-1'
+            replacement: 'worker2'

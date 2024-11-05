@@ -1,6 +1,12 @@
 ---
+- name: Install metallb
+  shell: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
+
+- name: Configure metallb
+  shell: kubectl wait --timeout=10m -n metallb-system deployment/controller --for=condition=Available
+
 - name: Get network ip # assume /16 subnet
-  shell: docker network inspect 0x5f3759df -f '{{ "{{ (index .IPAM.Config 0).Subnet }}" }}' | cut -d'/' -f1
+  shell: docker network inspect kind | jq -r '.[0].IPAM.Config[1] | .Subnet' | cut -d'/' -f1
   register: network_ip
 
 - name: Specify ip pool
@@ -14,11 +20,10 @@
   vars:
     IP_POOL: "{{ ip_pool.stdout }}"
 
-- name: Install metallb
-  shell: helm install --namespace metallb-system --version 0.12.1 --values /tmp/metallb_values.yaml --create-namespace --repo https://metallb.github.io/metallb metallb metallb
 
-# - name: Configure metallb
-#   shell: kubectl apply -f /tmp/metallb_values.yaml
+- name: Configure metallb
+  shell: kubectl apply -f /tmp/metallb_values.yaml
+
 #
 # - name: Restart metallb deployment
 #   shell: kubectl rollout restart deployment -n metallb-system

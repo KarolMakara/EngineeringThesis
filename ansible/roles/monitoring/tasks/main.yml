@@ -10,7 +10,7 @@
     prometheus_config: "{{ prom_config.stdout }}"
 
 - name: Get ip base
-  shell: kubectl get nodes -o wide | grep agent-0 | awk '{ print $6 }' | cut -d'.' -f1-3
+  shell: kubectl get nodes -o wide | grep worker | awk '{ print $6 }' | cut -d'.' -f1-3
   register: ip_base
 
 - name: Fillup config from template
@@ -34,6 +34,9 @@
 
 - name: Apply /tmp/monitoring.yml
   shell: kubectl apply -f /tmp/monitoring.yml
+
+# - name: Apply cadvisor
+#   shell: kubectl apply -f roles/monitoring/templates/cadvisor.yml
 
 - name: Wait until grafana ready
   shell: kubectl wait --timeout=5m -n monitoring deployment/grafana --for=condition=Available
