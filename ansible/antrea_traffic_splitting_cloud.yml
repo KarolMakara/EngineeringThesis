@@ -1,0 +1,19 @@
+---
+- name: Create antrea egress scenario with egress gateway
+  hosts: "{{ target | default('localhost') }}"
+  vars_files:
+    - ./vars/common.yml
+    - ./vars/traffic_splitting.yml
+    - ./vars/antrea.yml
+
+  roles:
+  #  - create_azure_cluster
+  #  - install_antrea_cloud
+  #  - wait_until_antrea_installed
+  #  - install_gateway_crd
+  #  - install_nginx_gateway
+  #  - register_nodes
+  #  - deploy_antrea_gateway_api_scenario
+  #  - monitoring_cloud
+   - register_gateway_api_ip
+   - run_traffic_shaping_k6

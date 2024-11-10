@@ -1,0 +1,9 @@
+- name: Delete kube-proxy daemonsets
+  shell: kubectl -n kube-system delete ds kube-proxy
+
+- name: Delete kube-proxy configmaps
+  shell: kubectl -n kube-system delete cm kube-proxy
+
+- name: Remove kube-proxy iptables in containers
+  shell: docker exec {{ item }} /bin/bash -c "iptables-save | grep -v KUBE | iptables-restore"
+  with_items: ["kind-control-plane", "kind-worker", "kind-worker2"]

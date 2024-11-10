@@ -1,26 +1,18 @@
 resource "kubernetes_manifest" "gateway" {
-
-  depends_on = [ kubernetes_deployment.echo_1, kubernetes_deployment.echo_2 ]
-
   manifest = {
     apiVersion = "gateway.networking.k8s.io/v1"
     kind = "Gateway"
     metadata = {
-      name = "cilium-gw"
+      name = "nginx-gw"
       namespace = "default"
     }
     spec = {
-      gatewayClassName = "cilium"
+      gatewayClassName = "nginx"
       listeners = [
         {
           protocol = "HTTP"
           port = "80"
-          name = "web-gw-echo"
-          allowedRoutes = {
-            namespaces = {
-              from = "Same"
-            }
-          }
+          name = "http"
         }
       ]
     }
@@ -28,20 +20,17 @@ resource "kubernetes_manifest" "gateway" {
 }
 
 resource "kubernetes_manifest" "splitting_route" {
-
-  depends_on = [ kubernetes_deployment.echo_1, kubernetes_deployment.echo_2 ]
-
   manifest = {
     apiVersion = "gateway.networking.k8s.io/v1"
     kind = "HTTPRoute"
     metadata = {
-      name = "example-route-1"
+      name = "echo-route"
       namespace = "default"
     }
     spec = {
       parentRefs = [
         {
-          name = "cilium-gw"
+          name = "nginx-gw"
         }
       ]
       rules = [

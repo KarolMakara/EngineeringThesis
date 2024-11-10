@@ -177,7 +177,7 @@ resource "kubernetes_deployment" "prometheus" {
           }
 
           volume_mount {
-            name = "monitoring-data"
+            name = "monitoring-data-volume"
             mount_path = "/prometheus"
           }
         }
@@ -192,14 +192,42 @@ resource "kubernetes_deployment" "prometheus" {
 
         }
 
+        # volume {
+        #   name = "monitoring-data-volume"
+        #   persistent_volume_claim {
+        #     claim_name = "monitoring-pvc"
+        #   }
+        # }
+
         volume {
-          name = "monitoring-data"
-          persistent_volume_claim {
-            claim_name = "monitoring-pvc"
+          name = "monitoring-data-volume"
+          host_path {
+            path = "/host_shared_data/monitoring/prometheus_db"
           }
         }
       }
     }
+  }
+}
+
+resource "kubernetes_service" "prom_monitoring_debug_service" {
+  metadata {
+    name      = "prom-monitoring-debug-service"
+    namespace = "monitoring"
+  }
+
+  spec {
+    selector = {
+      app = "prom-monitoring"
+    }
+
+    port {
+      port = 9090
+      target_port = 9090
+      node_port = 30909
+    }
+
+    type = "NodePort"
   }
 }
 
@@ -236,45 +264,45 @@ resource "kubernetes_storage_class" "local_storage" {
 }
 
 
-resource "kubernetes_persistent_volume_claim" "monitoring_data" {
+# resource "kubernetes_persistent_volume_claim" "monitoring_data" {
 
-  depends_on = [ kubernetes_storage_class.local_storage ]
+#   depends_on = [ kubernetes_storage_class.local_storage ]
 
-  metadata {
-    name = "monitoring-pvc"
-    namespace = "monitoring"
-  }
+#   metadata {
+#     name = "monitoring-pvc"
+#     namespace = "monitoring"
+#   }
 
-  spec {
-    access_modes = [ "ReadWriteOnce" ]
-    resources {
-      requests = {
-        storage = "20Gi"
-      }
-    }
-  }
-}
+#   spec {
+#     access_modes = [ "ReadWriteOnce" ]
+#     resources {
+#       requests = {
+#         storage = "20Gi"
+#       }
+#     }
+#   }
+# }
 
-resource "kubernetes_persistent_volume" "monitoring_data" {
+# resource "kubernetes_persistent_volume" "monitoring_data" {
 
-  metadata {
-    name = "monitoring-pv"
-  }
+#   metadata {
+#     name = "monitoring-pv"
+#   }
 
-  spec {
-    capacity = {
-      storage = "20Gi"
-    }
+#   spec {
+#     capacity = {
+#       storage = "20Gi"
+#     }
 
-    access_modes = [ "ReadWriteOnce" ]
+#     access_modes = [ "ReadWriteOnce" ]
 
-    persistent_volume_source {
-      host_path {
-        path = "/host_shared_data/monitoring/prometheus_db"
-      }
-    }
-  }
-}
+#     persistent_volume_source {
+#       host_path {
+#         path = "/host_shared_data/monitoring/prometheus_db"
+#       }
+#     }
+#   }
+# }
 
 resource "kubernetes_deployment" "grafana" {
 

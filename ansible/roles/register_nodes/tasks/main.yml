@@ -1,0 +1,8 @@
+---
+- name: Register first node
+  shell: kubectl get nodes | grep -v ROLES | grep -v "control-plane" | head -n 1 | awk '{ print $1 }'
+  register: node_1
+
+- name: Register second node
+  shell: kubectl get nodes | grep -v ROLES | grep -v "control-plane" | tail -n 1 | awk '{ print $1 }'
+  register: node_2

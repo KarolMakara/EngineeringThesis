@@ -10,7 +10,7 @@
     prometheus_config: "{{ prom_config.stdout }}"
 
 - name: Get ip base
-  shell: kubectl get nodes -o wide | grep worker | awk '{ print $6 }' | cut -d'.' -f1-3
+  shell: kubectl get nodes -o wide | grep worker | awk '{ print $6 }' | cut -d'.' -f1-3 | head -n 1
   register: ip_base
 
 - name: Fillup config from template

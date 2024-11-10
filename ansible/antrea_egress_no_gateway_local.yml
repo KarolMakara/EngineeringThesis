@@ -1,17 +1,14 @@
 ---
-- name: Create antrea egress scenario with egress gateway
+- name: Create antrea egress scenario without egress gateway
   hosts: "{{ target | default('localhost') }}"
   vars_files:
     - ./vars/common.yml
-    - ./vars/traffic_splitting.yml
+    - ./vars/egress_no_gateway.yml
     - ./vars/antrea.yml
 
   roles:
     - create_k3d_cluster
     - install_antrea
     - wait_until_antrea_installed
-    - install_gateway_crd
-    - install_nginx_gateway
-    - deploy_antrea_gateway_api_scenario
     - monitoring
-    - run_traffic_shaping_k6
+    - terraform_run_egress_iperf

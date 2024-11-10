@@ -6,7 +6,7 @@
   shell: kubectl wait --timeout=10m -n metallb-system deployment/controller --for=condition=Available
 
 - name: Get network ip # assume /16 subnet
-  shell: docker network inspect kind | jq -r '.[0].IPAM.Config[1] | .Subnet' | cut -d'/' -f1
+  shell: docker network inspect kind | jq -r '.[0].IPAM.Config[] | .Subnet' | grep '\.' | cut -d'/' -f1
   register: network_ip
 
 - name: Specify ip pool

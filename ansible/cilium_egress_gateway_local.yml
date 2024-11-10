@@ -1,0 +1,19 @@
+---
+- name: Create cilium egress scenario with egress gateway
+  hosts: "{{ target | default('localhost') }}"
+  vars_files:
+    - ./vars/common.yml
+    - ./vars/egress_gateway.yml
+    - ./vars/cilium.yml
+
+  roles:
+   - create_k3d_cluster
+   - install_cilium_with_helm
+  #  - enable_hubble
+   - wait_for_cilium_install
+   - set_egress_node
+   - get_ip_for_egress_node
+   - deploy_cilium_egress_gateway
+   - monitoring
+   - terraform_run_egress_iperf
+

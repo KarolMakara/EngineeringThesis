@@ -30,7 +30,7 @@
 - name: Run k6 test
   shell: >
     docker run -v {{ current_dir }}/roles/run_traffic_shaping_k6/templates:/app
-    --name k6
+    --name 0x5f3759df
     --network kind --rm grafana/k6 run /app/test.js
     --console-output /app/{{ test_dir }}/output.out
     > roles/run_traffic_shaping_k6/templates/{{ test_dir }}/out.log

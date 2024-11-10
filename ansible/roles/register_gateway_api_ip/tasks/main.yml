@@ -1,0 +1,4 @@
+---
+- name: Register first node
+  shell: kubectl get gateway | tail -n 1 | awk '{ print $3 }'
+  register: gateway_api_ip
