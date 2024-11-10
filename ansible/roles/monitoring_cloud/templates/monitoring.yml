@@ -411,10 +411,10 @@ spec:
     - port: 3000
       protocol: TCP
       targetPort: 3000
-      # nodePort: 30303
+      nodePort: 30303
   selector:
     app: grafana
-  type: LoadBalancer
+  type: NodePort
 ---
 # Source: prometheus/templates/prometheus.yaml
 apiVersion: v1
@@ -433,6 +433,24 @@ spec:
   selector:
     app: prometheus
   type: ClusterIP
+---
+# Source: prometheus/templates/prometheus.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: prometheus
+  name: prometheus-public
+  namespace: monitoring
+spec:
+  ports:
+  - name: webui
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+  selector:
+    app: prometheus
+  type: LoadBalancer
 ---
 # Source: prometheus/templates/grafana.yaml
 apiVersion: apps/v1

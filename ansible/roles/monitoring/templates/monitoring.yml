@@ -434,6 +434,25 @@ spec:
     app: prometheus
   type: ClusterIP
 ---
+# Source: prometheus/templates/prometheus.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: prometheus
+  name: prometheus-public
+  namespace: monitoring
+spec:
+  ports:
+  - name: webui
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+    nodePort: 30909
+  selector:
+    app: prometheus
+  type: NodePort
+---
 # Source: prometheus/templates/grafana.yaml
 apiVersion: apps/v1
 kind: Deployment
