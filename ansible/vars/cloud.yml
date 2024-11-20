@@ -1,0 +1,4 @@
+env_type: azure
+job: aks-servers
+node_1: aks-0
+node_2: aks-1

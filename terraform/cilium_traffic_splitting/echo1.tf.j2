@@ -1,29 +1,29 @@
-resource "kubernetes_service" "echo_2" {
+resource "kubernetes_service" "echo_1" {
   metadata {
-    name = "echo-2"
+    name = "echo-1"
     labels = {
-      app = "echo-2"
+      app = "echo-1"
     }
   }
 
   spec {
     selector = {
-      app = "echo-2"
+      app = "echo-1"
     }
     port {
-      port        = 8090
+      port        = 8080
       target_port = 8080
       protocol    = "TCP"
     }
   }
 }
 
-resource "kubernetes_deployment" "echo_2" {
+resource "kubernetes_deployment" "echo_1" {
   metadata {
-    name      = "echo-2"
+    name      = "echo-1"
     namespace = "default"
     labels = {
-      app = "echo-2"
+      app = "echo-1"
     }
   }
 
@@ -31,18 +31,18 @@ resource "kubernetes_deployment" "echo_2" {
     replicas = 1
     selector {
       match_labels = {
-        app = "echo-2"
+        app = "echo-1"
       }
     }
     template {
       metadata {
         labels = {
-          app = "echo-2"
+          app = "echo-1"
         }
       }
       spec {
         container {
-          name = "echo-2"
+          name = "echo-1"
           image = "gcr.io/kubernetes-e2e-test-images/echoserver:2.2"
 
           port {
@@ -92,7 +92,7 @@ resource "kubernetes_deployment" "echo_2" {
                 match_expressions {
                   key      = "kubernetes.io/hostname"
                   operator = "In"
-                  values   = ["kind-worker2"]
+                  values   = ["{{ NODE_1 }}"]
                 }
               }
             }

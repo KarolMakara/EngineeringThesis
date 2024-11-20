@@ -91,8 +91,9 @@ resource "kubernetes_deployment" "echo_2" {
             required_during_scheduling_ignored_during_execution {
               node_selector_term {
                 match_expressions {
-                  key      = "node-role.kubernetes.io/control-plane"
-                  operator = "DoesNotExist"
+                  key      = "kubernetes.io/hostname"
+                  operator = "In"
+                  values   = ["kind-worker2"]
                 }
               }
             }

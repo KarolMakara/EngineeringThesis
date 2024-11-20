@@ -92,7 +92,7 @@ resource "kubernetes_deployment" "echo_1" {
                 match_expressions {
                   key      = "kubernetes.io/hostname"
                   operator = "In"
-                  values   = ["aks-agentpool-82752459-vmss000000"]
+                  values   = ["kind-worker"]
                 }
               }
             }

@@ -1,6 +1,7 @@
 resource "kubernetes_service" "echo_2" {
   metadata {
     name = "echo-2"
+    namespace = "default"
     labels = {
       app = "echo-2"
     }
@@ -92,7 +93,7 @@ resource "kubernetes_deployment" "echo_2" {
                 match_expressions {
                   key      = "kubernetes.io/hostname"
                   operator = "In"
-                  values   = ["kind-worker2"]
+                  values   = ["{{ NODE_2 }}"]
                 }
               }
             }

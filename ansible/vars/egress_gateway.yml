@@ -3,5 +3,9 @@ helm_extra_opts: --set egressGateway.enabled=true --set bpf.masquerade=true --se
 k3d_agents: 2
 launch_pod_on_node: worker
 scenario: egress-gateway
-test_duration: 3600
+scenario_folder: egress_gateway
+test_duration: 15
+type: tcp
+udp_mode:
 volume_mount_path: /host_shared_data/egress_gateway
+vue: 1

@@ -10,15 +10,25 @@
     prometheus_config: "{{ prom_config.stdout }}"
 
 - name: Get ip base
-  shell: kubectl get nodes -o wide | grep worker | awk '{ print $6 }' | cut -d'.' -f1-3 | head -n 1
-  register: ip_base
+  shell: kubectl get nodes -o wide | grep control-plane | awk '{ print $6 }'  | tail -n 1
+  register: ip_1
+
+- name: Get ip base
+  shell: kubectl get nodes -o wide | grep worker | grep -v worker2 | awk '{ print $6 }'  | tail -n 1
+  register: ip_2
+
+- name: Get ip base
+  shell: kubectl get nodes -o wide | grep worker2 | awk '{ print $6 }'  | tail -n 1
+  register: ip_3
 
 - name: Fillup config from template
   template:
     src: /tmp/monitoring.yml.j2
     dest: /tmp/config_map.yml
   vars:
-    ip_addr: "{{ ip_base.stdout }}"
+    ip_addr_1: "{{ ip_1.stdout }}"
+    ip_addr_2: "{{ ip_2.stdout }}"
+    ip_addr_3: "{{ ip_3.stdout }}"
 
 - name: Load configmap with dashboards and victoria metrics using terraform
   shell: terraform -chdir="roles/monitoring/templates/terraform" apply -auto-approve
@@ -32,11 +42,16 @@
 - name: Append node_exporter
   shell: cat roles/monitoring/templates/node_exporter.yml >> /tmp/monitoring.yml
 
+- name: Taint cplane node
+  shell: kubectl taint nodes kind-control-plane node-role.kubernetes.io/control-plane-
+  when: env_type == "local"
+  ignore_errors: true
+
 - name: Apply /tmp/monitoring.yml
   shell: kubectl apply -f /tmp/monitoring.yml
 
 # - name: Apply cadvisor
 #   shell: kubectl apply -f roles/monitoring/templates/cadvisor.yml
 
-- name: Wait until grafana ready
-  shell: kubectl wait --timeout=5m -n monitoring deployment/grafana --for=condition=Available
+- name: Wait until prometheus ready
+  shell: kubectl wait --timeout=5m -n monitoring deployment/prometheus --for=condition=Available

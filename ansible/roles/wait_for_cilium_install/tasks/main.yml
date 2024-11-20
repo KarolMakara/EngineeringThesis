@@ -1,3 +1,4 @@
 ---
 - name: Wait until cilium fully installed
-  command: kubectl wait --timeout=10m -n kube-system deployment/cilium-operator --for=condition=Available
+  command: cilium status --wait
+  ignore_errors: true

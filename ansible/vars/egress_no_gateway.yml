@@ -2,5 +2,9 @@ helm_extra_opts: --set prometheus.enabled=true --set operator.prometheus.enabled
 k3d_agents: 2
 launch_pod_on_node: worker
 scenario: egress-no-gateway
-test_duration: 3600
+scenario_folder: egress_no_gateway
+test_duration: 720
+type: tcp
+udp_mode: -u
 volume_mount_path: /host_shared_data/egress_no_gateway
+vue: 1

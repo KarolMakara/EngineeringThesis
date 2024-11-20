@@ -1,25 +1,25 @@
 ---
 - name: Show NODE_1 IP
   debug:
-    msg: "NODE_1 IP: {{ node_1.stdout }}"
+    msg: "NODE_1 IP: {{ k_node_1.stdout }}"
 
 - name: Show NODE_2 IP
   debug:
-    msg: "NODE_2 IP: {{ node_2.stdout }}"
+    msg: "NODE_2 IP: {{ k_node_2.stdout }}"
 
 - name: Inject node ip to template
   template:
     src: ../terraform/antrea_traffic_splitting/echo1.tf.j2
     dest: ../terraform/antrea_traffic_splitting/echo1.tf
   vars:
-    NODE_1: "{{ node_1.stdout }}"
+    NODE_1: "{{ k_node_1.stdout }}"
 
 - name: Inject node ip to template
   template:
     src: ../terraform/antrea_traffic_splitting/echo2.tf.j2
     dest: ../terraform/antrea_traffic_splitting/echo2.tf
   vars:
-    NODE_2: "{{ node_2.stdout }}"
+    NODE_2: "{{ k_node_2.stdout }}"
 
 - name: Deploy traffic-splitting scenario
   shell: terraform -chdir=../terraform/antrea_traffic_splitting apply -auto-approve

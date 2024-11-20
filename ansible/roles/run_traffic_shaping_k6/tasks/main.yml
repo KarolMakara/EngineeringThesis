@@ -27,6 +27,10 @@
     truncate -s 0 roles/run_traffic_shaping_k6/templates/{{ test_dir }}/output.out
     chmod 777 roles/run_traffic_shaping_k6/templates/{{ test_dir }}/output.out
 
+- name: Log curr time for scraping
+  shell: date -u +"%Y-%m-%dT%H:%M:%SZ"
+  register: start_run
+
 - name: Run k6 test
   shell: >
     docker run -v {{ current_dir }}/roles/run_traffic_shaping_k6/templates:/app
@@ -35,6 +39,10 @@
     --console-output /app/{{ test_dir }}/output.out
     > roles/run_traffic_shaping_k6/templates/{{ test_dir }}/out.log
 
+- name: Log curr time for scraping
+  shell: date -u +"%Y-%m-%dT%H:%M:%SZ"
+  register: end_run
+
 - name: Save curr_ratio to CSV after test
   shell: |
     python3 roles/run_traffic_shaping_k6/templates/save_ratio_to_csv.py \
@@ -42,3 +50,7 @@
       --output_csv roles/run_traffic_shaping_k6/templates/{{ test_dir }}/current_ratio.csv
   args:
     executable: /bin/bash
+
+- name: Register test dir
+  command: echo "roles/run_traffic_shaping_k6/templates/{{ test_dir }}"
+  register: test_dir

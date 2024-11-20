@@ -1,0 +1,54 @@
+---
+- name: Get current dir for volume mount
+  set_fact:
+    current_dir: "{{ lookup('pipe', 'pwd') }}"
+
+- name: Get prometheus address
+  shell: echo "$(kubectl get node -o wide | grep control-plane | awk '{ print $6 }' | tail -n 1):30909"
+  when: env_type == "local"
+  register: addr
+
+- name: Set address
+  set_fact: address="{{ addr.stdout }}"
+  when: addr.changed
+
+- name: Get prometheus address
+  shell: echo "$(kubectl get svc -n monitoring prometheus-public | awk '{ print $4 }' | tail -n 1):9090"
+  when: env_type == "cloud"
+  register: addr
+
+- name: Set address
+  set_fact: address="{{ addr.stdout }}"
+  when: addr.changed
+
+- name: Inject node ip to template
+  template:
+    src: roles/scrap_prometheus_data/templates/scraper.py.j2
+    dest: roles/scrap_prometheus_data/templates/scraper.py
+  vars:
+    end_time: "{{ end_run.stdout }}"
+    prometheus_address: "{{ address }}"
+    start_time: "{{ start_run.stdout }}"
+
+- name: Go to the folder and execute command
+  command: chdir="{{ current_dir }}/roles/scrap_prometheus_data/templates" python3 scraper.py
+
+- name: Copy iperf files matching the pattern
+  copy:
+    src: "{{ item }}"
+    dest: "roles/scrap_prometheus_data/templates/local/{{ scenario }}/{{ cni_name }}/{{ vue }}/"
+  with_fileglob:
+    - "/mnt/kind/{{ scenario_folder }}/*{{ cni_name }}*"
+  when: "'egress' in scenario"
+
+- name: Mkdir
+  command: mkdir -p "roles/scrap_prometheus_data/templates/{{ env_type  }}/{{ scenario }}/{{ cni_name }}/r{{ run_num }}"
+  when: scenario == "traffic-splitting"
+
+- name: Copy runroles
+  command: cp -r "roles/scrap_prometheus_data/templates/{{ env_type  }}/{{ scenario }}/{{ cni_name }}/{{ number_of_vusers }}" "roles/scrap_prometheus_data/templates/{{ env_type  }}/{{ scenario }}/{{ cni_name }}/r{{ run_num }}"
+  when: scenario == "traffic-splitting"
+
+- name: Copy runroles
+  command: cp -r "{{ test_dir.stdout }}" "roles/scrap_prometheus_data/templates/{{ env_type  }}/{{ scenario }}/{{ cni_name }}/r{{ run_num }}"
+  when: scenario == "traffic-splitting"

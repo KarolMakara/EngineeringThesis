@@ -10,3 +10,5 @@ k3d_image: docker.io/rancher/k3s:v1.30.4-k3s1
 k3d_servers: 1
 k3d_version: v5.7.4
 subscription: 10a79cbd-9350-4de5-8011-ac3b9764fdc6
+step: 5s
+ansible_become_password: '{{ lookup("env", "ANSIBLE_BECOME_PASSWORD") }}'

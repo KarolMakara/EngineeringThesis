@@ -1,3 +1,4 @@
+aks_plugin: "azure"
 cilium_version: 1.16.3
 cni_name: cilium
 mount_entrypoint: true
