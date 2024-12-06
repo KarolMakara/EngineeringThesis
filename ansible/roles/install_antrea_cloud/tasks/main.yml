@@ -1,4 +1,0 @@
----
-- name: Install the Antrea
-  command: helm install -n kube-system -f roles/install_antrea_cloud/templates/values-aks.yml antrea antrea --repo https://charts.antrea.io --version 2.2.0
-

@@ -1,3 +1,0 @@
-cni_name: antrea
-mount_entrypoint: true
-mount_entrypoint_path: /lib/modules:/lib/modules

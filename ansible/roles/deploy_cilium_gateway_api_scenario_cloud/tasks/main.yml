@@ -1,3 +1,0 @@
----
-- name: Deploy traffic-splitting scenario
-  shell: terraform -chdir=../terraform/cilium_traffic_splitting_cloud apply -auto-approve

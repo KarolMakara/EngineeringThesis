@@ -1,3 +1,0 @@
----
-- name: Install specific version of Cilium CLI
-  command: cilium install --version {{ cilium_version }}

@@ -1,2 +1,0 @@
-- name: Craete kind cluster
-  shell: kind create cluster --config roles/create_kind_cluster/templates/kind-config.yml

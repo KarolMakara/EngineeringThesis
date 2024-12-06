@@ -1,4 +1,0 @@
----
-- name: Wait until cilium fully installed
-  command: cilium status --wait
-  ignore_errors: true

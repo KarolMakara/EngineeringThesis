@@ -1,6 +1,0 @@
-ansible/
-ANSIBLE_ENV/
-terraform/
-.git/
-.gitignore
-data/

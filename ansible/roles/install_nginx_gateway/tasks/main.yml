@@ -1,8 +1,0 @@
----
-- name: Install nginx gateway with helm
-  shell: helm install ngf oci://ghcr.io/nginxinc/charts/nginx-gateway-fabric --create-namespace -n nginx-gateway
-  ignore_errors: true
-
-- name: Wait until nginx gateway is ready
-  shell: kubectl wait --timeout=5m -n nginx-gateway deployment/ngf-nginx-gateway-fabric --for=condition=Available
-

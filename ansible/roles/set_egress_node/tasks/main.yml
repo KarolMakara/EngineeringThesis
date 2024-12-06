@@ -1,3 +1,0 @@
----
-- name: Set agent as egress node
-  shell: kubectl label nodes $(kubectl get nodes | grep {{ egress_node_agent_name }} | awk '{ print $1}') egress-node=true

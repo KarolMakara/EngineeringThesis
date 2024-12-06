@@ -1,7 +1,0 @@
-helm install haproxy-kubernetes-ingress haproxytech/kubernetes-ingress   --create-namespace   --namespace haproxy-controller   --version 1.41.0
-kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/experimental-install.yaml
-helm upgrade haproxy-kubernetes-ingress haproxytech/kubernetes-ingress   --namespace haproxy-controller   -f override.yaml
-kubectl apply -f haproxy-ingress-gatewayclass.yaml
-kubectl apply -f example-gateway.yaml
-kubectl apply -f example-route.yaml
-kubectl apply -f example-service.yaml

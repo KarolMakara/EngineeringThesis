@@ -1,7 +1,0 @@
-- name: Killall k3s
-  command: /usr/local/bin/k3s-killall.sh
-  ignore_errors: yes
-
-- name: Uninstall k3s
-  command: /usr/local/bin/k3s-uninstall.sh
-  ignore_errors: yes

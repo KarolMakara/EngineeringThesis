@@ -1,7 +1,0 @@
-helm_extra_opts: --set kubeProxyReplacement=true --set gatewayAPI.enabled=true
-k3d_agents: 2
-scenario: traffic-splitting
-test_duration: 120
-number_of_vusers: 1
-run_num: 1
-volume_mount_path: /host_shared_data/traffic_splitting
