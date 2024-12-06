@@ -1,12 +1,12 @@
-\chapter{Pierwszy dokument}
-\label{cha:pierwszyDokument}
+\chapter{Kubernetes and CNI Basics}
+\label{cha:k8s_cni}
 
 W rozdziale tym przedstawiono podstawowe informacje dotyczące struktury prostych plików \LaTeX a. Omówiono również metody kompilacji plików z zastosowaniem programów \emph{latex} oraz \emph{pdflatex}.
 
 %---------------------------------------------------------------------------
 
-\section{Struktura dokumentu}
-\label{sec:strukturaDokumentu}
+\section{Kubernetes Architecture}
+\label{sec:k8s_arch}
 
 Plik \LaTeX owy jest plikiem tekstowym, który oprócz tekstu zawiera polecenia formatujące ten tekst (analogicznie do języka HTML). Plik składa się z dwóch części:
 \begin{enumerate}%[1)]
@@ -21,7 +21,6 @@ Plik \LaTeX owy jest plikiem tekstowym, który oprócz tekstu zawiera polecenia 
 \usepackage[polish]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{times}
 
 \begin{document}                           % część główna
 
@@ -38,8 +37,8 @@ Nie ma żadnych przeciwskazań do tworzenia dokumentów w~\LaTeX u w~języku pol
 
 %---------------------------------------------------------------------------
 
-\section{Kompilacja}
-\label{sec:kompilacja}
+\section{Introduction to Container Network Interface}
+\label{sec:cni_intro}
 
 
 Załóżmy, że przygotowany przez nas dokument zapisany jest w pliku \texttt{test.tex}. Kolejno wykonane poniższe polecenia (pod warunkiem, że w pierwszym przypadku nie wykryto błędów i kompilacja zakończyła się sukcesem) pozwalają uzyskać nasz dokument w formacie pdf:
@@ -62,8 +61,8 @@ W pierwszym przypadku rysunki powinny być przygotowane w~formacie eps, a~w~drug
 
 %---------------------------------------------------------------------------
 
-\section{Narzędzia}
-\label{sec:narzedzia}
+\section{Overview of selected CNI Plugins}
+\label{sec:cni_overview}
 
 
 Do przygotowania pliku źródłowego może zostać wykorzystany dowolny edytor tekstowy. Niektóre edytory, np. Emacs, mają wbudowane moduły ułatwiające składanie tekstów w LaTeXu (kolorowanie składni, skrypty kompilacji, itp.).
@@ -81,30 +80,5 @@ Bardzo dobrym środowiskiem jest również edytor gEdit z wtyczką obsługując�
 \item Split View -- możliwość podziału okna edytora na 2 części. 
 \end{itemize}
 
-
-
-%---------------------------------------------------------------------------
-
-\section{Przygotowanie dokumentu}
-\label{sec:przygotowanieDokumentu}
-
-Plik źródłowy \LaTeX a jest zwykłym plikiem tekstowym. Przygotowując plik
-źródłowy warto wiedzieć o kilku szczegółach:
-
-\begin{itemize}
-\item
-Poszczególne słowa oddzielamy spacjami, przy czym ilość spacji nie ma znaczenia.
-Po kompilacji wielokrotne spacje i tak będą wyglądały jak pojedyncza spacja.
-Aby uzyskać {\em twardą spację}, zamiast znaku spacji należy użyć znaku {\em
-tyldy}.
-
-\item
-Znakiem końca akapitu jest pusta linia (ilość pusty linii nie ma znaczenia), a
-nie znaki przejścia do nowej linii.
-
-\item
-\LaTeX~sam formatuje tekst. \textbf{Nie starajmy się go poprawiać}, chyba, że
-naprawdę wiemy co robimy.
-\end{itemize} 
 
 
