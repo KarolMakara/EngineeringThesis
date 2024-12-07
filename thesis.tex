@@ -1,10 +1,17 @@
-\documentclass[pdflatex,12pt]{aghdpl}
+\documentclass[pdflatex,12pt,twoside,en]{aghdpl}
 
 \usepackage[utf8]{inputenc}
-
+\geometry{lmargin=20mm, rmargin=30mm, tmargin=25mm, bmargin=25mm, foot=10mm, head=10mm}
 \usepackage{enumerate}
 \usepackage{listings}
 \usepackage{times}
+\usepackage[
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=magenta,
+    urlcolor=blue,
+    citecolor=black
+]{hyperref}
 \lstloadlanguages{TeX}
 
 \lstset{
@@ -30,34 +37,15 @@
 
 %---------------------------------------------------------------------------
 
-\author{Marcin Szpyrka}
-\shortauthor{M. Szpyrka}
+\author{Karol Makara}
+\shortauthor{K. Makara}
 
-\titlePL{Przygotowanie pracy dyplomowej w~systemie \LaTeX}
-\titleEN{Thesis in \LaTeX}
+\titlePL{Zaawansowane mechanizmy inżynierii ruchu w wybranych modułach CNI klastra obliczeniowego Kubernetes}
+\titleEN{Advanced traffic engineering in selected versions of the Kubernetes CNI plugins}
 
-\shorttitlePL{Przygotowanie pracy dyplomowej w~systemie \LaTeX} % skrócona wersja tytułu jeśli jest bardzo długi
-\shorttitleEN{Thesis in \LaTeX}
+\shorttitlePL{Zaawansowane mechanizmy inżynierii ruchu w wybranych modułach CNI klastra obliczeniowego Kubernetes}
+\shorttitleEN{Advanced traffic engineering in selected versions of the Kubernetes CNI plugins}
 
-\thesistypePL{Praca magisterska}
-\thesistypeEN{Master of Science Thesis}
-
-\supervisorPL{dr hab. Marcin Szpyrka}
-\supervisorEN{Marcin Szpyrka Ph.D}
-
-\date{2011}
-
-\departmentPL{Katedra Automatyki}
-\departmentEN{Department of Automatics}
-
-\facultyPL{Wydział Elektrotechniki, Automatyki, Informatyki i Elektroniki}
-\facultyEN{Faculty of Electrical Engineering, Automatics, Computer Science and Electronics}
-
-\acknowledgements{Serdecznie dziękuję \dots tu ciąg dalszych podziękowań np. dla promotora, żony, sąsiada itp.}
-
-
-
-\setlength{\cftsecnumwidth}{10mm}
 
 %---------------------------------------------------------------------------
 
@@ -69,13 +57,13 @@
 
 \include{chapter1}
 \include{chapter2}
-\include{chapter3}
-\include{chapter4}
-\include{chapter5}
-\include{chapter6}
-\include{chapter7}
-\include{chapter8}
-\include{chapter9}
+% \include{chapter3}
+% \include{chapter4}
+% \include{chapter5}
+% \include{chapter6}
+% \include{chapter7}
+% \include{chapter8}
+% \include{chapter9}
 
 
 
@@ -85,8 +73,8 @@
 % \include{dodatekB}
 % itd.
 
-\bibliographystyle{alpha}
-\bibliography{bibliografia}
+\bibliographystyle{plain}
+\bibliography{bibliography}
 %\begin{thebibliography}{1}
 %
 %\bibitem{Dil00}

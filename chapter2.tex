@@ -1,84 +1,124 @@
-\chapter{Kubernetes and CNI Basics}
-\label{cha:k8s_cni}
+\chapter{Background and Related Work}
+\label{cha:background}
 
-W rozdziale tym przedstawiono podstawowe informacje dotyczące struktury prostych plików \LaTeX a. Omówiono również metody kompilacji plików z zastosowaniem programów \emph{latex} oraz \emph{pdflatex}.
+
+%---------------------------------------------------------------------------
+
+\section{Containerization}
+\label{sec:containerization}
+
+Contenerization is packaging an app along with all necessary runtime stuff like libraries, executables or asets into an object called "container". The main benefits of container are\cite{RedhatContainerization}:
+\begin{itemize}
+    \item Protable and Flexible -- container can be run on bare metal or virtual machine in cloud regardless of operating system. Only a container runtime software like \href{https://docs.docker.com/engine/}{Docker Engine} or \href{https://containerd.io/}{containerd} is required, which allows to interact with host system.
+    \item Lightweight -- container is sharing operating system kernel with hostmachine, there is no need to install separate operating system inside
+    \item Isolated -- does not depends on host's environment or infrastructure
+    \item Standarized -- \href{https://opencontainers.org/}{Open Container Initiative} standarize runtime, image and distribution specifications
+\end{itemize}
+A container image is set of files and configuration needed to run a container. It is immutable, only new image can be crated with new changes. Consists of layers. The layer contain one modification made a image. All layers are cachable and can be reused when building an image. The mechanism is really usefull when compiling large application components inside one container\cite{DockerImage}.
+
+%---------------------------------------------------------------------------
+
+\section{Contianer Orchestration}
+\label{sec:ContianerOrchestration}
+
+Container orchestration is coordinated deploying, managing, networking, scaling and monitoring containers process. It automates and manages whole container's lifecycle, there is no need to worrying about of deployed app, orchestration software like \href{https://kubernetes.io/}{Kubernetes} will take care of its availability \cite{RedhatContainerization}.
+
+The Kubernetes Authors says: "The name Kubernetes originates from Greek, meaning helmsman or pilot. K8s as an abbreviation results from counting the eight letters between the "K" and the "s"". K8s is open-source orchestration platform capable of managing containers. Key functionalities are \cite{KubernetesDocs}:
+
+\begin{itemize}
+    \item Automated rollouts and rollbacks -- updates or downgrades version of deplotyed containers at controller rate, replacing containers incrementally
+    \item Automatic bin packing --  allows to specify exact resources needed by container (CPU, Memory) to fit on appropriate node
+    \item Batch execution -- possible to create sets of tasks which can be run without manual intervention
+    \item Designed for extensibility -- permits to add feautres using custom resource definitions without changing source code
+    \item Horizontal scaling -- scales (replicate) app based of its need for resources
+    \item IPv4/IPv6 dual-stack -- allocates IPv4 or IPv6 to pods and services
+    \item Secret and configuration management -- allows store, manage and update secrets. Containers do not have to be rebuilt to access updated  credentials
+    \item Self-healing -- restarts crashed containers or by failure specified by user
+    \item Service discovery and load balancing -- advertises a container using DNS name or ip. Loadbalances traffic across all pods in deployment
+    \item Storage orchestration -- mounts desired storage like local or shipped by cloud provider
+\end{itemize}
+
+
 
 %---------------------------------------------------------------------------
 
 \section{Kubernetes Architecture}
 \label{sec:k8s_arch}
-
-Plik \LaTeX owy jest plikiem tekstowym, który oprócz tekstu zawiera polecenia formatujące ten tekst (analogicznie do języka HTML). Plik składa się z dwóch części:
+A cluster is set of machines controlled by K8s.
+Tekst:
 \begin{enumerate}%[1)]
-\item Preambuły -- określającej klasę dokumentu oraz zawierającej m.in. polecenia dołączającej dodatkowe pakiety;
+\item Tekst
 
-\item Części głównej -- zawierającej zasadniczą treść dokumentu.
+\item Tekst
 \end{enumerate}
 
 
-\begin{lstlisting}
-\documentclass[a4paper,12pt]{article}      % preambuła
-\usepackage[polish]{babel}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-
-\begin{document}                           % część główna
-
-\section{Sztuczne życie}
-
-% treść
-% ąśężźćńłóĘŚĄŻŹĆŃÓŁ
-
-\end{document}
+\begin{lstlisting}[language=Python, frame=single, caption={Python function to greet}]
+    def greet(name):
+        print(f"Hello, {name}!")
 \end{lstlisting}
-
-Nie ma żadnych przeciwskazań do tworzenia dokumentów w~\LaTeX u w~języku polskim. Plik źródłowy jest zwykłym plikiem tekstowym i~do jego przygotowania można użyć dowolnego edytora tekstów, a~polskie znaki wprowadzać używając prawego klawisza \texttt{Alt}. Jeżeli po kompilacji dokumentu polskie znaki nie są wyświetlane poprawnie, to na 95\% źle określono sposób kodowania znaków (należy zmienić opcje wykorzystywanych pakietów).
-
 
 %---------------------------------------------------------------------------
 
-\section{Introduction to Container Network Interface}
+\subsection{Kuberenetes Basics}
+\label{sec:k8s_basics}
+%---------------------------------------------------------------------------
+
+\subsection{Control Plane}
+\label{sec:k8s_cplane}
+%---------------------------------------------------------------------------
+
+\subsection{Nodes}
+\label{sec:k8s_nodes}
+%---------------------------------------------------------------------------
+
+\subsection{Objects}    
+\label{sec:k8s_objects}
+%---------------------------------------------------------------------------
+
+\subsection{Interfaces}    
+\label{sec:k8s_objects}
+
+\subsubsection{TEST}
+TEKST asdasdasda
+%---------------------------------------------------------------------------
+
+
+
+\section{Cluster Networking}
+\label{sec:k8s_networking}
+
+Tekst
+\begin{enumerate}%[1)]
+\item Tekst
+
+\item Tekst
+\end{enumerate}
+Tekst
+
+%---------------------------------------------------------------------------
+
+\section{Container Network Interface (CNI)}
 \label{sec:cni_intro}
 
 
-Załóżmy, że przygotowany przez nas dokument zapisany jest w pliku \texttt{test.tex}. Kolejno wykonane poniższe polecenia (pod warunkiem, że w pierwszym przypadku nie wykryto błędów i kompilacja zakończyła się sukcesem) pozwalają uzyskać nasz dokument w formacie pdf:
-\begin{lstlisting}
-latex test.tex
-dvips test.dvi -o test.ps
-ps2pdf test.ps
-\end{lstlisting}
-%
-lub za pomocą PDF\LaTeX:
-\begin{lstlisting}
-pdflatex test.tex
-\end{lstlisting}
-
-Przy pierwszej kompilacji po zmiane tekstu, dodaniu nowych etykiet itp., \LaTeX~tworzy sobie spis rozdziałów, obrazków, tabel itp., a dopiero przy następnej kompilacji korzysta z tych informacji.
-
-W pierwszym przypadku rysunki powinny być przygotowane w~formacie eps, a~w~drugim w~formacie pdf. Ponadto, jeżeli używamy polecenia \texttt{pdflatex test.tex} można wstawiać grafikę bitową (np. w formacie jpg).
-
 
 
 %---------------------------------------------------------------------------
 
-\section{Overview of selected CNI Plugins}
+\section{Overview of Selected CNI Plugins}
 \label{sec:cni_overview}
+%---------------------------------------------------------------------------
+
+\section{Related Work}
+\label{sec:realted_work}
 
 
-Do przygotowania pliku źródłowego może zostać wykorzystany dowolny edytor tekstowy. Niektóre edytory, np. Emacs, mają wbudowane moduły ułatwiające składanie tekstów w LaTeXu (kolorowanie składni, skrypty kompilacji, itp.).
+DoTekst
+Na stronie \underline{\texttt{http://kile.sourceforge.net/screenshots.php}} Tekst {\em Kile}, Tekst
 
-Jednym z bardziej znanych środowisk do składania dokumentów  \LaTeX a jest {\em Kile}. Aplikacja dostępna jest dla środowiska KDE począwszy od wersji 2. Zawiera edytor z podświetlaną składnią, zestawy poleceń \LaTeX a, zestawy symboli matematycznych, kreatory tabel, macierzy, skrypty kompilujące i konwertujące podpięte są do poleceń w menu aplikacji (i pasków narzędziowych), dostępne jest sprawdzanie pisowni, edytor obsługuje projekty (tzn. dokumenty składające się z~wielu plików), umożliwia przygotowanie i~zarządzanie bibliografią, itp.
+Tekst
 
-Na stronie \underline{\texttt{http://kile.sourceforge.net/screenshots.php}} zamieszczono kilkanaście zrzutów ekranu środowiska {\em Kile}, które warto przejrzeć, by wstępnie zapoznać się z~możliwościami programu.
-
-Bardzo dobrym środowiskiem jest również edytor gEdit z wtyczką obsługującą \LaTeX a. Jest to standardowy edytor środowiska Gnome. Po instalacji wtyczki obsługującej \LaTeX a, edytor nie ustępuje funkcjonalnościom środowisku Kile, a jest zdecydowanie szybszy w działaniu. Lista dostępnych wtyczek dla tego edytora znajduje się pod adresem \underline{\texttt{http://live.gnome.org/Gedit/Plugins}}. Inne polecane wtyczki to: 
 \begin{itemize}
-\item Edit shortcuts -- definiowanie własnych klawiszy skrótu;
-\item Line Tools -- dodatkowe operacje na liniach tekstu;
-\item Multi-edit -- możliwość jednoczesnej edycji w wielu miejscach tekstu;
-\item Zoom -- zmiana wielkości czcionki edytora z użyciem rolki myszy;
-\item Split View -- możliwość podziału okna edytora na 2 części. 
+\item Tekst
 \end{itemize}
-
-
-
