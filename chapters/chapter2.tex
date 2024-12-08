@@ -1,0 +1,197 @@
+\chapter{Background and Related Work}
+\label{cha:background}
+
+
+%---------------------------------------------------------------------------
+
+\section{Containerization}
+\label{sec:containerization}
+
+Contenerization is packaging an app along with all necessary runtime stuff like libraries, executables or asets into an object called "container". The main benefits of container are\cite{RedhatContainerization}:
+\begin{itemize}
+    \item Protable and Flexible -- container can be run on bare metal or virtual machine in cloud regardless of operating system. Only a container runtime software like \href{https://docs.docker.com/engine/}{Docker Engine} or \href{https://containerd.io/}{containerd} is required, which allows to interact with host system.
+    \item Lightweight -- container is sharing operating system kernel with hostmachine, there is no need to install separate operating system inside
+    \item Isolated -- does not depends on host's environment or infrastructure
+    \item Standarized -- \href{https://opencontainers.org/}{Open Container Initiative} standarize runtime, image and distribution specifications
+\end{itemize}
+A container image is set of files and configuration needed to run a container. It is immutable, only new image can be crated with new changes. Consists of layers. The layer contain one modification made a image. All layers are cachable and can be reused when building an image. The mechanism is really usefull when compiling large application components inside one container\cite{DockerImage}.
+
+%---------------------------------------------------------------------------
+
+\section{Contianer Orchestration}
+\label{sec:ContianerOrchestration}
+
+Container orchestration is coordinated deploying, managing, networking, scaling and monitoring containers process. It automates and manages whole container's lifecycle, there is no need to worrying about of deployed app, orchestration software like \href{https://kubernetes.io/}{Kubernetes} will take care of its availability \cite{RedhatContainerization}.
+
+The Kubernetes Authors says: "The name Kubernetes originates from Greek, meaning helmsman or pilot. K8s as an abbreviation results from counting the eight letters between the "K" and the "s"" \cite{KubernetesDocs}. K8s is open-source orchestration platform capable of managing containers \cite{KubernetesDocs}. Key functionalities are \cite{KubernetesDocs}:
+
+\begin{itemize}
+    \item Automated rollouts and rollbacks -- updates or downgrades version of deplotyed containers at controller rate, replacing containers incrementally
+    \item Automatic bin packing --  allows to specify exact resources needed by container (CPU, Memory) to fit on appropriate node
+    \item Batch execution -- possible to create sets of tasks which can be run without manual intervention
+    \item Designed for extensibility -- permits to add feautres using custom resource definitions without changing source code
+    \item Horizontal scaling -- scales (replicate) app based of its need for resources
+    \item IPv4/IPv6 dual-stack -- allocates IPv4 or IPv6 to pods and services
+    \item Secret and configuration management -- allows store, manage and update secrets. Containers do not have to be rebuilt to access updated  credentials
+    \item Self-healing -- restarts crashed containers or by failure specified by user
+    \item Service discovery and load balancing -- advertises a container using DNS name or ip. Loadbalances traffic across all pods in deployment
+    \item Storage orchestration -- mounts desired storage like local or shipped by cloud provider and make it available for containers
+\end{itemize}
+Understanding Kubernetes workflow becomes significantly easier by familiarizing with its architecture, which will be discussed in the following seciton.
+
+
+%---------------------------------------------------------------------------
+
+\section{Kubernetes Architecture}
+\label{sec:k8s_arch}
+A Kubernetes cluster is a group of machines that run containers and provide all the necessary services to enable communication between containers within the cluster, as well as access to the cluster from the outside. There are two types of components, a control plane and worker node. Minumum one of each is needed to run a container \cite{KubernetesArch}. 
+
+\begin{figure}[tbh]
+    \centering
+    \includegraphics[width=1\columnwidth]{images/kubernetes-cluster-architecture.png}
+    \caption{Kubernetes Cluster Architecture \cite{KubernetesArch}}
+    \label{fig:testsvg}
+\end{figure}
+
+On figure 2.1 there is graphical representation of kubernetes cluster. Not all of components shown on figure are mandatory for kubernetes to work correctly. Take a look on control plane part, \textit{\nameref{sec:cloudControllerManager}} might not be mandatory, in on-premise configurations where interacting with cloud provider is not needed. On the right side of figure in node representation is \textit{\nameref{sec:kubeProxy}} component, which is not mandatory as some networking plugins can provide own implementation of proxy \cite{KubernetesArch}. This is example of "Designed for extensibility", where Kubernetes can acquire 3rd-party features without changing its source code \cite{KubernetesDocs}.
+
+% \begin{figure}[h!]
+%     \centering
+%     \includesvg[width=\textwidth]{}
+%     \caption{An example image.}
+%     \label{fig:example}
+% \end{figure}
+
+
+
+%---------------------------------------------------------------------------
+
+
+
+\subsection{Control Plane}
+\label{sec:k8s_cplane}
+
+Control plane is like a brain in Kubernetes cluster. To interact with use kubcetl, asks \textit{\nameref{sec:kubeApiServer}}It is responsible for communication with worker nodes running pods, a smallest unit managed by K8s that has containers inside.
+
+%---------------------------------------------------------------------------
+
+\subsubsection{cloud-controller-manager}
+\label{sec:cloudControllerManager}
+
+This component allows connect Kubernetes cluster and interact with cloud provider's API. It is combined with kube-controller-manager as single binary and can be replicated. This is the only component that talks to the cloud provider, separating other components from direct communication with the cloud. When running without cloud envirnoment this component is absent \cite{KubernetesArch}.
+
+%---------------------------------------------------------------------------
+
+\subsubsection{etcd}
+\label{sec:etcd}
+
+Etcd is an open source distributed key-value store service often used in distributed systems. It is responsible for maintaining both the current state and its previous version in its persistent memory \cite{KubernetesArch}\cite{Etcd}.
+
+%---------------------------------------------------------------------------
+
+\subsubsection{kube-apiserver}
+\label{sec:kubeApiServer}
+
+Exposes Kubernetes API to interact with a cluster. Takes responsibility for handling all requests from components and users. This is the component which answers for cluster administrator requests sent by kubectl \cite{KubernetesArch}.
+
+%---------------------------------------------------------------------------
+
+\subsubsection{kube-controller-manager}
+\label{sec:kubeControllerManager}
+
+Component which run controller processes. Its compiled binary consists of multiple controllers. Example controllers are \cite{KubernetesArch}:
+
+\begin{itemize}
+    \item Node controller -- observes worker nodes if are up and running
+    \item Job controller -- responsible for batch execution jobs
+    \item EndpointSlice controller -- connects services with pods
+\end{itemize}
+
+More controller names can be found in \href{https://github.com/kubernetes/kubernetes/blob/master/cmd/kube-controller-manager/names/controller_names.go}{kubernetes source code}.
+
+%---------------------------------------------------------------------------
+
+\subsubsection{kube-scheduler}
+\label{sec:kubeScheduler}
+
+Takes care of pods which are not assigned to a worker node yet. kube-scheduler is looking for node that meets pod's scheduling requirements and fit a pod on that node. Such a node is called feasible node \cite{KubernetesScheduler}.
+
+%---------------------------------------------------------------------------
+
+\subsection{Nodes}
+\label{sec:k8sNodes}
+All of below mentioned components run on every node in a cluster. 
+%---------------------------------------------------------------------------
+
+\subsubsection{Container runtime}
+\label{sec:containerRuntime}
+
+Node's key component, has ability to run, execute commands, manage and delete containers in efficient way \cite{KubernetesArch}. 
+
+%---------------------------------------------------------------------------
+
+
+\subsubsection{kube-proxy}
+\label{sec:kubeProxy}
+
+Create networking rules which allows to communicate with Pods from outside cluster. If available kube-proxy uses operating system packet filtering to create set of rules. It is also able to forward traffic by itself. This component is optional, can be replaced with different one if desired one implements key features. \cite{KubernetesArch}.
+
+%---------------------------------------------------------------------------
+
+\subsubsection{kubelet}
+\label{sec:kubelet}
+
+It is responsible for managing containers inside pod on its node. Uses Container Runtime Interface to communicate with containers \cite{KubernetesArch} \cite{KubernetesCRI}.
+
+%---------------------------------------------------------------------------
+
+\subsection{Objects}    
+\label{sec:k8s_objects}
+%---------------------------------------------------------------------------
+
+\subsection{Interfaces}    
+\label{sec:k8s_interfaces}
+
+\subsubsection{TEST}
+TEKST asdasdasda
+%---------------------------------------------------------------------------
+
+
+
+\section{Cluster Networking}
+\label{sec:k8s_networking}
+
+Tekst
+\begin{enumerate}%[1)]
+\item Tekst
+
+\item Tekst
+\end{enumerate}
+Tekst
+
+%---------------------------------------------------------------------------
+
+\section{Container Network Interface (CNI)}
+\label{sec:cni_intro}
+
+
+
+
+%---------------------------------------------------------------------------
+
+\section{Overview of Selected CNI Plugins}
+\label{sec:cni_overview}
+%---------------------------------------------------------------------------
+
+\section{Related Work}
+\label{sec:realted_work}
+
+
+DoTekst
+Na stronie \underline{\texttt{http://kile.sourceforge.net/screenshots.php}} Tekst {\em Kile}, Tekst
+
+Tekst
+
+\begin{itemize}
+\item Tekst
+\end{itemize}
