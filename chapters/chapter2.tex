@@ -147,6 +147,76 @@ It is responsible for managing containers inside pod on its node. Uses Container
 
 \subsection{Objects}    
 \label{sec:k8s_objects}
+
+\subsubsection{Namespace}
+\label{sec:namespace}
+
+The purpose of namespace object is to isolate group of resources like pods, deployments, services etc. in a cluster. It helps to organise cluster into virtual sub areas of working space. If \textit{\nameref{svc}} is created in some custom namespace <service-name>.<namespace-name>.svc.cluster.local DNS entry within cluster is created \cite{KubernetesNamespaces}.
+
+\subsubsection{Pods}
+\label{sec:pods}
+
+Pods are the smallest deployable objects in Kubernetes. It contains in one or more containers, which can communicate with each other using localhost interface. Since they share IP address, the can not use the same ports. It is really useful, when our service consist of two apps which are coupled together. For example there is a pod which has two containers, one responsible for compiling a code, second one is creating cache entry from compiled object and uploads to some data storage. It has more sense, as sharing data among containers in a pod is rather easier than on node between pods. Scaling is simpler as replicating one pod instead of two. Moreover communication between apps happends using localhost, in scenario where there are two pods with one container, ClusterIP \textit{\nameref{svc}} is needed. However the most common approach is to run one container per pod, where pod is just managing wrapper for contenerized app. Also rather then creating pod directly it is more common to use workload resource like \textit{\nameref{deployment}} \cite{KubernetesPods}.
+
+\subsubsection{ReplicaSet}
+\label{replicaset}
+
+Basically \textit{\nameref{replicaset}} consists of pod template, and runs desired number of pods \cite{KubernetesReplicaSet}.
+
+\subsubsection{Deployment}
+\label{deployment}
+
+Deployment is a higher level abstraction over \textit{\nameref{replicaset}}, that manages its lifecycle. It provides more features like rollingback an app, as it keeps history of configurations \cite{KubernetesDeployments}.
+
+\subsubsection{DaemonSet}
+\label{daemonset}
+
+Running pods using DaemonSet guarantee that every node will have copy of desirded pod (if resource requirements are met etc.). It has ability to automatically add or remove pods, if number of nodes changes. The typical usege is creating monitoring pod on every node \cite{KubernetesDaemonSet}.
+
+\subsubsection{StatefulSet}
+\label{statefulset}
+
+StatefulSet unlike \textit{\nameref{deployment}} is stateful. It saves an identity of each pod and if e.g. some persistent storage is assigned to specific e.g. database pod and it dies, kubernetes will recreate pod on the same node as it was previously \cite{KubernetesStatefulSet}.
+
+\subsubsection{Job}
+\label{job}
+
+Runs pod that does one task and exists. Kubernetes will retry execution if pod fails specific number of tries set in its configuration \cite{KubernetesJobs}.
+
+\subsubsection{CronJob}
+\label{cronjob}
+Behaviours like \textit{\nameref{job}}, but is able to run regularly every given time for tasks like database backups or log rotation \cite{KubernetesCronJob}.
+
+\subsubsection{Service}
+\label{svc}
+
+Service exposes an application running inside a cluster by using an enpoint. As a pod is ephemeral resource and its address changes from time to time (e.g. when pod is recreated) it better to create dns name that resolves IP address. Moreover service will not advertise unhealthy pods. Usually service exposes one port per service, but for example web app might expose http and https ports. There are four types of services \cite{KubernetesService}.
+
+\begin{enumerate}
+    \item ClusterIP -- makes one pod available to other inside cluster by exposing application using inter-cluter IP address. Although its oriented to be accessible within the cluster, objets like \textit{\nameref{ingress}} or \textit{\nameref{gatewayapi}} can expose service to the outside.
+    \item NodePort -- by default allocates port (from range 30000-32767) to publish service on every node's ip. In this scenario every node on specified port acts like a proxy to deployed app.
+    \item LoadBalancer -- kubernetes does not provide loadbalancer by default and when creating such a service it interacts with cloud provider to create external service for traffic balancing. Loadbalancer can be installed inside cluster.
+    \item ExternalName -- allows pods inside Kubernetes to access external service using defined name rather than using IP address 
+\end{enumerate}
+
+LOCAL TRAFFIC POLICY
+
+\subsubsection{Ingress}
+\label{ingress}
+
+Ingress is an object that manages outside cluster access to services inside a cluster. It is a single point of entry to route traffic to specified pod based on configuration. This is only high abstract object that specifies routing rules in cluster. Real functionalities are provided by an \textit{\nameref{ingresscontroller}}. Nowadays the development of Ingress is frozen, Kubernetes authors pay attention to its successor a \textit{\nameref{gatewayapi}} \cite{KubernetesIngress}.
+
+\subsubsection{Ingress Controller}
+\label{ingresscontroller}
+
+Ingress Controller fulfills an \textit{\nameref{ingress}} and starts serving an application which performs configured rules. Any implementation has its own features, but common functionalities are L4/L7 loadbalancing, host and path based routing, SSL termination. This is the real application that runs in a pod. Ingress Controller have to be installed manually and is not part of Kubernetes, however the container orchestration tool developers maintain \href{https://github.com/kubernetes-sigs/aws-load-balancer-controller#readme}{AWS}, \href{https://github.com/kubernetes/ingress-gce/blob/master/README.md#readme}{GCE}, and \href{https://github.com/kubernetes/ingress-nginx/blob/main/README.md#readme}{nginx} ingress controllers \cite{KubernetesIngress}\cite{KubernetesIngressControllers}.
+
+\subsubsection{Gateway API}
+\label{gatewayapi}
+
+Gateway API vs API Gateway
+GatewayClass etc workflow
+
 %---------------------------------------------------------------------------
 
 \subsection{Interfaces}    
@@ -161,11 +231,13 @@ TEKST asdasdasda
 \section{Cluster Networking}
 \label{sec:k8s_networking}
 
-Tekst
-\begin{enumerate}%[1)]
-\item Tekst
+Networking is a most important thing in Kubernetes, the whole point is to obtain reliable and robust communication among containers, pods, services, nodes and external systems in a cluter. There are four types of network communication problems to take into account \cite{KubernetesClusterNetworking}:
 
-\item Tekst
+\begin{enumerate}
+    \item container-to-container -- resolved by sharing network resources inside a pod
+    \item Pod-to-Pod -- 
+    \item Pod-to-Service -- covered service type ClusterIP
+    \item External-to-Service -- held by services type NodePort and Loadbalancer
 \end{enumerate}
 Tekst
 
