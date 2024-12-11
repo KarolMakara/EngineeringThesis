@@ -1,6 +1,8 @@
 \chapter{Background and Related Work}
 \label{cha:background}
 
+Placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder placeholder
+
 
 %---------------------------------------------------------------------------
 
@@ -44,13 +46,13 @@ Understanding Kubernetes workflow becomes significantly easier by familiarizing 
 
 \section{Kubernetes Architecture}
 \label{sec:k8s_arch}
-A Kubernetes cluster is a group of machines that run containers and provide all the necessary services to enable communication between containers within the cluster, as well as access to the cluster from the outside. There are two types of components, a control plane and worker node. Minumum one of each is needed to run a container \cite{KubernetesArch}. 
+A Kubernetes cluster is a group of machines that run containers and provide all the necessary services to enable communication between containers within the cluster, as well as access to the cluster from the outside. There are two types of components, a control plane and worker node. Minumum one of each is needed to run a container, but to provide more robus and reliable production cluter is better to use two to three control plane nodes  \cite{KubernetesArch}. 
 
 \begin{figure}[tbh]
     \centering
     \includegraphics[width=1\columnwidth]{images/kubernetes-cluster-architecture.png}
     \caption{Kubernetes Cluster Architecture \cite{KubernetesArch}}
-    \label{fig:testsvg}
+    \label{fig:k8s_arch}
 \end{figure}
 
 On figure 2.1 there is graphical representation of kubernetes cluster. Not all of components shown on figure are mandatory for kubernetes to work correctly. Take a look on control plane part, \textit{\nameref{sec:cloudControllerManager}} might not be mandatory, in on-premise configurations where interacting with cloud provider is not needed. On the right side of figure in node representation is \textit{\nameref{sec:kubeProxy}} component, which is not mandatory as some networking plugins can provide own implementation of proxy \cite{KubernetesArch}. This is example of "Designed for extensibility", where Kubernetes can acquire 3rd-party features without changing its source code \cite{KubernetesDocs}.
@@ -214,16 +216,27 @@ Ingress Controller fulfills an \textit{\nameref{ingress}} and starts serving an 
 \subsubsection{Gateway API}
 \label{gatewayapi}
 
-Gateway API vs API Gateway
-GatewayClass etc workflow
+The functionalities of Gateway API are so wide, that the Kubernetes authors use term "project". The project mainly focus on L4 and L7 routing in a cluster. It succeeds \textit{\nameref{ingress}}, Load Balancing and service mesh APIs. The Gatewa API resource model is role-oriented \cite{KubernetesGatewayAPI}.
 
-%---------------------------------------------------------------------------
+\begin{figure}[tbh]
+    \centering
+    \includegraphics[width=0.7\columnwidth]{images/gateway-api-resource-model.png}
+    \caption{Gateway API roles-oriented resource model \cite{KubernetesGatewayAPI}}
+    \label{fig:gatewayApiResourceModel}
+\end{figure}
 
-\subsection{Interfaces}    
-\label{sec:k8s_interfaces}
+The model focus on 3 separate group of peoples who interact with a cluster on different levels.
 
-\subsubsection{TEST}
-TEKST asdasdasda
+On a top of figure~\ref{fig:gatewayApiResourceModel} there are infrastructure providers, who provide GatewayClass resource. They are responsible for the overall multiple clusters infrastructure, rather than ensuring developers can access pods correctly \cite{KubernetesGatewayAPI}. The Gateway API craetors provides clear overview of what GatewayClass: "This resource represents a class of Gateways that can be instantiated.". It defines specific types of loadbalancing implementations and provide clear explenation of capabilities availabe in Kubernetes resource model.  The functionality is similiar to \textit{\nameref{ingress}} \cite{KubernetesGatewayAPI} \cite{KubernetesGatewayClass}. There can be more than one GatewayClasss created. \cite{KubernetesGatewayAPI}. 
+
+Cluter operators are in the middle of figure~\ref{fig:gatewayApiResourceModel}, they make sure that cluster is meets requirements for several users. As maintainers define Gateway resource, some loadbalancing system is provisioned by GatewayClasss. Gateway resource defines specific instance which will handle incomming traffic. Allows to define specific protocol, port or allowed resources route incomming traffic \cite{KubernetesGatewayAPI} \cite{KubernetesGateway}.
+
+End users specified on Gateway API resource model on~\ref{fig:gatewayApiResourceModel} figure are application developers. They focus on serving application to the clients by creating resource named HTTPRoute. The resource defines HTTP routing from defined gateway to end API object like service. GRPCRoute is simmiliar, but operates on different protocol. \cite{KubernetesGatewayAPI} \cite{KubernetesHTTPRoute}.
+
+
+Gateway API is not an API Gateway. An API Gateway in general is resposible for routing, loadbalancing, information exchange manipulation and much more depending on specific implementation. Gateway API is set of three resources mentioned earlier, which creates a role-oriented Kubernetes service networking model. Creators of Gateway API provide a clear explenation: "Most Gateway API implementations are API Gateways to some extent, but not all API Gateways are Gateway API implementations" \cite{KubernetesGatewayAPI}.
+
+
 %---------------------------------------------------------------------------
 
 
@@ -231,21 +244,27 @@ TEKST asdasdasda
 \section{Cluster Networking}
 \label{sec:k8s_networking}
 
-Networking is a most important thing in Kubernetes, the whole point is to obtain reliable and robust communication among containers, pods, services, nodes and external systems in a cluter. There are four types of network communication problems to take into account \cite{KubernetesClusterNetworking}:
+Networking is a most important thing in Kubernetes, the whole point is to obtain reliable and robust communication among containers, pods, services, nodes and external systems in a cluter \cite{KubernetesClusterNetworking}. There are four types of network communication: \cite{KubernetesClusterNetworking}:
 
 \begin{enumerate}
-    \item container-to-container -- resolved by sharing network resources inside a pod
-    \item Pod-to-Pod -- 
-    \item Pod-to-Service -- covered service type ClusterIP
-    \item External-to-Service -- held by services type NodePort and Loadbalancer
+    \item container-to-container -- communicates by sharing network resources inside a pod
+    \item Pod-to-Pod -- every pod can communicate with any other pod without need to use NAT as every of them has its own IP address \cite{IBMKubernetesNetworking}.
+    \item Pod-to-Service -- covered by service type ClusterIP, which provides inter-cluster IP address
+    \item External-to-Service -- held by services type NodePort and Loadbalancer, which expose pod to the outside
 \end{enumerate}
-Tekst
+Kubernetes allocates IP addresses to nodes, services and pods \cite{KubernetesClusterNetworking}:
+\begin{itemize}
+    \item \textit{\nameref{sec:kubelet}} or \textit{\nameref{sec:cloudControllerManager}}, depending on local or cloud infrastructure allocates IP address for nodes
+    \item \textit{\nameref{sec:kubeApiServer}} allocates IP address for services
+    \item for allocation of IP address to pod is responsible networking plugin which is an implementation of \textit{\nameref{sec:cni}}
+\end{itemize}
+
 
 %---------------------------------------------------------------------------
 
 \section{Container Network Interface (CNI)}
-\label{sec:cni_intro}
-
+\label{sec:cni}
+CNI is standarized by Cloud Native Computing Foundation set of API rules which defines container networking. Generally speaking CNI is responsible for pod-to-pod communication, which include assigning IP addresses, configuring network interface inside container and routing \cite{IBMKubernetesNetworking}.
 
 
 
@@ -253,6 +272,28 @@ Tekst
 
 \section{Overview of Selected CNI Plugins}
 \label{sec:cni_overview}
+
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Feature}                  & \textbf{Calico}                                                   & \textbf{Cilium}                                                   & \textbf{Antrea}                                                   \\ \hline
+\textbf{CNI Type}                  & L3 Networking (BGP, IPIP, VXLAN)                                  & eBPF-based Networking                                              & Open vSwitch (OVS)                                               \\ \hline
+\textbf{Network Policy Support}    & Kubernetes NetworkPolicy + Custom Policies                        & Kubernetes NetworkPolicy + Advanced features with eBPF            & Kubernetes NetworkPolicy + Advanced Policy Features               \\ \hline
+\textbf{High Performance}          & High (BGP, VXLAN support)                                         & Very High (eBPF for packet processing)                             & High (Open vSwitch and OVS optimizations)                         \\ \hline
+\textbf{Security Features}         & Calico NetworkPolicy, IPsec for Encryption                        & eBPF-based security (L7, L3), DNS filtering, service mesh support & Advanced NetworkPolicy support, Encryption, Secure Networking    \\ \hline
+\textbf{Observability}             & Prometheus, Grafana support for metrics                           & Hubble (eBPF-based observability), Prometheus integration          & Prometheus, Flow Monitoring, Open vSwitch Metrics                 \\ \hline
+\textbf{Multicluster Support}      & Yes (via Calico GlobalNetworkPolicy)                              & Yes (Cilium MultiCluster)                                          & Yes (Antrea Multicluster, also supports Calico as CNI backend)    \\ \hline
+\textbf{Networking Mode}           & Overlay (VXLAN), BGP (for large scale)                            & Direct routing with eBPF (XDP, TC, etc.)                           & Overlay (VXLAN) or Underlay (Direct routing with OVS)             \\ \hline
+\textbf{Use Case}                  & Large-scale networks, Security-focused setups                     & Cloud-native apps, Microservices, and observability-heavy setups   & Large-scale Kubernetes deployments with strong network policies  \\ \hline
+\textbf{Ease of Setup}             & Moderate (manual configuration for advanced features)            & Moderate (advanced features require configuration)                 & Easy to Moderate (simple setup, advanced features may require tuning) \\ \hline
+\end{tabular}
+\caption{Comparison of Calico, Cilium, and Antrea CNI Plugins}
+\label{tab:cni-comparison}
+\end{table}
+
+
 %---------------------------------------------------------------------------
 
 \section{Related Work}
