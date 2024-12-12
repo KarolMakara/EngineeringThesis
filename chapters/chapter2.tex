@@ -11,10 +11,10 @@ Placeholder placeholder placeholder placeholder placeholder placeholder placehol
 
 Contenerization is packaging an app along with all necessary runtime stuff like libraries, executables or asets into an object called "container". The main benefits of container are\cite{RedhatContainerization}:
 \begin{itemize}
-    \item Protable and Flexible -- container can be run on bare metal or virtual machine in cloud regardless of operating system. Only a container runtime software like \href{https://docs.docker.com/engine/}{Docker Engine} or \href{https://containerd.io/}{containerd} is required, which allows to interact with host system.
+    \item Protable and Flexible -- container can be run on bare metal or virtual machine in cloud regardless of operating system. Only a container runtime software like Docker Engine or containerd is required, which allows to interact with host system.
     \item Lightweight -- container is sharing operating system kernel with hostmachine, there is no need to install separate operating system inside
     \item Isolated -- does not depends on host's environment or infrastructure
-    \item Standarized -- \href{https://opencontainers.org/}{Open Container Initiative} standarize runtime, image and distribution specifications
+    \item Standarized -- Open Container Initiative standarize runtime, image and distribution specifications
 \end{itemize}
 A container image is set of files and configuration needed to run a container. It is immutable, only new image can be crated with new changes. Consists of layers. The layer contain one modification made a image. All layers are cachable and can be reused when building an image. The mechanism is really usefull when compiling large application components inside one container\cite{DockerImage}.
 
@@ -23,7 +23,7 @@ A container image is set of files and configuration needed to run a container. I
 \section{Contianer Orchestration}
 \label{sec:ContianerOrchestration}
 
-Container orchestration is coordinated deploying, managing, networking, scaling and monitoring containers process. It automates and manages whole container's lifecycle, there is no need to worrying about of deployed app, orchestration software like \href{https://kubernetes.io/}{Kubernetes} will take care of its availability \cite{RedhatContainerization}.
+Container orchestration is coordinated deploying, managing, networking, scaling and monitoring containers process. It automates and manages whole container's lifecycle, there is no need to worrying about of deployed app, orchestration software like Kubernetes will take care of its availability \cite{RedhatContainerization}.
 
 The Kubernetes Authors says: "The name Kubernetes originates from Greek, meaning helmsman or pilot. K8s as an abbreviation results from counting the eight letters between the "K" and the "s"" \cite{KubernetesDocs}. K8s is open-source orchestration platform capable of managing containers \cite{KubernetesDocs}. Key functionalities are \cite{KubernetesDocs}:
 
@@ -55,7 +55,7 @@ A Kubernetes cluster is a group of machines that run containers and provide all 
     \label{fig:k8s_arch}
 \end{figure}
 
-On figure 2.1 there is graphical representation of kubernetes cluster. Not all of components shown on figure are mandatory for kubernetes to work correctly. Take a look on control plane part, \textit{\nameref{sec:cloudControllerManager}} might not be mandatory, in on-premise configurations where interacting with cloud provider is not needed. On the right side of figure in node representation is \textit{\nameref{sec:kubeProxy}} component, which is not mandatory as some networking plugins can provide own implementation of proxy \cite{KubernetesArch}. This is example of "Designed for extensibility", where Kubernetes can acquire 3rd-party features without changing its source code \cite{KubernetesDocs}.
+On figure figure~\ref{fig:k8s_arch} there is graphical representation of kubernetes cluster. Not all of components shown on figure are mandatory for kubernetes to work correctly. Take a look on control plane part, \textit{\nameref{sec:cloudControllerManager}} might not be mandatory, in on-premise configurations where interacting with cloud provider is not needed. On the right side of figure in node representation is \textit{\nameref{sec:kubeProxy}} component, which is not mandatory as some networking plugins can provide own implementation of proxy \cite{KubernetesArch}. This is example of "Designed for extensibility", where Kubernetes can acquire 3rd-party features without changing its source code \cite{KubernetesDocs}.
 
 % \begin{figure}[h!]
 %     \centering
@@ -201,8 +201,6 @@ Service exposes an application running inside a cluster by using an enpoint. As 
     \item ExternalName -- allows pods inside Kubernetes to access external service using defined name rather than using IP address 
 \end{enumerate}
 
-LOCAL TRAFFIC POLICY
-
 \subsubsection{Ingress}
 \label{ingress}
 
@@ -275,35 +273,50 @@ CNI is standarized by Cloud Native Computing Foundation set of API rules which d
 
 
 \begin{table}[h!]
-\centering
-\begin{tabular}{|l|l|l|l|}
-\hline
-\textbf{Feature}                  & \textbf{Calico}                                                   & \textbf{Cilium}                                                   & \textbf{Antrea}                                                   \\ \hline
-\textbf{CNI Type}                  & L3 Networking (BGP, IPIP, VXLAN)                                  & eBPF-based Networking                                              & Open vSwitch (OVS)                                               \\ \hline
-\textbf{Network Policy Support}    & Kubernetes NetworkPolicy + Custom Policies                        & Kubernetes NetworkPolicy + Advanced features with eBPF            & Kubernetes NetworkPolicy + Advanced Policy Features               \\ \hline
-\textbf{High Performance}          & High (BGP, VXLAN support)                                         & Very High (eBPF for packet processing)                             & High (Open vSwitch and OVS optimizations)                         \\ \hline
-\textbf{Security Features}         & Calico NetworkPolicy, IPsec for Encryption                        & eBPF-based security (L7, L3), DNS filtering, service mesh support & Advanced NetworkPolicy support, Encryption, Secure Networking    \\ \hline
-\textbf{Observability}             & Prometheus, Grafana support for metrics                           & Hubble (eBPF-based observability), Prometheus integration          & Prometheus, Flow Monitoring, Open vSwitch Metrics                 \\ \hline
-\textbf{Multicluster Support}      & Yes (via Calico GlobalNetworkPolicy)                              & Yes (Cilium MultiCluster)                                          & Yes (Antrea Multicluster, also supports Calico as CNI backend)    \\ \hline
-\textbf{Networking Mode}           & Overlay (VXLAN), BGP (for large scale)                            & Direct routing with eBPF (XDP, TC, etc.)                           & Overlay (VXLAN) or Underlay (Direct routing with OVS)             \\ \hline
-\textbf{Use Case}                  & Large-scale networks, Security-focused setups                     & Cloud-native apps, Microservices, and observability-heavy setups   & Large-scale Kubernetes deployments with strong network policies  \\ \hline
-\textbf{Ease of Setup}             & Moderate (manual configuration for advanced features)            & Moderate (advanced features require configuration)                 & Easy to Moderate (simple setup, advanced features may require tuning) \\ \hline
-\end{tabular}
-\caption{Comparison of Calico, Cilium, and Antrea CNI Plugins}
-\label{tab:cni-comparison}
+    \centering
+    \caption{Comparison of Antrea and Cilium \cite{Antrea}\cite{CiliumBGP}\cite{CiliumEgressGateway}\cite{CiliumGatewayAPI}\cite{CiliumEncryption}.}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|l|l|l|}
+    \hline
+    \textbf{Feature/Plugin}              & \textbf{Antrea}                                         & \textbf{Cilium}                                \\ \hline
+    \textbf{Dataplane}            & Open vSwitch                                            & eBPF                                           \\ \hline
+    \textbf{Encapsulation}        & VXLAN or Geneve                                         & VXLAN or Geneve                                \\ \hline
+    \textbf{Encryption}           & IPsec or WireGuard tunnels                              & IPsec or WireGuard tunnels                     \\ \hline
+    \textbf{Security}             & Extends Kubernetes Network Policies                     & Advanced security policies                     \\ \hline
+    \textbf{Observability}        & Theia and Grafana for visualization                     & Hubble                                         \\ \hline
+    \textbf{Purpose}              & Simplified Kubernetes networking management             & For large-scale cluters                        \\ \hline
+    \textbf{Additional features}  & Network policies for non-Kubernetes nodes               & BGP to advertise network outside cluster       \\ \hline
+    \textbf{Gateway API}          & No support                                              & Fully supports Gateway API                     \\ \hline
+    \textbf{Egress Gateway}       & Basic egress gateway capabilities                       & Advanced egress gateway support                \\ \hline
+    \end{tabular}}
+    \label{tab:antrea_cilium}
 \end{table}
 
 
+Antrea is an open-source CNI plugin which is built on Open vSwitch \cite{Antrea}. OvS is a virtual swtich with capability of handling traffic flow between vitrual machines and containers \cite{OvS}. Antrea's main focus is L3/L4 networking ad security services, such as network policies. The resource is responsible for managing traffic flow between pods. By default every pod can communicate with any other pod, but network policies can specify if pod A is able to talk to pod B \cite{KubernetesNetworkPolicies}. Consider scenario with three pods, client, frontend and backend. There is no need to allow client communication directly with backend, so network policies allows traffic flow from client to frontend and direct communication with backend is not allowed \cite{CalicoNetworkPolicies}.
+
+
+
+Cilium, open-source CNI which uses eBPF (extended Barkeley Packer Filter) for packet processing, security and deep observability using Hubble \cite{CiliumOverview}. eBPF is a technology that allows running defined programs, with custom logic inside operating system kernel in privileged context without need of any kernel source code changes or loading modules. Lack of switching between kernel and user space, which reduces latency \cite{eBPF}.
+
+\begin{figure}[tbh]
+    \centering
+    \includegraphics[width=1\columnwidth]{images/ebpf_hostrouting.png}
+    \caption{Cilium eBPF host-routing \cite{CiliumCNIBenchmark}}
+    \label{fig:ebpf_routing}
+\end{figure}
+
+
+As seen on figure~\ref{fig:ebpf_routing}, the whole point of eBPF networking is skipping overhead that comes from iptables. Moreover eBPF implements hash tables for storing routing policies, which time complexity is O(log n), comparing to iptables array O(n). It makes clear that large-scale clusters will benefit from using eBPF \cite{IsovalentHash}. 
 %---------------------------------------------------------------------------
 
 \section{Related Work}
 \label{sec:realted_work}
 
+As discussed in \cite{dakic2024performance} the performance of different CNIs can vary widely, some CNIs performing two to three times better than others, making it essential to choose right plugin for particular workload. Authors says, that developing automated methodology of CNI plugin evaluation is a key aspact, specifically in large High-Performance Computing (HPC) environments. This allows for reproducible and consistent tests across different configurations, reducing the overhead of manual testing. To achieve that, tools like Ansible can be helpful. They state that Linux Kernel or NIC can be a bottleneck in networking performance, so they extend maximum buffer size, scale TCP window, disable TCP Selective Acknowledgement, increase SYN Queue Size or enabled Generic Receive offload. The paper shows results of comparison four CNI plugins, such as Antrea, Cilium, Calico, Flannel using TCP/UDP in base and with optimized system settings \cite{dakic2024performance}.
 
-DoTekst
-Na stronie \underline{\texttt{http://kile.sourceforge.net/screenshots.php}} Tekst {\em Kile}, Tekst
+In \cite{9153266} the authors measure CNI plugins for inter-host and intra-host communication using UDP and TCP protocols. They introduce the concept of CPU cycles per packet (CPP) to evalueate CNI efficiency. They measure CPP spent in each network component using the Linux perf tool. By measuring throughput, RTT, and latency, they compare how differ CNI plugins (flannel, weave, cilium, kuber-router, calico) comparing its network models.
 
-Tekst
 
 \begin{itemize}
 \item Tekst
