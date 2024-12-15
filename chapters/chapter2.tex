@@ -65,7 +65,7 @@ A Kubernetes cluster is a group of machines that run containers and provide all 
     \label{fig:k8s_arch}
 \end{figure}
 
-On figure figure~\ref{fig:k8s_arch} there is graphical representation of Kubernetes cluster. Not all of components shown in the figure are mandatory for Kubernetes to work correctly. At the control plane part, \textit{\nameref{sec:cloudControllerManager}} might not be mandatory, in on-premises configurations where interacting with cloud provider is not needed. On the right side of figure in node representation is \textit{\nameref{sec:kubeProxy}} component, which is not mandatory as some networking plugins can provide own implementation of proxy \cite{KubernetesArch}. This is an example of "Designed for extensibility", where Kubernetes can acquire 3rd-party features without changing its source code \cite{KubernetesDocs}.
+On figure~\ref{fig:k8s_arch} there is graphical representation of Kubernetes cluster. Not all of components shown in the figure are mandatory for Kubernetes to work correctly. At the control plane part, \textit{\nameref{sec:cloudControllerManager}} might not be mandatory, in on-premises configurations where interacting with cloud provider is not needed. On the right side of figure in node representation is \textit{\nameref{sec:kubeProxy}} component, which is not mandatory as some networking plugins can provide own implementation of proxy \cite{KubernetesArch}. This is an example of "Designed for extensibility", where Kubernetes can acquire 3rd-party features without changing its source code \cite{KubernetesDocs}.
 
 % \begin{figure}[h!]
 %     \centering

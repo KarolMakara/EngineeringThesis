@@ -4,9 +4,11 @@
 \geometry{lmargin=20mm, rmargin=30mm, tmargin=25mm, bmargin=25mm, foot=10mm, head=10mm}
 \usepackage{enumerate}
 \usepackage{listings}
+\usepackage{xcolor}
 \usepackage{times}
 \usepackage{setspace}
 \usepackage{float}
+\usepackage{minted}
 \linespread{1.5}
 \usepackage{svg}
 \usepackage{geometry}
@@ -19,6 +21,22 @@
     urlcolor=blue,
     citecolor=black,
 ]{hyperref}
+
+\definecolor{darkgreen}{rgb}{0.0, 0.5, 0.0}
+\lstdefinestyle{yaml}{
+  basicstyle=\color{darkgreen}\footnotesize,   % Blue text color with footnotesize font
+  rulecolor=\color{black},                % Border color
+  string=[s]{'}{'},                       % String delimiter for YAML strings
+  stringstyle=\color{blue},               % Color of strings
+  comment=[l]{:},                         % Comment symbol
+  commentstyle=\color{black},             % Color of comments
+  morecomment=[l]{-},                     % More comment symbols
+  frame=single,                           % Adds a border around the code block
+  framesep=10pt,                          % Space between the code and the border
+  framerule=1pt,                          % Thickness of the border
+  breaklines=true                         % Wraps long lines
+}
+
 \lstloadlanguages{TeX}
 
 %---------------------------------------------------------------------------
@@ -43,7 +61,7 @@
 
 \include{chapters/chapter1}
 \include{chapters/chapter2}
-% \include{chapters/chapter3}
+\include{chapters/chapter3}
 % \include{chapters/chapter4}
 % \include{chapters/chapter5}
 % \include{chapters/chapter6}
