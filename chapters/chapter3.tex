@@ -4,7 +4,7 @@
 \section{Egress Scenario: Routing Outgoing Traffic via Egress Gateway}
 \label{sec:egress}
 
-Egress gateway can play key role in cluster's security. It is able to force routing all outgoing connections initiated within labeled pods through gateway node. The node can push all outgoing traffic through a firewall to scan every packet for potential threats, ensuring that only secure traffic leaves the cluster.
+Egress gateway can play key role in cluster's security. It is able to force routing all outgoing connections initiated within labeled pods through gateway node. The node can push all outgoing traffic through a firewall to scan every packet for potential threats, ensuring that outgoing traffic only accesses secure services outside the cluster.
 
 The IT departament of a financial company manages Kubernetes cluster in their local laboratory. The infrastructure is used to create production-ready, efficient and secure environment financial services where handling sensitive data and strict regulatory standards are critical. Leaving unmonitored critical traffic leaving the cluster can create vulnerabilities potentially exposing the system to data exfiltration from financial apps. They decided to analyze all outgoing traffic from financial services pods using some intrusion detection system (IDS) software. However they are also providing some services which do not need such a robust security. Redirecting every request to the traffic analyzer would add unnecessary overhead to exposed applications and cause higher latency. Cluster operators decided to get advantage of an egress gateway routing all outgoing traffic from financial services into security tool to monitor and analyze packets. However end users started complaining about that, their apps started showing errors like "503 Service Unavailable". IT departament administrators started seeking for a problem and they conclude that created egress gateway is a bottleneck in their cluster. They started searching online for solutions and decided to create separate gateways for each deployment of their service \cite{CalicoEgressDeploy}. End users stopped complaining about poor avalaibility of services.
 
@@ -154,34 +154,103 @@ Selecting an egress gateway can be done in in three ways: by matching node label
 
 Both Anrea and Cilium allows to configure egress gateway in multiple ways. Cilium has more flexibility in defining which traffic should be routed through egress gateway, unlike Antrea it can specify trafic by destination CIDR. Although cilium has more capabilities of matching egress traffic, antrea implementation allows to create fail-over node, which will route traffic if main one fails. Cilium also takes advantage by using eBPF which is designed for large-scale clusters \cite{CiliumOverview}. It is not clear which egress gateway CNI implementation use, every of them has its advantages and drawbacks. Further both gateways will be evaluated using networking tools in creating local environment.
 
-\subsection{Implemented Egress Scenario Overview}
-\label{subsection:implEgressOverview}
 
-
-\subsubsection{Antrea}
-\label{subsection:implAntreaEgress}
-
-
-\subsubsection{Cilium}
-\label{subsection:implCiliumEgress}
 
 
 \section{Ingress Scenario: Splitting Incoming Traffic via Gateway API}
 \label{sec:ingress}
 
+The Gateway API as a successor to the Ingress object, provides more features for traffic management and role-oriented approach to separate Kubernetes user/operator concerns. It is capable of teraffic splitting, header modification, or URL rewriting. The Gateway API supports key protocols, like HTTP, HTTPS, TCP, UDP and gRPC. Offering wide range of features, can be used in some different ways \cite{CiliumGatewayAPIBlog}.
 
+%---------------------------------------------------------------------------
+\subsubsection{Canary Deployment}
+\label{subsubsection:canary}
+
+Canary Deployment is a one of most common deployment methods used to rollout a new application version to end users, ensuring that everything is working as expected before full release. The whole point is to release new version of software only for small group of peoples, leaving most of users unaware of new releas \cite{Canary}.
+
+This is where traffic splitting feature from Gateway API might be used \cite{CiliumTrafficSplitting}. Lets define five stages of deployment \cite{Canary}:
+
+\begin{itemize}
+    \item initial state of app -- stable version of application is served
+    \item canary stage -- new version of application is only visible for 5\% of users. As some users are able to interact with new provisioned software, most common errors should be visible (if any exist).
+    \item early stage -- second stage of canary deployment where new app is available for 25\% of total connections. At this point less frequent bugs might be observed.
+    \item mid stage -- allowing for 50\% of end clients. A half of traffic is routed to new version of app. At this point performance of rolledout software is monitored.
+    \item late stage -- most of traffic (75\%) is handled by new version of application. Stage that precedes full release of new software.
+    \item full stage -- 100\%, new application version is fully deployed for all users
+\end{itemize}
+
+If any anomalies are detected during any stage of the canary deployment, the new application version should be immediately rolled back.
+
+Gateway API is not designed for software deployment, it does not have capabilities of rolling back application in automated way. In presented way of use the gateway is used only for weighted traffic splitting.
 
 %---------------------------------------------------------------------------
 
-\subsection{Scenario Introduction}
-\label{subsection:ingressScenatioIntro}
+\subsubsection{Traffic Mirroring with Gateway API}
+\label{subsubsection:mirroring}
+
+A company is offering weather API, not all enpoints are publicly available, some features are secured and paid. Securing these paid interfaces is not as critical as more sensitive and confidential data. Lately company decided to start analyzing incomming trafic on secured enpoints, because they make want to make sure only authorized requests are handled. However the company does not have infrastructure capabilities to analyze all incomming traffic on these enpoints. As their services are HTTP based inside Kuberentes cluster, they can get advantage of the Gateway API traffic splitting. The security team decided to route 40\% of incoming traffic to a traffic analyzer to evaluate if and how requests might bypass the paywall. Cluster management (infrastructure providers and cluster operators at once in terms of roles in Gateway API model) decided to split traffic using Gateway API, as they need general usege of API Gateway (company offers RESTful APIs). Pure traffic splitting is not a case, because all incomming traffic have to be handled with response. The solution is to split 40\% of traffic to a different Kubernetes service, then mirror traffic to analyzer and route back to the pod containing an app. While cluster managers implement second deployment with mirroring requests to traffic analyzer, app developers created HTTPRoute object with appropriate weights for each of services. Figure~\ref{fig:mirroringImg} show how cluster infrastucture might look in this case.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\columnwidth]{images/ingress.png}
+    \caption{Example Kuberenetes cluster with traffic mirroring}
+    \label{fig:mirroringImg}
+\end{figure}
+
 %---------------------------------------------------------------------------
 
 \subsection{Traffic Splitting in Selected CNI Plugins}
 \label{subsection:trafficSplitting}
-%---------------------------------------------------------------------------
 
-\subsection{Configuration Overview}
-\label{subsection:ingressConfigOverview}
-%---------------------------------------------------------------------------
+Unfortunately Antrea plugin does not provide Gateway API implementation, in fact Cilium is the only one which does. For purpose of evaluating cluster networking implementation of Antrea CNI, NGINX Gateway Fabric can be used.
 
+
+
+%---------------------------------------------------------------------------
+\subsubsection{Antrea + NGINX}
+\label{subsection:antreaIngress}
+
+Figure~\ref{fig:canaryAntreaImg} shows example cluster which configures Gateway API to work in canary stage. Antrea CNI is installed, antrea-ctrl and antrea-agent pods are deployed on nodes, OvS tunelling among nodes is set up. On control plane node there is also NGINX Gateway API deployed as a pod, what is in different to cilium, where Gateway API will not be running as a pod.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\columnwidth]{images/antrea-nginx.png}
+    \caption{Example Kuberenetes cluster with Antrea CNI and NGINX Gateway Fabric in canary stage of canary deployment}
+    \label{fig:canaryAntreaImg}
+\end{figure}
+
+\begin{listing}[htb]
+    \centering
+    \caption{Egress resource example \cite{AntreaEgressArch}.}
+    \begin{minted}[gobble=4, frame=single, linenos, fontsize=\scriptsize]{yaml}
+    apiVersion: gateway.networking.k8s.io/v1
+    kind: HTTPRoute
+    metadata:
+        name: curren-weather-route
+    spec:
+        parentRefs:
+        - name: nginx-gw
+        rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /getCurrentWeather
+            backendRefs:
+            - kind: Service
+                name: current-weather-pod-1
+                port: 8080
+                weight: 95
+            - kind: Service
+                name: current-weather-pod-2
+                port: 8090
+                weight: 5
+    \end{minted}
+    \label{lst:yamlAntreaIngressCanaryHTTPRoute}
+\end{listing}
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+\subsubsection{Cilium}
+\label{subsection:ciliumIngress}
+
+%---------------------------------------------------------------------------
