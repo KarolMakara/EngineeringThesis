@@ -1,0 +1,184 @@
+\chapter{Implementing Egress and Ingress Scenarios Using Selected CNI Plugins}
+\label{cha:practical_impl}
+
+This chapter presents the implementation of egress and ingress scenarios. The egress scenario will be executed locally, while the ingress scenario will be deployed both on local infrastructure (personal laptop) and on the public cloud (Azure). The tools used in this implementation will be described.
+
+%---------------------------------------------------------------------------
+
+
+\section{Tools and automation}
+\label{sec:tools}
+
+In this section, the tools used to provision the egress and ingress implementations will be described. A Kubernetes cluster will be created to simulate the scenarios, and Infrastructure as Code (IaC) tool Terraform will be used to provision and interact with the cluster. Additionally, Ansible will be used for creating, configuring cluster setups along with running terraform and performance tools.
+
+
+%---------------------------------------------------------------------------
+
+\subsection{Ansible}
+\label{sec:ansible}
+
+Ansible is an opensource tool which is able to automate provisioning and configuring infrastructure. Configuration in Ansible is written in playbooks, which are YAML files as blueprints that contain a set of instructions to be executed. Each playbook consists of one or more plays, and each play describes a set of tasks to be performed on a group of desired hosts \cite{Ansible} \cite{AnsiblePlaybook}.
+
+\begin{listing}[htb]
+    \centering
+    \caption{Example ansible playbook \cite{AnsibleOpenstack}.}
+    \begin{minted}[gobble=4, frame=single, linenos, fontsize=\scriptsize]{yaml}
+    - name: Create openstack instance and assign floating ip
+      hosts: "{{ openstack_pool | default('localhost') }}"
+      var_files:
+        - ./vars/auth.yml
+      become: yes
+  
+      tasks:
+        - name: Create the OpenStack instance
+          openstack.cloud.server:
+            state: present
+            name: vm1 #TODO
+            key_name: "{{ key_name }}"
+            network: "{{ network_name }}"
+            auth:
+              auth_url: "{{ auth_url }}"
+              username: "{{ username }}"
+              password: "{{ password }}"
+              project_name: "{{ project_name }}"
+  
+      roles:
+        - assign_floating_ip
+
+    \end{minted}
+    \label{lst:exampleAnsiblePlaybook}
+\end{listing}
+
+\begin{listing}[htb]
+    \centering
+    \caption{Example ansible inventory \cite{AnsibleInventory} \cite{AnsibleOpenstack} \cite{AnsibleVars}}
+    \begin{minted}[gobble=4, frame=single, linenos, fontsize=\scriptsize]{yaml}
+    [openstack_pool]
+    instance-1.example.com key_name=ansible_key network_name=my-network ansible_host=10.10.10.10
+    instance-2.example.com key_name=ansible_key network_name=my-network ansible_host=10.10.10.20
+    \end{minted}
+    \label{lst:exampleAnsibleInventory}
+\end{listing}
+
+
+Listing~\ref{lst:exampleAnsiblePlaybook} shows example ansible playbook configuration. Hosts field define group of objects on which configuration script is executed. In this case instances specified in group named openstack\_pool in ansible inventory showed on listing~\ref{lst:exampleAnsibleInventory} will be created when using the playbook. Using var\_files is possible to attach file containg, for example authentication variables required to access openstack cloud. Become is used to execute script as root user. Tasks and roles is the place, where actual script is defined. It can be defined directly in tasks, or specified by a roles, in this case will use script from ./roles/assign\_floating\_ip/tasks/main.yaml \cite{AnsiblePlaybook}.
+
+
+\subsection{Iperf3}
+\label{sec:iperf3}
+
+Iperf3 is a tool capable of measure networking metrics. It supports TCP, UDP and SCTP protocols in IPv4 or IPv6 networks. The tool works in client-server architecture. Iperf3 will be used to evalutate throughput and round trip time in egress scenario. Listings~\ref{lst:iperfServer} and~\ref{lst:iperfClient} shows how to run iperf three seconds measurement within localhost interface \cite{Iperf}.
+
+\begin{listing}[H]
+    \centering
+    \caption{Running iperf3 server command \cite{IperfDocs}.}
+    \begin{minted}[gobble=4, frame=single, linenos, fontsize=\scriptsize]{bash}
+    $ iperf3 --server
+    -----------------------------------------------------------
+    Server listening on 5201 (test #1)
+    -----------------------------------------------------------
+    Accepted connection from 127.0.0.1, port 40496
+    [  5] local 127.0.0.1 port 5201 connected to 127.0.0.1 port 40502
+    [ ID] Interval           Transfer     Bitrate
+    [  5]   0.00-1.00   sec  5.55 GBytes  47.6 Gbits/sec                  
+    [  5]   1.00-2.00   sec  5.97 GBytes  51.3 Gbits/sec                  
+    [  5]   2.00-3.00   sec  5.50 GBytes  47.3 Gbits/sec                  
+    [  5]   3.00-3.00   sec  4.50 MBytes  38.7 Gbits/sec                  
+    - - - - - - - - - - - - - - - - - - - - - - - - -
+    [ ID] Interval           Transfer     Bitrate
+    [  5]   0.00-3.00   sec  17.0 GBytes  48.7 Gbits/sec                  receiver
+    \end{minted}
+    \label{lst:iperfServer}
+\end{listing}
+
+\begin{listing}[H]
+    \centering
+    \caption{Running iperf3 client command \cite{IperfDocs}.}
+    \begin{minted}[gobble=4, frame=single, linenos, fontsize=\scriptsize]{bash}
+    $ iperf3 --client 127.0.0.1 --time 3
+    Connecting to host 127.0.0.1, port 5201
+    [  5] local 127.0.0.1 port 40502 connected to 127.0.0.1 port 5201
+    [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+    [  5]   0.00-1.00   sec  5.55 GBytes  47.6 Gbits/sec    0   1.31 MBytes       
+    [  5]   1.00-2.00   sec  5.97 GBytes  51.3 Gbits/sec    0   1.50 MBytes       
+    [  5]   2.00-3.00   sec  5.50 GBytes  47.2 Gbits/sec    0   1.50 MBytes       
+    - - - - - - - - - - - - - - - - - - - - - - - - -
+    [ ID] Interval           Transfer     Bitrate         Retr
+    [  5]   0.00-3.00   sec  17.0 GBytes  48.7 Gbits/sec    0             sender
+    [  5]   0.00-3.00   sec  17.0 GBytes  48.7 Gbits/sec                  receiver
+
+    iperf Done.
+    \end{minted}
+    \label{lst:iperfClient}
+\end{listing}
+
+\subsection{Kind}
+\label{sec:kind}
+
+Kind is a tool used for creating local Kuberentes cluster. This tool can simulate real communication between nodes within one machine. It creates control plane and worker nodes using Docker containers to enable node to node communication. The important thing is that it does not provide any load balancer for assigning external IP addresses for Kubernetes services. In ingress scenario Gateway API requires outside cluster routable IP address, on local infrastructure MetalLB will be installed and configured to provide IPs \cite{Kind}. Listing~\ref{lst:kindConfig} shows kind configuration used in both egress and ingress scenation on local infrastructure. One control plane node and two worker nodes are created. It also disables default CNI plugin which is essentail in this case.
+
+\begin{listing}[H]
+    \centering
+    \caption{Kind config used in both scenarios \cite{KindConfig}.}
+    \begin{minted}[gobble=4, frame=single, linenos, fontsize=\scriptsize]{yaml}
+    kind: Cluster
+    apiVersion: kind.x-k8s.io/v1alpha4
+    networking:
+        disableDefaultCNI: true
+    nodes:
+        - role: control-plane
+          extraPortMappings:
+            - containerPort: 80
+              hostPort: 80
+            - containerPort: 443
+              hostPort: 443
+        - role: worker
+        - role: worker
+    \end{minted}
+    \label{lst:kindConfig}
+\end{listing}
+
+\subsection{K6}
+\label{sec:k6}
+
+Grafana K6 opensource tool for load testing. It is able to allocate virtual users, who access specified enpoint. Load testing is configured in javascript file using k6 library. % TODO ADD SCRIPT HERE
+
+\subsection{MetelLB}
+\label{sec:metallb}
+
+\subsection{Node Exporter}
+\label{sec:nodeExporter}
+
+\subsection{Prometheus}
+\label{sec:prometheus}
+
+\subsection{Terraform}
+\label{sec:terraform}
+
+%---------------------------------------------------------------------------
+
+\section{Egress scenario implementation}
+\label{sec:egressImpl}
+%---------------------------------------------------------------------------
+\subsection{Antrea}
+\label{sec:antreaEgress}
+%---------------------------------------------------------------------------
+
+\subsection{Cilium}
+\label{sec:ciliumEgress}
+
+%---------------------------------------------------------------------------
+
+\section{Inress scenario implementation}
+\label{sec:ingressImpl}
+%---------------------------------------------------------------------------
+
+\subsection{Local deployment}
+\label{sec:localIngressImpl}
+%---------------------------------------------------------------------------
+
+\subsection{Cloud deployment}
+\label{sec:cloudIngressImpl}
+
+
+%---------------------------------------------------------------------------

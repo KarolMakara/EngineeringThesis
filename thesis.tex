@@ -37,6 +37,26 @@
   breaklines=true                         % Wraps long lines
 }
 
+\definecolor{darkgreen}{rgb}{0.0, 0.5, 0.0}   % Color for commands (green)
+\definecolor{lightgray}{rgb}{0.8, 0.8, 0.8}   % Color for terminal output (light gray)
+\definecolor{cyan}{rgb}{0.0, 1.0, 1.0}        % Color for options (cyan)
+\lstdefinestyle{linuxconsole}{
+  basicstyle=\footnotesize\ttfamily,           % Monospaced font
+  keywordstyle=\color{darkgreen}\bfseries,     % Color for commands
+  stringstyle=\color{cyan},                    % Color for options (e.g., `-s`, `-t`)
+  commentstyle=\color{lightgray},              % Color for output
+  morecomment=[l]{\$},                         % The dollar sign is the prompt symbol
+  escapeinside={\%*}{*)},                      % Allow LaTeX escapes inside listings
+  frame=single,                               % Adds a border around the code block
+  framesep=10pt,                              % Space between the code and the border
+  framerule=1pt,                              % Thickness of the border
+  breaklines=true,                             % Wraps long lines
+  backgroundcolor=\color{black!05},            % Light gray background for console output
+  literate={-}{{$\mathord{-}$}}1               % Handle the hyphen properly
+}
+
+
+
 \lstloadlanguages{TeX}
 
 %---------------------------------------------------------------------------
@@ -59,10 +79,10 @@
 \tableofcontents
 \clearpage
 
-\include{chapters/chapter1}
-\include{chapters/chapter2}
-\include{chapters/chapter3}
-% \include{chapters/chapter4}
+% \include{chapters/chapter1}
+% \include{chapters/chapter2}
+% \include{chapters/chapter3}
+\include{chapters/chapter4}
 % \include{chapters/chapter5}
 % \include{chapters/chapter6}
 % \include{chapters/chapter7}
