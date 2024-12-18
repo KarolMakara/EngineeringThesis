@@ -182,77 +182,91 @@ def main():
             os.remove(file)
 
 
-base_url = "http://74.248.106.84:9090/api/v1/query_range"
-job = "aks-servers"
+base_url = "http://172.18.0.2:30909/api/v1/query_range"
+job = "k3d-servers"
 step = "5s"
-cni_name = "antrea"
+cni_name = "cilium"
 
-start_time = "2024-11-10T13:01:18Z"
-end_time = "2024-11-10T13:03:18Z"
-node = "aks-0"
-run_id = "1"
-
-folder_path = f"{cni_name}_{run_id}/{node}"
-os.makedirs(folder_path, exist_ok=True)
-
-main()
-node = "aks-1"
-folder_path = f"{cni_name}_{run_id}/{node}"
-os.makedirs(folder_path, exist_ok=True)
-main()
-
-start_time = "2024-11-10T13:05:11Z"
-end_time = "2024-11-10T13:07:11Z"
-node = "aks-0"
-run_id = "10"
+start_time = "2024-11-11T13:21:51Z"
+end_time = "2024-11-11T13:26:49Z"
+node = "worker2"
+run_id = "01"
 
 folder_path = f"{cni_name}_{run_id}/{node}"
 os.makedirs(folder_path, exist_ok=True)
 
 main()
-node = "aks-1"
+node = "kind-worker"
 folder_path = f"{cni_name}_{run_id}/{node}"
 os.makedirs(folder_path, exist_ok=True)
 main()
 
-start_time = "2024-11-10T13:19:02Z"
-end_time = "2024-11-10T13:21:02Z"
-node = "aks-0"
-run_id = "100"
+# start_time = "2024-11-10T13:01:18Z"
+# end_time = "2024-11-10T13:03:18Z"
+# node = "aks-0"
+# run_id = "1"
 
-folder_path = f"{cni_name}_{run_id}/{node}"
-os.makedirs(folder_path, exist_ok=True)
+# folder_path = f"{cni_name}_{run_id}/{node}"
+# os.makedirs(folder_path, exist_ok=True)
 
-main()
-node = "aks-1"
-folder_path = f"{cni_name}_{run_id}/{node}"
-os.makedirs(folder_path, exist_ok=True)
-main()
+# main()
+# node = "aks-1"
+# folder_path = f"{cni_name}_{run_id}/{node}"
+# os.makedirs(folder_path, exist_ok=True)
+# main()
 
-start_time = "2024-11-10T13:32:51Z"
-end_time = "2024-11-10T13:34:51Z"
-node = "aks-0"
-run_id = "1000"
+# start_time = "2024-11-10T13:05:11Z"
+# end_time = "2024-11-10T13:07:11Z"
+# node = "aks-0"
+# run_id = "10"
 
-folder_path = f"{cni_name}_{run_id}/{node}"
-os.makedirs(folder_path, exist_ok=True)
+# folder_path = f"{cni_name}_{run_id}/{node}"
+# os.makedirs(folder_path, exist_ok=True)
 
-main()
-node = "aks-1"
-folder_path = f"{cni_name}_{run_id}/{node}"
-os.makedirs(folder_path, exist_ok=True)
-main()
+# main()
+# node = "aks-1"
+# folder_path = f"{cni_name}_{run_id}/{node}"
+# os.makedirs(folder_path, exist_ok=True)
+# main()
 
-start_time = "2024-11-10T13:36:45Z"
-end_time = "2024-11-10T13:38:45Z"
-node = "aks-0"
-run_id = "10000"
+# start_time = "2024-11-10T13:19:02Z"
+# end_time = "2024-11-10T13:21:02Z"
+# node = "aks-0"
+# run_id = "100"
 
-folder_path = f"{cni_name}_{run_id}/{node}"
-os.makedirs(folder_path, exist_ok=True)
+# folder_path = f"{cni_name}_{run_id}/{node}"
+# os.makedirs(folder_path, exist_ok=True)
 
-main()
-node = "aks-1"
-folder_path = f"{cni_name}_{run_id}/{node}"
-os.makedirs(folder_path, exist_ok=True)
-main()
+# main()
+# node = "aks-1"
+# folder_path = f"{cni_name}_{run_id}/{node}"
+# os.makedirs(folder_path, exist_ok=True)
+# main()
+
+# start_time = "2024-11-10T13:32:51Z"
+# end_time = "2024-11-10T13:34:51Z"
+# node = "aks-0"
+# run_id = "1000"
+
+# folder_path = f"{cni_name}_{run_id}/{node}"
+# os.makedirs(folder_path, exist_ok=True)
+
+# main()
+# node = "aks-1"
+# folder_path = f"{cni_name}_{run_id}/{node}"
+# os.makedirs(folder_path, exist_ok=True)
+# main()
+
+# start_time = "2024-11-10T13:36:45Z"
+# end_time = "2024-11-10T13:38:45Z"
+# node = "aks-0"
+# run_id = "10000"
+
+# folder_path = f"{cni_name}_{run_id}/{node}"
+# os.makedirs(folder_path, exist_ok=True)
+
+# main()
+# node = "aks-1"
+# folder_path = f"{cni_name}_{run_id}/{node}"
+# os.makedirs(folder_path, exist_ok=True)
+# main()

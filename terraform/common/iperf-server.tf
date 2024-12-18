@@ -1,14 +1,14 @@
 resource "kubernetes_deployment" "iperf_server" {
   metadata {
     name      = "iperf-server"
-    namespace = "iperf-namespace"
+    namespace = "iperf"
     labels = {
       app = "iperf-server"
     }
   }
 
   spec {
-    replicas = 1
+    replicas = 2
 
     selector {
       match_labels = {
@@ -62,7 +62,7 @@ resource "kubernetes_deployment" "iperf_server" {
 resource "kubernetes_service" "iperf_server_service_statexec" {
   metadata {
     name      = "iperf-server-statexec"
-    namespace = "iperf-namespace"
+    namespace = "iperf"
   }
 
   spec {
@@ -82,6 +82,6 @@ resource "kubernetes_service" "iperf_server_service_statexec" {
       target_port = 5201
     }
 
-    type = "ClusterIP"
+    type = "LoadBalancer"
   }
 }

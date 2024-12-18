@@ -5,13 +5,18 @@
     - ./vars/common.yml
     - ./vars/traffic_splitting.yml
     - ./vars/antrea.yml
+    - ./vars/local.yml
 
   roles:
-#    - create_k3d_cluster
-#    - install_antrea
-#    - wait_until_antrea_installed
-#    - install_gateway_crd
-#    - install_nginx_gateway
-#    - deploy_antrea_gateway_api_scenario
-#    - monitoring
+  #  - create_kind_cluster
+  #  - install_antrea
+  #  - wait_until_antrea_installed
+  #  - install_gateway_crd
+  #  - install_nginx_gateway
+  #  - register_nodes
+  #  - install_metallb
+  #  - deploy_antrea_gateway_api_scenario
+  #  - monitoring
+    - register_gateway_api_ip
     - run_traffic_shaping_k6
+    - scrap_prometheus_data

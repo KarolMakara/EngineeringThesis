@@ -1,8 +1,5 @@
 ---
-kubectl wait --timeout=3m -n kube-system deployment/cilium-operator --for=condition=Available
-
-- name: Wait until cilium fully installed
-  command: kubectl wait --timeout=3m -n kube-system ds/cilium --for=condition=Availablekind-- name: Create azure cluster
+- name: Create azure cluster
   command: terraform -chdir=../terraform/cloud/infrastructure apply -auto-approve
   environment:
     TF_VAR_SUBSCRIPTION: "{{ subscription }}"

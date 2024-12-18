@@ -5,6 +5,7 @@
     - ./vars/common.yml
     - ./vars/egress_no_gateway.yml
     - ./vars/antrea.yml
+    - ./vars/cloud.yml
 
   roles:
     - create_k3d_cluster

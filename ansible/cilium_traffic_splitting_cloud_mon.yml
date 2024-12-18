@@ -12,9 +12,9 @@
   #  - install_gateway_crd
   #  - install_cilium_with_helm
   #  - wait_for_cilium_install
-  #  - register_nodes
-  #  - deploy_cilium_gateway_api_scenario_cloud
-  #  - monitoring_cloud
-   - register_gateway_api_ip
-   - run_traffic_shaping_k6
-   - scrap_prometheus_data
+   - register_nodes
+   - deploy_cilium_gateway_api_scenario_cloud
+   - monitoring_cloud
+  #  - register_gateway_api_ip
+  #  - run_traffic_shaping_k6
+  #  - scrap_prometheus_data

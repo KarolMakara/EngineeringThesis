@@ -5,6 +5,7 @@
     - ./vars/common.yml
     - ./vars/traffic_splitting.yml
     - ./vars/antrea.yml
+    - ./vars/cloud.yml
 
   roles:
   #  - create_azure_cluster
@@ -17,3 +18,4 @@
   #  - monitoring_cloud
    - register_gateway_api_ip
    - run_traffic_shaping_k6
+   - scrap_prometheus_data

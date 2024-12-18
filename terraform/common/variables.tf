@@ -1,4 +1,4 @@
-variable "test_duraction" {
+variable "test_duration" {
   description = "Duration in seconds for the iperf test to run"
   default     = 60
 }
@@ -15,10 +15,10 @@ variable "image" {
   type        = string
 }
 
-variable "CNI_NAME" {
-  description = "The type of CNI to use"
-  type        = string
-}
+#variable "CNI_NAME" {
+#  description = "The type of CNI to use"
+#  type        = string
+#}
 
 variable "metrics_reference_time" {
   description = "Set fixed reference time for metrics, to see all charts in period of time"
@@ -35,7 +35,7 @@ variable "resource_group_location" {
 variable "common_infix" {
   description = "Common infix for cloud resources"
   type        = string
-  default     = "EngineeringThesis"
+  default     = "-engineering-thesis"
 }
 
 variable "node_count" {
@@ -58,5 +58,11 @@ variable "vm_type" {
 
 variable "SUBSCRIPTION" {
   description = "Azure subscription id"
+  default     = "10a79cbd-9350-4de5-8011-ac3b9764fdc6"
   type        = string
 }
+
+#variable "k3d_network_id" { # TF_VAR_network_id
+#  description = "The kd network id"
+#  type        = string
+#}

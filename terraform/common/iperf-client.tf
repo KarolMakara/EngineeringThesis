@@ -1,8 +1,10 @@
 resource "kubernetes_job" "iperf_client" {
 
+  depends_on = [ kubernetes_deployment.iperf_server ]
+
   metadata {
     name      = "iperf-client"
-    namespace = "iperf-namespace"
+    namespace = "iperf"
   }
 
   spec {
@@ -20,7 +22,7 @@ resource "kubernetes_job" "iperf_client" {
           command = [
             "/bin/sh",
             "-c",
-            "/usr/local/bin/statexec --sync-until-succeed -c iperf-server-statexec --log-file ${local.iperf_client_json_path} --file ${local.statexec_iperf_client_metrics_path} -l cni=${var.CNI_NAME} -mst ${var.metrics_reference_time} -- /usr/local/bin/iperf3 --client iperf-server-statexec --time ${var.test_duraction} --json"
+            "/usr/local/bin/statexec --sync-until-succeed -c iperf-server-statexec --log-file ${local.iperf_client_json_path} --file ${local.statexec_iperf_client_metrics_path} -l cni=${var.CNI_NAME} -mst ${var.metrics_reference_time} -- /usr/local/bin/iperf3 --client iperf-server-statexec --time ${var.test_duration} --json"
           ]
           # resources {
           #   limits = {
@@ -47,5 +49,9 @@ resource "kubernetes_job" "iperf_client" {
     }
 
     backoff_limit = 4
+  }
+
+  timeouts {
+    create = "${2 / 60 * var.test_duration}m"
   }
 }
