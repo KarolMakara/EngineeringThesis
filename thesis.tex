@@ -24,37 +24,54 @@
 
 \definecolor{darkgreen}{rgb}{0.0, 0.5, 0.0}
 \lstdefinestyle{yaml}{
-  basicstyle=\color{darkgreen}\footnotesize,   % Blue text color with footnotesize font
-  rulecolor=\color{black},                % Border color
-  string=[s]{'}{'},                       % String delimiter for YAML strings
-  stringstyle=\color{blue},               % Color of strings
-  comment=[l]{:},                         % Comment symbol
-  commentstyle=\color{black},             % Color of comments
-  morecomment=[l]{-},                     % More comment symbols
-  frame=single,                           % Adds a border around the code block
-  framesep=10pt,                          % Space between the code and the border
-  framerule=1pt,                          % Thickness of the border
-  breaklines=true                         % Wraps long lines
+  basicstyle=\color{darkgreen}\footnotesize,
+  rulecolor=\color{black},
+  string=[s]{'}{'},
+  stringstyle=\color{blue},
+  comment=[l]{:},
+  commentstyle=\color{black},
+  morecomment=[l]{-},
+  frame=single,
+  framesep=10pt,
+  framerule=1pt,
+  breaklines=true
 }
 
-\definecolor{darkgreen}{rgb}{0.0, 0.5, 0.0}   % Color for commands (green)
-\definecolor{lightgray}{rgb}{0.8, 0.8, 0.8}   % Color for terminal output (light gray)
-\definecolor{cyan}{rgb}{0.0, 1.0, 1.0}        % Color for options (cyan)
-\lstdefinestyle{linuxconsole}{
-  basicstyle=\footnotesize\ttfamily,           % Monospaced font
-  keywordstyle=\color{darkgreen}\bfseries,     % Color for commands
-  stringstyle=\color{cyan},                    % Color for options (e.g., `-s`, `-t`)
-  commentstyle=\color{lightgray},              % Color for output
-  morecomment=[l]{\$},                         % The dollar sign is the prompt symbol
-  escapeinside={\%*}{*)},                      % Allow LaTeX escapes inside listings
-  frame=single,                               % Adds a border around the code block
-  framesep=10pt,                              % Space between the code and the border
-  framerule=1pt,                              % Thickness of the border
-  breaklines=true,                             % Wraps long lines
-  backgroundcolor=\color{black!05},            % Light gray background for console output
-  literate={-}{{$\mathord{-}$}}1               % Handle the hyphen properly
+\definecolor{darkblue}{rgb}{0.0, 0.0, 0.5}
+\definecolor{darkred}{rgb}{0.5, 0.0, 0.0}
+\definecolor{darkgreen}{rgb}{0.0, 0.5, 0.0}
+
+\lstdefinestyle{javascript}{
+  basicstyle=\color{darkblue}\footnotesize,
+  rulecolor=\color{black},
+  keywordstyle=\color{darkred}\bfseries,
+  stringstyle=\color{darkgreen},
+  commentstyle=\color{gray},
+  morekeywords={const, let, var, function, if, else, return, for, while, break, continue, switch, case, default, try, catch, finally, throw, async, await, import, export}, % JavaScript keywords
+  frame=single,
+  framesep=10pt,
+  framerule=1pt,
+  breaklines=true,
+  showstringspaces=false,
 }
 
+\definecolor{darkgreen}{rgb}{0.0, 0.5, 0.0}
+\definecolor{darkorange}{rgb}{1.0, 0.55, 0.0}
+
+\lstdefinestyle{hcl}{
+  basicstyle=\color{darkgreen}\footnotesize,
+  rulecolor=\color{black},
+  string=[s]{"}{"},
+  stringstyle=\color{darkorange},
+  keywordstyle=\color{blue},
+  commentstyle=\color{gray},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  frame=single,
+  framesep=10pt,
+  framerule=1pt,
+  breaklines=true
+}
 
 
 \lstloadlanguages{TeX}

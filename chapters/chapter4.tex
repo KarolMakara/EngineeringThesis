@@ -1,7 +1,25 @@
 \chapter{Implementing Egress and Ingress Scenarios Using Selected CNI Plugins}
 \label{cha:practical_impl}
 
-This chapter presents the implementation of egress and ingress scenarios. The egress scenario will be executed locally, while the ingress scenario will be deployed both on local infrastructure (personal laptop) and on the public cloud (Azure). The tools used in this implementation will be described.
+This chapter presents the implementation of egress and ingress scenarios. The egress scenario will be executed locally, while the ingress scenario will be deployed both on local infrastructure (personal laptop) and on the public cloud (Azure). The tools used in this implementation with some example configurations will be described.
+The Kubernetes cluster will run on a local laptop with the following specifications:
+\begin{itemize}
+  \item CPU: AMD Ryzen 8CPUs
+  \item RAM: 20 GB
+  \item Storage: 256 GB SSD
+  \item Operating System: Fedora 40
+\end{itemize}
+
+Cloud infrastrucure consist of two AKS nodes, Azure Standard\_A2\_v2 virtual machines. Each VM has the following specifications:
+\begin{itemize}
+  \item CPU: 2 vCPUs
+  \item RAM: 4 GB
+  \item Storage: Standard SSD
+  \item Operating System: Ubuntu 22.04
+\end{itemize}
+
+
+
 
 %---------------------------------------------------------------------------
 
@@ -14,7 +32,7 @@ In this section, the tools used to provision the egress and ingress implementati
 
 %---------------------------------------------------------------------------
 
-\subsection{Ansible}
+\subsubsection{Ansible}
 \label{sec:ansible}
 
 Ansible is an opensource tool which is able to automate provisioning and configuring infrastructure. Configuration in Ansible is written in playbooks, which are YAML files as blueprints that contain a set of instructions to be executed. Each playbook consists of one or more plays, and each play describes a set of tasks to be performed on a group of desired hosts \cite{Ansible} \cite{AnsiblePlaybook}.
@@ -33,7 +51,7 @@ Ansible is an opensource tool which is able to automate provisioning and configu
         - name: Create the OpenStack instance
           openstack.cloud.server:
             state: present
-            name: vm1 #TODO
+            name: " {{ inventory_hostname }}"
             key_name: "{{ key_name }}"
             network: "{{ network_name }}"
             auth:
@@ -64,7 +82,7 @@ Ansible is an opensource tool which is able to automate provisioning and configu
 Listing~\ref{lst:exampleAnsiblePlaybook} shows example ansible playbook configuration. Hosts field define group of objects on which configuration script is executed. In this case instances specified in group named openstack\_pool in ansible inventory showed on listing~\ref{lst:exampleAnsibleInventory} will be created when using the playbook. Using var\_files is possible to attach file containg, for example authentication variables required to access openstack cloud. Become is used to execute script as root user. Tasks and roles is the place, where actual script is defined. It can be defined directly in tasks, or specified by a roles, in this case will use script from ./roles/assign\_floating\_ip/tasks/main.yaml \cite{AnsiblePlaybook}.
 
 
-\subsection{Iperf3}
+\subsubsection{Iperf3}
 \label{sec:iperf3}
 
 Iperf3 is a tool capable of measure networking metrics. It supports TCP, UDP and SCTP protocols in IPv4 or IPv6 networks. The tool works in client-server architecture. Iperf3 will be used to evalutate throughput and round trip time in egress scenario. Listings~\ref{lst:iperfServer} and~\ref{lst:iperfClient} shows how to run iperf three seconds measurement within localhost interface \cite{Iperf}.
@@ -112,7 +130,7 @@ Iperf3 is a tool capable of measure networking metrics. It supports TCP, UDP and
     \label{lst:iperfClient}
 \end{listing}
 
-\subsection{Kind}
+\subsubsection{Kind}
 \label{sec:kind}
 
 Kind is a tool used for creating local Kuberentes cluster. This tool can simulate real communication between nodes within one machine. It creates control plane and worker nodes using Docker containers to enable node to node communication. The important thing is that it does not provide any load balancer for assigning external IP addresses for Kubernetes services. In ingress scenario Gateway API requires outside cluster routable IP address, on local infrastructure MetalLB will be installed and configured to provide IPs \cite{Kind}. Listing~\ref{lst:kindConfig} shows kind configuration used in both egress and ingress scenation on local infrastructure. One control plane node and two worker nodes are created. It also disables default CNI plugin which is essentail in this case.
@@ -138,24 +156,109 @@ Kind is a tool used for creating local Kuberentes cluster. This tool can simulat
     \label{lst:kindConfig}
 \end{listing}
 
-\subsection{K6}
+\subsubsection{K6}
 \label{sec:k6}
 
-Grafana K6 opensource tool for load testing. It is able to allocate virtual users, who access specified enpoint. Load testing is configured in javascript file using k6 library. % TODO ADD SCRIPT HERE
+Grafana K6 is open-source tool designed for load testing by simulating virtual users accessing specified endpoints. The testing configuration is written in a JavaScript file using the k6 library. Listing~\ref{lst:k6Config} demonstrates k6 script used in the ingres scenario. It is written as an Ansible template. During the ingress test Ansible injects variables into the script, allowing k6 to probe the Gateway API \cite{AnsibleTemplates}.
 
-\subsection{MetelLB}
+
+\begin{listing}[H]
+  \centering
+  \caption{Grafana k6 script used in the infress scenario \cite{K6HTTP}.}
+  \begin{minted}[gobble=4, frame=single, linenos, fontsize=\scriptsize]{javascript}
+    import http from 'k6/http';
+
+    export const options = {
+      vus: "{{ number_of_vusers }}",
+      duration: "{{ test_duration }}s",
+    };
+
+    export default function () {
+        const timestamp = new Date().toISOString();
+
+        const res = http.get('http://{{ gateway_api_ip.stdout }}/echo');
+
+        const hostnameMatch = res.body.match(/Hostname:\s*(\S+)/);
+        const hostname = hostnameMatch ? hostnameMatch[1] : 'Hostname not found';
+
+        console.log(`[${timestamp}] Hostname: ${hostname}`);
+    }
+  \end{minted}
+  \label{lst:k6Config}
+\end{listing}
+
+\subsubsection{MetalLB}
 \label{sec:metallb}
 
-\subsection{Node Exporter}
+MetalLB is an implementation of load balancer for bare metal Kubernetes. Kind does not provide implementation of load balancer. Without external tool like this, load balancer type service will persist in "pending" state. It is mandatory in ingres scenario to create loadbalancing serbice for Gateway API \cite{MetalLB}.
+
+\subsubsection{Node Exporter}
 \label{sec:nodeExporter}
 
-\subsection{Prometheus}
+A tool that exports the current system's metrics, such as CPU usage, memory utilization, disk I/O, and network statistics. The metrics in OpenMetrics format are exposed on /metrics enpoind \cite{NodeExporter}.
+
+\subsubsection{Prometheus}
 \label{sec:prometheus}
 
-\subsection{Terraform}
+Prometheus is a monitoring and alerting tool, which stores data in time series, any data value is associated with time when it was collected. Stored data can be retrieved using PromQL (query language). The tool colects data by pulling from specified enpoints in configuration \cite{Prometheus}. 
+
+\subsubsection{Terraform}
 \label{sec:terraform}
 
+Terraform is an open-source infrastructure as code (IaC) tool. It allows provision, and manage infrastructure resources, cloud infrastructure, kubernetes cluster, virtual machines, docker containers, storage and also SaaS features. Configuration files are written in a declarative language called HashiCorp Configuration Language (HCL) shown on listing~\ref{lst:terraformScript} \cite{Terraform}. The script is responsible for creating Kubernetes cluster in Azure services. It is important to choose appropriate location for cluster, define default node pool (virtual machine type and node count) and to get rid of default CNI by setting network\_plugin in network\_profile to "none" if different networking plugin is preffered \cite{AKS}.
+
+The Terraform workflow is made up of three stages \cite{Terraform}:
+\begin{enumerate}
+  \item Write -- define in configuration file resources to be created
+  \item Plan -- shows the actual resources that will be created based on the provided configuration and checks for any errors in the code
+  \item Apply -- provision resources or applys changes defined in write stage to the infrastructure 
+\end{enumerate}
+
+\begin{listing}[htb]
+  \centering
+  \caption{Terraform Azure Kubernetes Service creation script \cite{AKS}.}
+  \begin{minted}[gobble=4, frame=single, linenos, fontsize=\scriptsize]{hcl}
+    resource "azurerm_resource_group" "rg" {
+      location = var.resource_group_location
+      name     = "rg${var.common_infix}"
+    }
+
+    resource "azurerm_kubernetes_cluster" "k8s" {
+      location            = azurerm_resource_group.rg.location
+      name                = "cluster${var.common_infix}"
+      resource_group_name = azurerm_resource_group.rg.name
+      dns_prefix          = "dns${var.common_infix}"
+
+      identity {
+        type = "SystemAssigned"
+      }
+
+      default_node_pool {
+        name       = "agentpool"
+        vm_size    = var.vm_type
+        node_count = var.node_count
+      }
+
+      linux_profile {
+        admin_username = var.username
+
+        ssh_key {
+          key_data = azapi_resource_action.ssh_public_key_gen.output.publicKey
+        }
+      }
+
+      network_profile {
+        network_plugin    = "none"
+        load_balancer_sku = "standard"
+      }
+    }
+  \end{minted}
+  \label{lst:terraformScript}
+\end{listing}
+
+
 %---------------------------------------------------------------------------
+
 
 \section{Egress scenario implementation}
 \label{sec:egressImpl}
@@ -173,12 +276,12 @@ Grafana K6 opensource tool for load testing. It is able to allocate virtual user
 \label{sec:ingressImpl}
 %---------------------------------------------------------------------------
 
-\subsection{Local deployment}
-\label{sec:localIngressImpl}
-%---------------------------------------------------------------------------
-
 \subsection{Cloud deployment}
 \label{sec:cloudIngressImpl}
+%---------------------------------------------------------------------------
+\subsection{Local deployment}
+\label{sec:localIngressImpl}
+
 
 
 %---------------------------------------------------------------------------
