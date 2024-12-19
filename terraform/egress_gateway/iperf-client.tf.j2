@@ -1,0 +1,53 @@
+resource "kubernetes_pod" "iperf_client" {
+
+  metadata {
+    name      = "iperf-client"
+    namespace = "default"
+    labels = {
+      role = "filter"
+    }
+  }
+
+  spec {
+
+    container {
+      name  = "iperf-client"
+      image = var.image
+      command = [
+        "/bin/sh",
+        "-c",
+        "/usr/local/bin/statexec  --log-file ${local.iperf_client_json_path} --file ${local.statexec_iperf_client_metrics_path} -l cni=${var.cni_name} -l scenario=${var.scenario} -mst ${var.metrics_reference_time} -- /usr/local/bin/iperf3 {{ udp_mode | default('') }} --client ${var.real_host_ip} --time ${var.test_duration} --json"
+      ]
+
+      volume_mount {
+        name       = "metrics-volume"
+        mount_path = var.volume_mount_path
+      }
+    }
+
+    affinity {
+      node_affinity {
+        required_during_scheduling_ignored_during_execution {
+          node_selector_term {
+            match_expressions {
+              key      = "kubernetes.io/hostname"
+              operator = "In"
+              values   = ["kind-{{ launch_pod_on_node }}"]
+            }
+          }
+        }
+      }
+    }
+
+
+    restart_policy = "Never"
+
+    volume {
+      name = "metrics-volume"
+      host_path {
+        path = var.volume_mount_path
+      }
+    }
+
+  }
+}
