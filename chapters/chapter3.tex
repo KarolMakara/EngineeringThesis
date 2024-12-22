@@ -212,7 +212,7 @@ Unfortunately Antrea plugin does not provide Gateway API implementation, in fact
 \subsubsection{Antrea + NGINX}
 \label{subsection:antreaIngress}
 
-Figure~\ref{fig:canaryAntreaImg} shows example cluster which configures Gateway API to work in canary stage. Antrea CNI is installed, antrea-ctrl and antrea-agent pods are deployed on nodes, OvS tunelling among nodes is set up. On control plane node there is also NGINX Gateway API deployed as a pod, what is in different to cilium, where Gateway API will not be running as a pod.
+Figure~\ref{fig:canaryAntreaImg} shows example cluster which configures Gateway API to work in canary stage. Antrea CNI is installed, antrea-ctrl and antrea-agent pods are deployed on nodes, OvS tunelling among nodes is set up. On the control plane node, the NGINX Gateway API is deployed as a pod. This differs from Cilium, where the Gateway API is not run as a single pod. In this setup, traffic is processed by the NGINX Gateway API pod, while Antrea handles the networking stack that integrates with NGINX to manage traffic routing.
 
 \begin{figure}[H]
     \centering
@@ -228,7 +228,7 @@ Figure~\ref{fig:canaryAntreaImg} shows example cluster which configures Gateway 
     apiVersion: gateway.networking.k8s.io/v1
     kind: HTTPRoute
     metadata:
-        name: curren-weather-route
+        name: current-weather-route
     spec:
         parentRefs:
         - name: nginx-gw
@@ -250,8 +250,17 @@ Figure~\ref{fig:canaryAntreaImg} shows example cluster which configures Gateway 
     \label{lst:yamlAntreaIngressCanaryHTTPRoute}
 \end{listing}
 %---------------------------------------------------------------------------
-%---------------------------------------------------------------------------
+
 \subsubsection{Cilium}
 \label{subsection:ciliumIngress}
+
+In figure~\ref{fig:ciliumDataflow} example canary cluster stack is presented using Cilium plugin. The arrows show real data traffic flow, while dashed arrows show configuration flow. HTTPRoutes are pulled by cilium-agent which prepares configuration and injects to Envoy proxy and eBPF. Envoy when sees incoming request, it knows the traffic splitting ratio and decides where to route, to a local pod on to different pod specified in HTTPRoute configuration. HTTPRoute resource for Cilium Gateway API will look almost exacly as in listing~\ref{lst:yamlAntreaIngressCanaryHTTPRoute}, the only difference is the parentRefs name, which defines which Gateway is being used.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\columnwidth]{images/cilium_dataflow.png}
+    \caption{Example Kuberenetes cluster with Cilium CNI in canary stage of canary deployment}
+    \label{fig:ciliumDataflow}
+\end{figure}
 
 %---------------------------------------------------------------------------
