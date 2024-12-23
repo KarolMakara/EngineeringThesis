@@ -85,107 +85,17 @@ Listing~\ref{lst:exampleAnsiblePlaybook} shows example ansible playbook configur
 \subsubsection{Iperf3}
 \label{sec:iperf3}
 
-Iperf3 is a tool capable of measure networking metrics. It supports TCP, UDP and SCTP protocols in IPv4 or IPv6 networks. The tool works in client-server architecture. Iperf3 will be used to evalutate throughput and round trip time in egress scenario. Listings~\ref{lst:iperfServer} and~\ref{lst:iperfClient} shows how to run iperf three seconds measurement within localhost interface \cite{Iperf}.
-
-\begin{listing}[H]
-    \centering
-    \caption{Running iperf3 server command \cite{IperfDocs}.}
-    \begin{minted}[gobble=4, frame=single, linenos, fontsize=\scriptsize]{bash}
-    $ iperf3 --server
-    -----------------------------------------------------------
-    Server listening on 5201 (test #1)
-    -----------------------------------------------------------
-    Accepted connection from 127.0.0.1, port 40496
-    [  5] local 127.0.0.1 port 5201 connected to 127.0.0.1 port 40502
-    [ ID] Interval           Transfer     Bitrate
-    [  5]   0.00-1.00   sec  5.55 GBytes  47.6 Gbits/sec                  
-    [  5]   1.00-2.00   sec  5.97 GBytes  51.3 Gbits/sec                  
-    [  5]   2.00-3.00   sec  5.50 GBytes  47.3 Gbits/sec                  
-    [  5]   3.00-3.00   sec  4.50 MBytes  38.7 Gbits/sec                  
-    - - - - - - - - - - - - - - - - - - - - - - - - -
-    [ ID] Interval           Transfer     Bitrate
-    [  5]   0.00-3.00   sec  17.0 GBytes  48.7 Gbits/sec                  receiver
-    \end{minted}
-    \label{lst:iperfServer}
-\end{listing}
-
-\begin{listing}[H]
-    \centering
-    \caption{Running iperf3 client command \cite{IperfDocs}.}
-    \begin{minted}[gobble=4, frame=single, linenos, fontsize=\scriptsize]{bash}
-    $ iperf3 --client 127.0.0.1 --time 3
-    Connecting to host 127.0.0.1, port 5201
-    [  5] local 127.0.0.1 port 40502 connected to 127.0.0.1 port 5201
-    [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-    [  5]   0.00-1.00   sec  5.55 GBytes  47.6 Gbits/sec    0   1.31 MBytes       
-    [  5]   1.00-2.00   sec  5.97 GBytes  51.3 Gbits/sec    0   1.50 MBytes       
-    [  5]   2.00-3.00   sec  5.50 GBytes  47.2 Gbits/sec    0   1.50 MBytes       
-    - - - - - - - - - - - - - - - - - - - - - - - - -
-    [ ID] Interval           Transfer     Bitrate         Retr
-    [  5]   0.00-3.00   sec  17.0 GBytes  48.7 Gbits/sec    0             sender
-    [  5]   0.00-3.00   sec  17.0 GBytes  48.7 Gbits/sec                  receiver
-
-    iperf Done.
-    \end{minted}
-    \label{lst:iperfClient}
-\end{listing}
+Iperf3 is a tool capable of measure networking metrics. It supports TCP, UDP and SCTP protocols in IPv4 or IPv6 networks. The tool works in client-server architecture. Iperf3 will be used to evalutate throughput and round trip time in egress scenario.
 
 \subsubsection{Kind}
 \label{sec:kind}
 
-Kind is a tool used for creating local Kuberentes cluster. This tool can simulate real communication between nodes within one machine. It creates control plane and worker nodes using Docker containers to enable node to node communication. The important thing is that it does not provide any load balancer for assigning external IP addresses for Kubernetes services. In ingress scenario Gateway API requires outside cluster routable IP address, on local infrastructure MetalLB will be installed and configured to provide IPs \cite{Kind}. Listing~\ref{lst:kindConfig} shows kind configuration used in both egress and ingress scenation on local infrastructure. One control plane node and two worker nodes are created. It also disables default CNI plugin which is essentail in this case.
+Kind is a tool used for creating local Kuberentes cluster. This tool can simulate real communication between nodes within one machine. It creates control plane and worker nodes using Docker containers to enable node to node communication. The important thing is that it does not provide any load balancer for assigning external IP addresses for Kubernetes services. In ingress scenario Gateway API requires outside cluster routable IP address, on local infrastructure MetalLB will be installed and configured to provide IPs \cite{Kind}.
 
-\begin{listing}[H]
-    \centering
-    \caption{Kind config used in both scenarios \cite{KindConfig}.}
-    \begin{minted}[gobble=4, frame=single, linenos, fontsize=\scriptsize]{yaml}
-    kind: Cluster
-    apiVersion: kind.x-k8s.io/v1alpha4
-    networking:
-        disableDefaultCNI: true
-    nodes:
-        - role: control-plane
-          extraPortMappings:
-            - containerPort: 80
-              hostPort: 80
-            - containerPort: 443
-              hostPort: 443
-        - role: worker
-        - role: worker
-    \end{minted}
-    \label{lst:kindConfig}
-\end{listing}
+\subsubsection{Grafana K6}
+\label{sec:grafana}
 
-\subsubsection{K6}
-\label{sec:k6}
-
-Grafana K6 is open-source tool designed for load testing by simulating virtual users accessing specified endpoints. The testing configuration is written in a JavaScript file using the k6 library. Listing~\ref{lst:k6Config} demonstrates k6 script used in the ingres scenario. It is written as an Ansible template. During the ingress test Ansible injects variables into the script, allowing k6 to probe the Gateway API \cite{AnsibleTemplates}.
-
-
-\begin{listing}[H]
-  \centering
-  \caption{Grafana k6 script used in the infress scenario \cite{K6HTTP}.}
-  \begin{minted}[gobble=4, frame=single, linenos, fontsize=\scriptsize]{javascript}
-    import http from 'k6/http';
-
-    export const options = {
-      vus: "{{ number_of_vusers }}",
-      duration: "{{ test_duration }}s",
-    };
-
-    export default function () {
-        const timestamp = new Date().toISOString();
-
-        const res = http.get('http://{{ gateway_api_ip.stdout }}/echo');
-
-        const hostnameMatch = res.body.match(/Hostname:\s*(\S+)/);
-        const hostname = hostnameMatch ? hostnameMatch[1] : 'Hostname not found';
-
-        console.log(`[${timestamp}] Hostname: ${hostname}`);
-    }
-  \end{minted}
-  \label{lst:k6Config}
-\end{listing}
+Grafana K6 is open-source tool designed for load testing by simulating virtual users accessing specified endpoints. The testing configuration is written in a JavaScript file using the k6 library.
 
 \subsubsection{MetalLB}
 \label{sec:metallb}
@@ -223,13 +133,22 @@ The Terraform workflow is made up of three stages \cite{Terraform}:
 \label{sec:egressImpl}
 
 
-The engress scenario compares Antrea and Cilium egress gateway implementation performance. The overall resource utilization will be evaluated by comparing the results of running the same test with and without redirecting traffic through the egress gateway. The test involves using iperf3 in TCP mode to measure network performance. The iperf3 is located in a pod inside Kubernetes cluster, on the other hand iperf server runs on personal computer which launches cluster. The network resources are collected by iperf3, and CPU/memory usage is monitored by a node exporter. These include:
+The engress scenario compares Antrea and Cilium egress gateway implementation performance. The test involves using iperf3 in TCP mode to measure network performance. The iperf3 is located in a pod inside Kubernetes cluster, on the other hand iperf server runs on personal computer which launches cluster. The network resources are collected by iperf3, and CPU/memory usage is monitored by a node exporter. These include:
 \begin{itemize}
   \item CPU -- the processing power utilized by the cluster.
   \item Memory -- the amount of RAM consumed by the infrastructure.
   \item Throughput -- The volume of data successfully transmitted per unit of time.
   \item RTT (Round-Trip Time) -- The time taken for a data packet to travel to its destination and back.
 \end{itemize}
+
+The overall resource utilization and performance will be evaluated in four test cases:
+
+\begin{enumerate}
+  \item antrea egress gateway -- all traffic generated by a pod inside a cluster will leave cluster through antrea egress gateway node implementation
+  \item antrea base -- traffic leaves cluster using node on which pod is deplotyed
+  \item cilium egress gateway -- cilium implementation of an egress gateway will route outbound traffic to the outside
+  \item cilium base -- no redirecting at all
+\end{enumerate}
 
 %---------------------------------------------------------------------------
 \subsection{Antrea}
@@ -292,25 +211,17 @@ The playbook from listing~\ref{lst:antreaEgressPlaybook} produces following infr
 \end{figure}
 
 Kubernetes cluster visible in figure~\ref{fig:antreaEgressScenarioArch} is provisioned on personal computer using Kind, and configured using Ansible and Terraform. The cluster consists of three nodes, a control plane, a worker node and an egress gateway, which are belonging to docker network. When role terraform\_run\_egress\_iperf begins its execution and created iperf3 Pod is ready the test begins, client using TCP protocol is sending data to server (outside cluster), which is routed through egress gateway. Iperf3 server discovers that traffic is incomming from egress gateway node (it sees IP address of Egress Gateway Node as a source), because traffic from the Pod is SNATed.
-The iperf3 client sedns data packets using three-way handshake (TCP TODO CITE), after receiving acknowledgment from server, networking metrics are stored in its memory and at the end of the test, json file with gathered data is saved inside a Pod. The node exporter is constantly scraping the metrics, which are pulled by a Prometheus to its datbase. After the measurement is over, unformatted data is downloaded from prometheus and saved to csv file.
+The iperf3 client sedns data packets using TCP protocol, after receiving acknowledgment from server, networking metrics are stored in its memory and at the end of the test, json file with gathered data is saved inside a Pod. The node exporter is constantly scraping the metrics, which are pulled by a Prometheus to its datbase. After the measurement is over, unformatted data is downloaded from prometheus and saved to csv file.
 
-\begin{figure}[tbh]
-  \centering
-  \includegraphics[width=1\columnwidth]{images/antrea_egress_no_gateway.png}
-  \caption{Antrea Egress Scenario infrastructure without using Egrees Gateway.}
-  \label{fig:antreaEgressNoGatewayScenarioArch}
-\end{figure}
-
-As seen on figure~\ref{fig:antreaEgressNoGatewayScenarioArch} the only difference is that, traffic initiated inside the iperf3 client pod is not leaving cluter through an Egress Gateway. This setup is designed to compare networking metrics and resource utilization with and without routing traffic through an Egress Gateway.
 
 %---------------------------------------------------------------------------
 
 \subsection{Cilium}
 \label{sec:ciliumEgress}
 
-The playbook for cilium is really similiar to the one which creates egress scenario using Antre CNI. The ansible roles are designed to be reused in different playbooks, the only differences are, CNI installation, Egress Gatewway deployment and in cilium desired node is labelled with egress-node=true. The infrastructure can be seen in figure~\ref{fig:ciliumEgressGatewayScenarioArch}.
+The playbook for cilium is really similiar to the one which creates egress scenario using Antre CNI. The ansible roles are designed to be reused in different playbooks, the only differences are, CNI installation, Egress Gatewway deployment and in cilium desired node is labelled with egress-node=true. The infrastructure can be seen in figure~\ref{fig:ciliumEgressGatewayScenarioArch} % TODO OPISAC CO SIE DZIEJE.
 
-\begin{figure}[tbh]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1\columnwidth]{images/cilium_egress_gatateway_cluster.png}
   \caption{Cilium Egress Scenario infrastructure.}
@@ -434,8 +345,7 @@ The process of creating ingress scenario with Antrea CNI on Azure Kubernetes Ser
 
 The ingress scenario with the Cilium CNI plugin does not need to install the NGINX Gateway Fabric, as it utilizes its own built-in implementation.
 
-
-
+% opisac wiecej
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\columnwidth]{images/cilium_cloud_traffic_splitting.png}

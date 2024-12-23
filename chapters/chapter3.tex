@@ -1,6 +1,6 @@
 \chapter{Introduction to Egress and Ingress Scenarios in Selected CNI Plugins}
 \label{cha:introScenarios}
-Egress and no egress TODO
+In modern Kubernetes networking, managing traffic flow into and outside of a cluster is important for performance and security reasons. Different CNI plugins offer distinct mechanisms for controlling network traffic, each with its own approach to implementing networking. Understanding how traffic is managed in both ingress and egress scenarios is crucial for enhancing security, performance, and overall network efficiency.
 
 \section{Egress Scenario: Routing Outgoing Traffic via Egress Gateway}
 \label{sec:egress}
@@ -153,7 +153,7 @@ Selecting an egress gateway can be done in in three ways: by matching node label
 \end{listing}
 
 
-Both Anrea and Cilium allows to configure egress gateway in multiple ways. Cilium has more flexibility in defining which traffic should be routed through egress gateway, unlike Antrea it can specify trafic by destination CIDR. Although cilium has more capabilities of matching egress traffic, antrea implementation allows to create fail-over node, which will route traffic if main one fails. Cilium also takes advantage by using eBPF which is designed for large-scale clusters \cite{CiliumOverview}. It is not clear which egress gateway CNI implementation use, every of them has its advantages and drawbacks. Further both gateways will be evaluated using networking tools in creating local environment.
+Both Antrea and Cilium allows to configure egress gateway in multiple ways. Cilium has more flexibility in defining which traffic should be routed through egress gateway, unlike Antrea it can specify trafic by destination CIDR. Although cilium has more capabilities of matching egress traffic, antrea implementation allows to create fail-over node, which will route traffic if main one fails. Creating high availability egress gateway in cilium is possible using enterprise, paid version of plugin. Cilium also takes advantage by using eBPF which is designed for large-scale clusters \cite{CiliumOverview}. It is not clear which egress gateway CNI implementation use, every of them has its advantages and drawbacks. Further both gateways will be evaluated using networking tools in creating local environment.
 
 
 
