@@ -1,7 +1,7 @@
 \chapter{Performance comparison}
 \label{cha:performCompare}
 
-In this chapter, test results for both ingress and egress scenarios will be presented and analyzed, with a focus on comparing CPU and memory usage in each case. For ingress, the analysis will cover weighted traffic splitting through the Gateway API, evaluating its impact on resource utilization and accuracy of traffic distribution. For egress, the evaluation will include traffic routing through an egress gateway, comparing throughput and round-trip time. The results will highlight differences in resource efficiency and networking performance among antrea and cilium CNI plugins, identifying which CNI offers better optimization for these scenarios.
+In this chapter, test results for both ingress and egress scenarios will be presented and analyzed, with a focus on comparing CPU and memory usage in each case. For ingress, the analysis will cover weighted traffic splitting through the Gateway API, evaluating its impact on resource utilization and accuracy of traffic distribution. For egress, the evaluation will include traffic routing through an egress gateway, comparing throughput and round-trip time. The results will highlight differences in resource efficiency and networking performance among Antrea and cilium CNI plugins, identifying which CNI offers better optimization for these scenarios.
 
 
 \section{Egress Scenario}
@@ -12,7 +12,7 @@ In this chapter, test results for both ingress and egress scenarios will be pres
 
 
 
-The figures~\ref{fig:cpu_avg} and~\ref{fig:memory_avg} show resource utilization is lower when using egress gateway than without redirecting outgoing packets via additional node. This might be because all traffic management (routing table, NAT rules and maps) is offloaded to the egress gateway. In this setup, the node running the iperf3 pod does not need to evaluate routing decisions. Instead, it simply forwards all traffic to the egress gateway (where adress is translated), allowing the node to leave CPU time for the pod which runs iperf3 client. In the case where an egress gateway is not used, the individual nodes are responsible for handling more operations, which can lead to higher resource allocation. In figures~\ref{fig:cpu_all} and~\ref{fig:memory_all} there are showed all eight runs in all four test cases. The sixth run in figure ~\ref{fig:cpu_all} during cilium egress gateway case is definitely an outliner and was not use to calculate total average. Overall CPU usage is lower when cluster uses antrea networking. If it comes to memory usage, antrea uses 10\% less while using egress, up to almost 20\% less without additional node in comparison to cilium.
+The figures~\ref{fig:cpu_avg} and~\ref{fig:memory_avg} show resource utilization is lower when using egress gateway than without redirecting outgoing packets via additional node. This might be because all traffic management (routing table, NAT rules and maps) is offloaded to the egress gateway. In this setup, the node running the iperf3 pod does not need to evaluate routing decisions. Instead, it simply forwards all traffic to the egress gateway (where address is translated), allowing the node to leave CPU time for the pod which runs iperf3 client. In the case where an egress gateway is not used, the individual nodes are responsible for handling more operations, which can lead to higher resource allocation. In figures~\ref{fig:cpu_all} and~\ref{fig:memory_all} there are showed all eight runs in all four test cases. The sixth run in figure ~\ref{fig:cpu_all} during cilium egress gateway case is an outliner and was not used to calculate total average. Overall CPU usage is lower when cluster uses Antrea networking. If it comes to memory usage, Antrea uses 10\% less while using egress, up to almost 20\% less without additional node in comparison to cilium.
 
 \begin{figure}[H]
     \centering
@@ -115,13 +115,13 @@ The figures~\ref{fig:cpu_avg} and~\ref{fig:memory_avg} show resource utilization
     \label{fig:memoryFour}
 \end{figure}
 
-Figures~\ref{fig:cpu_a},~\ref{fig:cpu_b},~\ref{fig:memory_a},~\ref{fig:memory_b} compare average CPU and memory usage between cilium and antrea CNI in each of eight runs. It shows how both container network interface plugins perform under the same test conditions, what helps to evaluate which plugin consumes less resources. In only second run antrea has not used less CPU than cilium used.
+Figures~\ref{fig:cpu_a},~\ref{fig:cpu_b},~\ref{fig:memory_a},~\ref{fig:memory_b} compare average CPU and memory usage between cilium and Antrea CNI in each of eight runs. It shows how both container network interface plugins perform under the same test conditions, what helps to evaluate which plugin consumes less resources. In only second run Antrea has not used less CPU than cilium used.
 Comparing resource utilization showed on figures~\ref{fig:cpu_c},~\ref{fig:cpu_d},~\ref{fig:memory_c},~\ref{fig:memory_d}, highlights how using an egress gateway with each CNI plugins affects resource usage compared to not using one.
 
 \subsubsection{Networking performance}
 \label{sec:egressNetworkingPerformance}
 
-The figures~\ref{fig:throughput_avg} and~\ref{fig:rtt_avg} provides overall performance summary as a average of all runs. Antrea handles traffic more efficiently, with lower round trip time regardles off using egress gateway or not. The plots in~\ref{fig:throughput_all} and~\ref{fig:rtt_all} display the results of all eight runs for each test case, showing that antrea outperforms cilium in every single run, achieving higher throughput and lower bidirectional latency.
+The figures~\ref{fig:throughput_avg} and~\ref{fig:rtt_avg} provide overall performance summary as an average of all runs. Antrea handles traffic more efficiently, with lower round trip time regardless of using egress gateway or not. The plots in~\ref{fig:throughput_all} and~\ref{fig:rtt_all} display the results of all eight runs for each test case, showing that Antrea outperforms cilium in every single run, achieving higher throughput and lower bidirectional latency.
 
 \begin{figure}[H]
     \centering
@@ -160,7 +160,7 @@ The figures~\ref{fig:throughput_avg} and~\ref{fig:rtt_avg} provides overall perf
 
 
 
-Figures~\ref{fig:throughput_a},~\ref{fig:throughput_b},~\ref{fig:rtt_a},~\ref{fig:rtt_b} ilustrate average throughput and round trip time in eight runs, comparing the performance of networking plugins. Throughput with cilium egress gateway remains stable, hovering aroung 6.3 Gb/s and with tighter confidence intervals indicating more stability. Every single run shows the antrea's advantage in transfer data rate and RTT.
+Figures~\ref{fig:throughput_a},~\ref{fig:throughput_b},~\ref{fig:rtt_a},~\ref{fig:rtt_b} illustrate average throughput and round trip time in eight runs, comparing the performance of networking plugins. Throughput with cilium egress gateway remains stable, hovering around 6.3 Gb/s and with tighter confidence intervals indicating more stability. Every single run shows the Antrea's advantage in transfer data rate and RTT.
 Figures~\ref{fig:throughput_c},~\ref{fig:throughput_d},~\ref{fig:rtt_c}, and~\ref{fig:rtt_d} compare the performance of CNI plugins with and without the use of an egress gateway. They highlight whether using an egress gateway is worth, showing significant differences in throughput and round-trip time.
 
 
@@ -357,8 +357,8 @@ When comparing traffic weighting accuracy with an increasing number of virtual u
         \caption{}
     \end{subfigure}
 
-    \caption{Average traffic splitting ratio distance to reference point in increasing virtual users, (a) one, (b) ten, (c) houndred, (d) tousand }
+    \caption{Average traffic splitting ratio distance to reference point in increasing virtual users, (a) one, (b) ten, (c) hundred, (d) thousand }
     \label{fig:referencesIngress}
 \end{figure}
 
-Analyzing plots in figure~\ref{fig:avg_vus} show overlapping confidence intervals in all cases, indicating some variability in the results. However, when averaging the values, it becomes clear that cilium performs better, especially as the number of VUs is one or tousand. The distance to reference points can be seen in figure~\ref{fig:referencesIngress}. The overlapping confidence intervals shows statistical uncertainty, but the average values demonstrate that cilium performs higher accuracy traffic weighting compared to antrea and nginx test case.
+Analyzing plots in figure~\ref{fig:avg_vus} show overlapping confidence intervals in all cases, indicating some variability in the results. However, when averaging the values, it becomes clear that cilium performs better, especially as the number of VUs is one or a thousand. The distance to reference points can be seen in figure~\ref{fig:referencesIngress}. The overlapping confidence intervals show statistical uncertainty, but the average values demonstrate that cilium performs higher accuracy traffic weighting compared to Antrea and nginx test case.

@@ -10,7 +10,7 @@ The Kubernetes cluster will run on a local laptop with the following specificati
   \item Operating System: Fedora 40 with kernel 6.10.11
 \end{itemize}
 
-Cloud infrastrucure consist of two AKS nodes (virtual machines) of type Azure Standard\_A2\_v2. Each VM has the following specifications:
+Cloud infrastructure consist of two AKS nodes (virtual machines) of type Azure Standard\_A2\_v2. Each VM has the following specifications:
 \begin{itemize}
   \item CPU: 2 vCPUs
   \item RAM: 4 GB
@@ -35,11 +35,11 @@ In this section, the tools used to provision the egress and ingress implementati
 \subsubsection{Ansible}
 \label{sec:ansible}
 
-Ansible is an opensource tool which is able to automate provisioning and configuring infrastructure. Configuration in Ansible is written in playbooks, which are YAML files as blueprints that contain a set of instructions to be executed. Each playbook consists of one or more plays, and each play describes a set of tasks to be performed on a group of desired hosts \cite{Ansible} \cite{AnsiblePlaybook}.
+Ansible is an open-source tool which can automate provisioning and configuring infrastructure. Configuration in Ansible is written in playbooks, which are YAML files as blueprints that contain a set of instructions to be executed. Each playbook consists of one or more plays, and each play describes a set of tasks to be performed on a group of desired hosts \cite{Ansible} \cite{AnsiblePlaybook}.
 
 \begin{listing}[htb]
     \centering
-    \caption{Example ansible playbook \cite{AnsibleOpenstack}.}
+    \caption{Example Ansible playbook \cite{AnsibleOpenstack}.}
     \begin{minted}[gobble=4, frame=single, linenos, fontsize=\scriptsize]{yaml}
     - name: Create openstack instance and assign floating ip
       hosts: "{{ openstack_pool | default('localhost') }}"
@@ -69,7 +69,7 @@ Ansible is an opensource tool which is able to automate provisioning and configu
 
 \begin{listing}[htb]
     \centering
-    \caption{Example ansible inventory \cite{AnsibleInventory} \cite{AnsibleOpenstack} \cite{AnsibleVars}}
+    \caption{Example Ansible inventory \cite{AnsibleInventory} \cite{AnsibleOpenstack} \cite{AnsibleVars}}
     \begin{minted}[gobble=4, frame=single, linenos, fontsize=\scriptsize]{yaml}
     [openstack_pool]
     instance-1.example.com key_name=ansible_key network_name=my-network ansible_host=10.10.10.10
@@ -79,18 +79,18 @@ Ansible is an opensource tool which is able to automate provisioning and configu
 \end{listing}
 
 
-Listing~\ref{lst:exampleAnsiblePlaybook} shows example ansible playbook configuration. Hosts field define group of objects on which configuration script is executed. In this case instances specified in group named openstack\_pool in ansible inventory showed on listing~\ref{lst:exampleAnsibleInventory} will be created when using the playbook. Using var\_files is possible to attach file containg, for example authentication variables required to access openstack cloud. Become is used to execute script as root user. Tasks and roles is the place, where actual script is defined. It can be defined directly in tasks, or specified by a roles, in this case will use script from ./roles/assign\_floating\_ip/tasks/main.yaml \cite{AnsiblePlaybook}.
+Listing~\ref{lst:exampleAnsiblePlaybook} shows example Ansible playbook configuration. The host field defines the group of objects on which configuration script is executed. In this case instances specified in group named openstack\_pool in ansible inventory showed on listing~\ref{lst:exampleAnsibleInventory} will be created when using the playbook. Using var\_files is possible to attach file contains, for example authentication variables required to access OpenStack cloud. Become is used to execute script as root user. Tasks and roles are the place where the actual script is defined. It can be defined directly in tasks, or specified by roles, in this case will use script from ./roles/assign\_floating\_ip/tasks/main.yaml \cite{AnsiblePlaybook}.
 
 
 \subsubsection{Iperf3}
 \label{sec:iperf3}
 
-Iperf3 is a tool capable of measure networking metrics. It supports TCP, UDP and SCTP protocols in IPv4 or IPv6 networks. The tool works in client-server architecture. Iperf3 will be used to evalutate throughput and round trip time in egress scenario.
+Iperf3 is a tool capable of measuring networking metrics. It supports TCP, UDP and SCTP protocols in IPv4 or IPv6 networks. The tool works in client-server architecture. Iperf3 will be used to evaluate throughput and round-trip time in egress scenario.
 
 \subsubsection{Kind}
 \label{sec:kind}
 
-Kind is a tool used for creating local Kuberentes cluster. This tool can simulate real communication between nodes within one machine. It creates control plane and worker nodes using Docker containers to enable node to node communication. The important thing is that it does not provide any load balancer for assigning external IP addresses for Kubernetes services. In ingress scenario Gateway API requires outside cluster routable IP address, on local infrastructure MetalLB will be installed and configured to provide IPs \cite{Kind}.
+Kind is a tool used for creating local Kubernetes cluster. This tool can simulate real communication between nodes within one machine. It creates control plane and worker nodes using Docker containers to enable node to node communication. The important thing is that it does not provide any load balancer for assigning external IP addresses for Kubernetes services. In ingress scenario Gateway API requires outside cluster routable IP address, on local infrastructure MetalLB will be installed and configured to provide IPs \cite{Kind}.
 
 \subsubsection{Grafana K6}
 \label{sec:grafana}
@@ -100,28 +100,28 @@ Grafana K6 is open-source tool designed for load testing by simulating virtual u
 \subsubsection{MetalLB}
 \label{sec:metallb}
 
-MetalLB is an implementation of load balancer for bare metal Kubernetes. Kind does not provide implementation of load balancer. Without external tool like this, load balancer type service will persist in "pending" state. It is mandatory in ingres scenario to create loadbalancing service (in this case to allocate external IP address) for Gateway API \cite{MetalLB}.
+MetalLB is an implementation of load balancer for bare metal Kubernetes. Kind does not provide implementation of load balancer. Without external tool like this, load balancer type service will persist in "pending" state. It is mandatory in ingress scenario to create load balancing service (in this case to allocate external IP address) for Gateway API \cite{MetalLB}.
 
 \subsubsection{Node Exporter}
 \label{sec:nodeExporter}
 
-A tool that exports the current system's metrics, such as CPU usage, memory utilization, disk I/O, and network statistics. The metrics in OpenMetrics format are exposed on /metrics enpoind \cite{NodeExporter}.
+A tool that exports the current system's metrics, such as CPU usage, memory utilization, disk I/O, and network statistics. The metrics in OpenMetrics format are exposed on /metrics endpoint \cite{NodeExporter}.
 
 \subsubsection{Prometheus}
 \label{sec:prometheus}
 
-Prometheus is a monitoring and alerting tool, which stores data in time series, any data value is associated with time when it was collected. Stored data can be retrieved using PromQL (query language). The tool colects data by pulling from specified enpoints in configuration \cite{Prometheus}. 
+Prometheus is a monitoring and alerting tool, which stores data in time series, any data value is associated with time when it was collected. Stored data can be retrieved using PromQL (query language). The tool collects data by pulling from specified endpoints in configuration \cite{Prometheus}. 
 
 \subsubsection{Terraform}
 \label{sec:terraform}
 
-Terraform is an open-source infrastructure as code (IaC) tool. It allows provision, and manage infrastructure resources, cloud infrastructure, kubernetes cluster, virtual machines, docker containers, storage and also SaaS features. Configuration files are written in a declarative language called HashiCorp Configuration Language (HCL).
+Terraform is an open-source infrastructure as code (IaC) tool. It allows provision and manage infrastructure resources, cloud infrastructure, Kubernetes cluster, virtual machines, docker containers, storage, and SaaS features. Configuration files are written in a declarative language called HashiCorp Configuration Language (HCL).
 
 The Terraform workflow is made up of three stages \cite{Terraform}:
 \begin{enumerate}
   \item Write -- define in configuration file resources to be created
   \item Plan -- shows the actual resources that will be created based on the provided configuration and checks for any errors in the code
-  \item Apply -- provision resources or applys changes defined in write stage to the infrastructure 
+  \item Apply -- provision resources or applies changes defined in write stage to the infrastructure 
 \end{enumerate}
 
 
@@ -133,7 +133,7 @@ The Terraform workflow is made up of three stages \cite{Terraform}:
 \label{sec:egressImpl}
 
 
-The engress scenario compares Antrea and Cilium egress gateway implementation performance. The test involves using iperf3 in TCP mode to measure network performance. The iperf3 is located in a pod inside Kubernetes cluster, on the other hand iperf server runs on personal computer which launches cluster. The network resources are collected by iperf3, and CPU/memory usage is monitored by a node exporter. These include:
+The egress scenario compares Antrea and Cilium egress gateway implementation performance. The test involves using iperf3 in TCP mode to measure network performance. The iperf3 is located in a pod inside Kubernetes cluster, on the other hand iperf server runs on personal computer which launches cluster. The network resources are collected by iperf3, and CPU/memory usage is monitored by a node exporter. These include:
 \begin{itemize}
   \item CPU -- the processing power utilized by the cluster.
   \item Memory -- the amount of RAM consumed by the infrastructure.
@@ -144,8 +144,8 @@ The engress scenario compares Antrea and Cilium egress gateway implementation pe
 The overall resource utilization and performance will be evaluated in four test cases:
 
 \begin{enumerate}
-  \item antrea egress gateway -- all traffic generated by a pod inside a cluster will leave cluster through antrea egress gateway node implementation
-  \item antrea base -- traffic leaves cluster using node on which pod is deplotyed
+  \item antrea egress gateway -- all traffic generated by a pod inside a cluster will leave cluster through Antrea egress gateway node implementation
+  \item antrea base -- traffic leaves cluster using node on which pod is deployed
   \item cilium egress gateway -- cilium implementation of an egress gateway will route outbound traffic to the outside
   \item cilium base -- no redirecting at all
 \end{enumerate}
@@ -183,22 +183,22 @@ In this part of the scenario, Antrea CNI is installed on a locally hosted Kubern
 
 Four file containing variables included in the script:
 \begin{enumerate}
-  \item common.yml -- contains shared variables like ansible become password to access root privileges on machine
+  \item common.yml -- contains shared variables like Ansible become password to access root privileges on machine
   \item egress\_gateway.yml -- scenario name or node name on which deploy gateway
   \item antrea.yml -- CNI name for later use, such as specifying the cluster name and the folder path where test results are stored
-  \item local.yml -- informations about local infrastructure, like node names, job name for prometheus and env type
+  \item local.yml -- information about local infrastructure, like node names, job name for Prometheus and env type
 \end{enumerate}
 
 The actual playbook from listing~\ref{lst:antreaEgressPlaybook} consist of eight steps to perform automate provisioning infrastructure, running test and store output:
 \begin{enumerate}
-  \item create\_kind\_cluster -- creates kind cluster using config presented on listing~\ref{lst:kindConfig}
-  \item install\_antrea -- applies massive antrea yaml containing custom resource definitions which define cluster networking 
-  \item wait\_until\_antrea\_installed -- uses kubectl wait command and stops script intil antrea controller deployment is available
-  \item get\_ip\_for\_egress\_node -- retrieves ip address of node by name specified in variable files on which deploy egress gateway in the next step 
+  \item create\_kind\_cluster -- creates kind cluster using config YAML
+  \item install\_antrea -- applies massive Antrea YAML containing custom resource definitions which define cluster networking 
+  \item wait\_until\_antrea\_installed -- uses kubectl wait command and stops script until Antrea controller deployment is available
+  \item get\_ip\_for\_egress\_node -- retrieves IP address of node by name specified in variable files on which deploy egress gateway in the next step 
   \item deploy\_antrea\_egress\_gateway -- turns on egress support in Antrea CNI using config map and creates static egress gateway by setting egressIP field to previously obtained IP address 
   \item monitoring -- applies monitoring in cluster, deploys Prometheus Deployment and Node Exporter DaemonSet
   \item terraform\_run\_egress\_iperf -- runs iperf3 server on laptop, saves current timestamp and runs iperf3 client Pod using terraform.
-  \item scrap\_prometheus\_data -- part of playbook responsible for pulling CPU and memory metrics stored by prometheus
+  \item scrap\_prometheus\_data -- part of playbook responsible for pulling CPU and memory metrics stored by Prometheus
 \end{enumerate}
 
 The playbook from listing~\ref{lst:antreaEgressPlaybook} produces following infrastructure:
@@ -210,8 +210,8 @@ The playbook from listing~\ref{lst:antreaEgressPlaybook} produces following infr
   \label{fig:antreaEgressScenarioArch}
 \end{figure}
 
-Kubernetes cluster visible in figure~\ref{fig:antreaEgressScenarioArch} is provisioned on personal computer using Kind, and configured using Ansible and Terraform. The cluster consists of three nodes, a control plane, a worker node and an egress gateway, which are belonging to docker network. When role terraform\_run\_egress\_iperf begins its execution and created iperf3 Pod is ready the test begins, client using TCP protocol is sending data to server (outside cluster), which is routed through egress gateway. Iperf3 server discovers that traffic is incomming from egress gateway node (it sees IP address of Egress Gateway Node as a source), because traffic from the Pod is SNATed.
-The iperf3 client sedns data packets using TCP protocol, after receiving acknowledgment from server, networking metrics are stored in its memory and at the end of the test, json file with gathered data is saved inside a Pod. The node exporter is constantly scraping the metrics, which are pulled by a Prometheus to its datbase. After the measurement is over, unformatted data is downloaded from prometheus and saved to csv file.
+Kubernetes cluster visible in figure~\ref{fig:antreaEgressScenarioArch} is provisioned on personal computer using Kind and configured using Ansible and Terraform. The cluster consists of three nodes, a control plane, a worker node, and an egress gateway, which blong to docker network. When role terraform\_run\_egress\_iperf begins its execution and created iperf3 Pod is ready the test begins, client using TCP protocol is sending data to server (outside cluster), which is routed through egress gateway. The Iperf3 server discovers that traffic is incoming from egress gateway node (it sees IP address of Egress Gateway Node as a source), because traffic from the Pod is SNATed.
+The iperf3 client sends data packets using TCP protocol, after receiving acknowledgment from server, networking metrics are stored in its memory and at the end of the test, JSON file with gathered data is saved inside a Pod. The node exporter is constantly scraping the metrics, which are pulled by a Prometheus to its database. After the measurement is over, unformatted data is downloaded from Prometheus and saved to CSV file.
 
 
 %---------------------------------------------------------------------------
@@ -219,7 +219,7 @@ The iperf3 client sedns data packets using TCP protocol, after receiving acknowl
 \subsection{Cilium}
 \label{sec:ciliumEgress}
 
-The playbook for cilium is really similiar to the one which creates egress scenario using Antre CNI. The ansible roles are designed to be reused in different playbooks, the only differences are, CNI installation, Egress Gatewway deployment and in cilium desired node is labelled with egress-node=true. The infrastructure can be seen in figure~\ref{fig:ciliumEgressGatewayScenarioArch} % TODO OPISAC CO SIE DZIEJE.
+The playbook for cilium is really like the one which creates egress scenario using Antrea CNI. The Ansible roles are designed to be reused in different playbooks, the only differences are, CNI installation, Egress Gateway deployment and in cilium desired node is labelled with egress-node=true. The infrastructure can be seen in figure~\ref{fig:ciliumEgressGatewayScenarioArch} % TODO OPISAC CO SIE DZIEJE.
 
 \begin{figure}[H]
   \centering
@@ -232,14 +232,14 @@ The playbook for cilium is really similiar to the one which creates egress scena
 \section{Ingress scenario implementation}
 \label{sec:ingressImpl}
 
-The ingress scenario evaluates the Antrea and Cilium Container Networking Plugins CPU and memory usage while using Gateway API in handling weighted traffic routing. The experiment involves using the Gateway API to route 40\% of incoming requests to one Pod and evaluating accuracy of traffic splitting by two different Gateway APIs. The test setup includes the k6 load testing tool running outside the Kubernetes cluster, generating traffic towards the Gateway API. The simulated traffic has four intensity levels by allocating different number of virtual users talking to the Gateway API. These are one, ten, houndred and tousand virtual users. The traffic is initiated using k6 tool, which runs inside container on personal computer. The network generator is performing HTTP request at Gatewy API and saves received response extracting Pod name to the text file (one per line). Having a list of responses containing names of two pods, accuracy of Gateway API traffic splitting is calculated. CPU and memory usage, is monitored with a Node Exporter during whole test and fetched at the end of scenario.
+The ingress scenario evaluates the Antrea and Cilium Container Networking Plugins CPU and memory usage while using Gateway API in handling weighted traffic routing. The experiment involves using the Gateway API to route 40\% of incoming requests to one Pod and evaluating accuracy of traffic splitting by two different Gateway APIs. The test setup includes the k6 load testing tool running outside the Kubernetes cluster, generating traffic towards the Gateway API. The simulated traffic has four intensity levels by allocating different number of virtual users talking to the Gateway API. These are one, ten, a hundred and a thousand virtual users. The traffic is initiated using k6 tool, which runs inside container on personal computer. The network generator is performing HTTP request at Gateway API and saves received response extracting Pod name to the text file (one per line). Having a list of responses containing names of two pods, accuracy of Gateway API traffic splitting is calculated. CPU and memory usage is monitored with a Node Exporter during whole test and fetched at the end of scenario.
 
 
 %---------------------------------------------------------------------------
 \subsection{Cluster provisioning}
 \label{sec:clusterProvisioning}
 
-Creating a local cluster using Kind is a straightforward process, as described earlier. However, when setting up a Kubernetes cluster on Azure, the azurerm terraform provider must be configured properly to be authenticated with an azure account. The script shown on listing~\ref{lst:terraformScript} is responsible for creating Kubernetes cluster in Azure Services. It is important to choose appropriate location for cluster, define default node pool (virtual machine type and node count) and to get rid of default CNI by setting network\_plugin in network\_profile to "none" if different networking plugin is preffered \cite{AKS}.
+Creating a local cluster using Kind is a straightforward process, as described earlier. However, when setting up a Kubernetes cluster on Azure, the azurerm terraform provider must be configured properly to be authenticated with an azure account. The script shown on listing~\ref{lst:terraformScript} is responsible for creating Kubernetes cluster in Azure Services. It is important to choose appropriate location for cluster, define default node pool (virtual machine type and node count) and to get rid of default CNI by setting network\_plugin in network\_profile to "none" if different networking plugin is preferred \cite{AKS}.
 
 \begin{listing}[htb]
   \centering
@@ -295,12 +295,12 @@ The process of creating ingress scenario with Antrea CNI on Azure Kubernetes Ser
   \item create\_azure\_cluster -- runs terraform to provision infrastructure in the cloud and configures the local environment to allow kubectl to interact with the cluster
   \item install\_antrea -- installs Antrea CNI plugin
   \item wait\_until\_antrea\_installed -- waits until Antrea is installed
-  \item install\_gateway\_api\_crd -- applys custom definiton resources, Gateway, GatewayClass, HTTPRoutes etc
-  \item install\_nginx\_gateway\_fabric -- isntall NGINX Gateway Fabric using helm and waits util is fully installed
+  \item install\_gateway\_api\_crd -- applies custom definition resources, Gateway, GatewayClass, HTTPRoutes etc
+  \item install\_nginx\_gateway\_fabric -- installs NGINX Gateway Fabric using helm and waits util is fully installed
   \item deploy\_antrea\_ingress\_scenario -- deploys ingress scenario (echo Pods and Gateway API) using terraform
   \item monitoring -- enables monitoring with Node Exporter and Prometheus
-  \item register\_gateway\_api\_ip -- registers api of Gateway API for k6 tool
-  \item run\_k6 -- creates container with k6 which generates HTTP traffic acessing Gateway API
+  \item register\_gateway\_api\_ip -- registers IP address of Gateway API for k6 tool
+  \item run\_k6 -- creates container with k6 which generates HTTP traffic accessing Gateway API
   \item scrap\_prometheus\_data -- downloads data about CPU and memory utilization
 \end{enumerate}
 
@@ -360,9 +360,9 @@ The ingress scenario with the Cilium CNI plugin does not need to install the NGI
 \subsubsection{Control plane}
 \label{sec:cplaneDiff}
 
-In the local environment, the control plane node is created in the same way as the worker nodes, running as a container. However, when using NGINX with the Antrea CNI, the NGINX Gateway Fabric pod is deployed on a separate control plane node. This setup allows the routing of traffic between two different nodes, ensuring that traffic is always leaving the node. In contrast, when using AKS (Azure Kubernetes Service), the control plane is not part of the node pool; it is a separate managed service outside of the node pool, providing a more distinct separation between the control plane and worker nodes. This architectural difference can affect the measurements (in comparison to local stack), as resource utiliazation of the control plane node is not gathered.
+In the local environment, the control plane node is created in the same way as the worker nodes, running as a container. However, when using NGINX with the Antrea CNI, the NGINX Gateway Fabric pod is deployed on a separate control plane node. This setup allows the routing of traffic between two different nodes, ensuring that traffic is always leaving the node. In contrast, when using AKS (Azure Kubernetes Service), the control plane is not part of the node pool; it is a separate managed service outside the node pool, providing a more distinct separation between the control plane and worker nodes. This architectural difference can affect the measurements (in comparison to local stack), as resource utilization of the control plane node is not gathered.
 
 \subsubsection{Client traffic generator}
 \label{sec:clientServerDiff}
 
-In the cloud setup, the client running on a personal computer generates HTTP requests to the public Gateway API IP address exposed by Azure Cloud. Resource utilization within the cluster is exclusively used by the cluster itself, not by the client. However when running local stack, the client is part of a laptop on which cluster is running, what might influence measurements.
+In the cloud setup, the client running on a personal computer generates HTTP requests to the public Gateway API IP address exposed by Azure Cloud. Resource utilization within the cluster is exclusively used by the cluster itself, not by the client. However, when running local stack, the client is part of a laptop on which cluster is running, what might influence measurements.
