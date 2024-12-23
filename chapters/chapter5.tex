@@ -1,7 +1,7 @@
 \chapter{Performance comparison}
 \label{cha:performCompare}
 
-In this chapter, test results for both ingress and egress scenarios will be presented and analyzed, with a focus on comparing CPU and memory usage in each case. For ingress, the analysis will cover weighted traffic splitting through the Gateway API, evaluating its impact on resource utilization and accuracy of traffic distribution. For egress, the evaluation will include traffic routing through an egress gateway, comparing throughput and round-trip time. The results will highlight differences in resource efficiency and networking performance among Antrea and cilium CNI plugins, identifying which CNI offers better optimization for these scenarios.
+In this chapter, test results for both ingress and egress scenarios will be presented and analyzed, with a focus on comparing CPU and memory usage in each case. For ingress, the analysis will cover weighted traffic splitting through the Gateway API, evaluating its impact on resource utilization and accuracy of traffic distribution. The test was run sixteen times for only two minutes, because during traffic generation by a thousand of virtual users, the logs are up to half a million lines long. For egress, the evaluation will include traffic routing through an egress gateway, comparing throughput and round-trip time. The egress test takes twelve minutes of eight times. The results will highlight differences in resource efficiency and networking performance among Antrea and Cilium CNI plugins, identifying which CNI offers better optimization for these scenarios.
 
 
 \section{Egress Scenario}
@@ -12,7 +12,7 @@ In this chapter, test results for both ingress and egress scenarios will be pres
 
 
 
-The figures~\ref{fig:cpu_avg} and~\ref{fig:memory_avg} show resource utilization is lower when using egress gateway than without redirecting outgoing packets via additional node. This might be because all traffic management (routing table, NAT rules and maps) is offloaded to the egress gateway. In this setup, the node running the iperf3 pod does not need to evaluate routing decisions. Instead, it simply forwards all traffic to the egress gateway (where address is translated), allowing the node to leave CPU time for the pod which runs iperf3 client. In the case where an egress gateway is not used, the individual nodes are responsible for handling more operations, which can lead to higher resource allocation. In figures~\ref{fig:cpu_all} and~\ref{fig:memory_all} there are showed all eight runs in all four test cases. The sixth run in figure ~\ref{fig:cpu_all} during cilium egress gateway case is an outliner and was not used to calculate total average. Overall CPU usage is lower when cluster uses Antrea networking. If it comes to memory usage, Antrea uses 10\% less while using egress, up to almost 20\% less without additional node in comparison to cilium.
+The figures~\ref{fig:cpu_avg} and~\ref{fig:memory_avg} show resource utilization is lower when using egress gateway than without redirecting outgoing packets via additional node. This might be because all traffic management (routing table, NAT rules and maps) is offloaded to the egress gateway. In this setup, the node running the Iperf3 pod does not need to evaluate routing decisions. Instead, it simply forwards all traffic to the egress gateway (where address is translated), allowing the node to leave CPU time for the pod which runs Iperf3 client. In the case where an egress gateway is not used, the individual nodes are responsible for handling more operations, which can lead to higher resource allocation. In figures~\ref{fig:cpu_all} and~\ref{fig:memory_all} there are showed all eight runs in all four test cases. The sixth run in figure ~\ref{fig:cpu_all} during Cilium egress gateway case is an outliner and was not used to calculate total average (which is called a truncated mean). Overall CPU usage is lower when cluster uses Antrea networking. When it comes to memory usage, Antrea uses 10\% less while using egress, up to almost 20\% less without additional node in comparison to Cilium.
 
 \begin{figure}[H]
     \centering
@@ -27,7 +27,7 @@ The figures~\ref{fig:cpu_avg} and~\ref{fig:memory_avg} show resource utilization
         \label{fig:memory_avg}
     \end{subfigure}
     
-    \caption{Average resource comsumption in egress scenario, (a) CPU, (b) Memory}
+    \caption{Average resource consumption in egress scenario, (a) CPU, (b) Memory}
     \label{fig:res_avg}
 \end{figure}
 
@@ -45,7 +45,7 @@ The figures~\ref{fig:cpu_avg} and~\ref{fig:memory_avg} show resource utilization
         \label{fig:memory_all}
     \end{subfigure}
     
-    \caption{Average resource comsumption in egress scenario in each run, (a) CPU, (b) Memory}
+    \caption{Average resource consumption in egress scenario in each run, (a) CPU, (b) Memory}
     \label{fig:res_all}
 \end{figure}
 
@@ -115,13 +115,13 @@ The figures~\ref{fig:cpu_avg} and~\ref{fig:memory_avg} show resource utilization
     \label{fig:memoryFour}
 \end{figure}
 
-Figures~\ref{fig:cpu_a},~\ref{fig:cpu_b},~\ref{fig:memory_a},~\ref{fig:memory_b} compare average CPU and memory usage between cilium and Antrea CNI in each of eight runs. It shows how both container network interface plugins perform under the same test conditions, what helps to evaluate which plugin consumes less resources. In only second run Antrea has not used less CPU than cilium used.
+Figures~\ref{fig:cpu_a},~\ref{fig:cpu_b},~\ref{fig:memory_a},~\ref{fig:memory_b} compare average CPU and memory usage between Cilium and Antrea CNI in each of eight runs. It shows how both container network interface plugins perform under the same test conditions, what helps to evaluate which plugin consumes less resources. In only second run Antrea has not used less CPU than Cilium used.
 Comparing resource utilization showed on figures~\ref{fig:cpu_c},~\ref{fig:cpu_d},~\ref{fig:memory_c},~\ref{fig:memory_d}, highlights how using an egress gateway with each CNI plugins affects resource usage compared to not using one.
 
 \subsubsection{Networking performance}
 \label{sec:egressNetworkingPerformance}
 
-The figures~\ref{fig:throughput_avg} and~\ref{fig:rtt_avg} provide overall performance summary as an average of all runs. Antrea handles traffic more efficiently, with lower round trip time regardless of using egress gateway or not. The plots in~\ref{fig:throughput_all} and~\ref{fig:rtt_all} display the results of all eight runs for each test case, showing that Antrea outperforms cilium in every single run, achieving higher throughput and lower bidirectional latency.
+The figures~\ref{fig:throughput_avg} and~\ref{fig:rtt_avg} provide overall performance summary as an average of all runs. Antrea handles traffic more efficiently, with lower round trip time regardless of using egress gateway or not. The plots in~\ref{fig:throughput_all} and~\ref{fig:rtt_all} display the results of all eight runs for each test case, showing that Antrea outperforms Cilium in every single run, achieving higher throughput and lower bidirectional latency.
 
 \begin{figure}[H]
     \centering
@@ -252,6 +252,8 @@ Figures~\ref{fig:throughput_c},~\ref{fig:throughput_d},~\ref{fig:rtt_c}, and~\re
     \label{fig:resource_cloud_avg}
 \end{figure}
 
+Comparing Figures~\ref{fig:resource_cloud_avg} and~\ref{fig:resource_local_avg}, it is evident that traffic management primarily impacts CPU usage rather than memory consumption, as the memory usage shows lower increases. In the cloud environment, Antrea demonstrates better resource efficiency, whereas in the cloud environment, Cilium consumes less resources.
+
 \begin{figure}[H]
     \centering
     \begin{subfigure}[b]{0.8\textwidth}
@@ -269,17 +271,17 @@ Figures~\ref{fig:throughput_c},~\ref{fig:throughput_d},~\ref{fig:rtt_c}, and~\re
     \label{fig:resource_local_avg}
 \end{figure}
 
-Comparing Figures~\ref{fig:resource_cloud_avg} and~\ref{fig:resource_local_avg}, it is evident that traffic management primarily impacts CPU usage rather than memory consumption, as the memory usage shows lower increases. In the cloud environment, Antrea demonstrates better resource efficiency, whereas in the cloud environment, Cilium consumes less resources.
+When comparing traffic weighting accuracy in figure~\ref{fig:resource_local_avg} with an increasing number of virtual users in a cloud environment, Antrea proves to be more precise both when a single user makes a request and when a thousand users generate massive load. In a local environment, Cilium is more accurate in splitting traffic to a value specified in HTTPRoute in every scenario except for the case of a single user. Antrea in local environment has wider confidential intervals, and distance from reference point is high in comparison to Cilium, making it less effective during high load period.
 
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.8\textwidth}
+    \begin{subfigure}[b]{0.6\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/vus_cloud_all.png}
         \caption{}
         \label{fig:vus_cloud_avg}
     \end{subfigure}
-    \begin{subfigure}[b]{0.8\textwidth}
+    \begin{subfigure}[b]{0.6\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/vus_local_all.png}
         \caption{}
         \label{fig:vus_local_avg}
@@ -289,7 +291,9 @@ Comparing Figures~\ref{fig:resource_cloud_avg} and~\ref{fig:resource_local_avg},
     \label{fig:vus_avg}
 \end{figure}
 
-When comparing traffic weighting accuracy with an increasing number of virtual users in a cloud environment, antrea proves to be more precise both when a single user makes a request and when thousand users generate massive load. In a local environment, Cilium is more accurate in splitting traffic to a value specified in HTTPRoute in every scenario except for the case of a single user. Antrea in local environment has wider confidential intervals, and distance from reference point is high in comparison to cilium, making it less effective during high load period.
+
+Analyzing plots in figure~\ref{fig:avg_vus} show overlapping confidence intervals in all cases, indicating some variability in the results. However, when averaging the values, it becomes clear that Cilium performs better, especially as the number of VUs is one or a thousand. The distance to reference points can be seen in figure~\ref{fig:referencesIngress}. The overlapping confidence intervals show statistical uncertainty, but the average values demonstrate that Cilium performs higher accuracy traffic weighting compared to Antrea and nginx test case.
+
 
 \begin{figure}[H]
     \centering
@@ -298,37 +302,32 @@ When comparing traffic weighting accuracy with an increasing number of virtual u
         \label{fig:time_window_1vu}
     \end{subfigure}
 
-    \vspace{-0.1cm} % Adjusted minimal space between subfigures
+    \vspace{-0.1cm}
 
     \begin{subfigure}[b]{0.8\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/time_window_5_10vu_cloud.png}
         \label{fig:time_window_10vu}
     \end{subfigure}
 
-    \vspace{-0.1cm} % Adjusted minimal space between subfigures
+    \vspace{-0.1cm}
 
     \begin{subfigure}[b]{0.8\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/time_window_5_100vu_cloud.png}
         \label{fig:time_window_100vu}
     \end{subfigure}
 
-    \vspace{-0.1cm} % Adjusted minimal space between subfigures
+    \vspace{-0.1cm}
 
     \begin{subfigure}[b]{0.8\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/time_window_5_1000vu_cloud.png}
         \label{fig:time_window_1000vu}
     \end{subfigure}
 
-    \vspace{-0.3cm} % Reduced space between the last subfigure and the caption
+    \vspace{-0.3cm}
 
-    \caption{Average traffic splitting ratio in function of five second request time window with increasing virtual users; one, ten, houndred and tousand}
+    \caption{Average traffic splitting ratio in function of five second request time windows with increasing virtual users; one, ten, a hundred and a thousand}
     \label{fig:avg_vus}
 \end{figure}
-
-
-
-
-
 
 
 \begin{figure}[H]
@@ -360,5 +359,3 @@ When comparing traffic weighting accuracy with an increasing number of virtual u
     \caption{Average traffic splitting ratio distance to reference point in increasing virtual users, (a) one, (b) ten, (c) hundred, (d) thousand }
     \label{fig:referencesIngress}
 \end{figure}
-
-Analyzing plots in figure~\ref{fig:avg_vus} show overlapping confidence intervals in all cases, indicating some variability in the results. However, when averaging the values, it becomes clear that cilium performs better, especially as the number of VUs is one or a thousand. The distance to reference points can be seen in figure~\ref{fig:referencesIngress}. The overlapping confidence intervals show statistical uncertainty, but the average values demonstrate that cilium performs higher accuracy traffic weighting compared to Antrea and nginx test case.
