@@ -3,21 +3,16 @@
 
 %---------------------------------------------------------------------------
 
-\section{Purpose of the thesis}
-\label{sec:purpose}
+
+The purpose of this thesis is to evaluate and compare the traffic engineering capabilities of Container Networking Interface (CNI) plugins in Kubernetes clusters. The study focuses on understanding how CNI plugins can manage both incoming and outgoing traffic within the cluster. Traffic engineering plays a crucial role in efficient Kubernetes networking performance and security. By implementing traffic policies and load balancing, data flow can be optimized, ensuring faster transmission and more secure communication with external services. By analyzing their usage in real-world scenarios, this thesis aims to identify the strengths and limitations of these plugins. The evaluation includes measurements of critical performance metrics, such as CPU usage, memory consumption, and networking benchmarks, to provide a clear view of their efficiency. The findings of this research are intended to guide Kubernetes users in selecting the most suitable CNI plugin for their specific traffic engineering needs for more efficient, reliable, and scalable Kubernetes networking solutions.
 
 
 %---------------------------------------------------------------------------
-
-\section{Scope of the thesis}
-\label{sec:scope}
-
-
-
+The study introduces containers, orchestration, and Kubernetes, the key technologies that transformed the deployment and management of applications in cloud environments. The work presents and analyzes the traffic engineering capabilities of Cilium and Antrea, two Kubernetes CNI plugins. The study is divided into two scenarios: egress and ingress. The first one demonstrates both CNI implementations and performance an egress gateway, which is used to control outgoing traffic from inside the cluster. Potential use cases are outlined, and networking performance, such as throughput and round-trip time, is compared across the CNIs, both with and without the egress gateway. In the ingress scenario, the Gateway API provided by Antrea and Cilium will be examined, with example use cases demonstrated. Special attention will be given to traffic weighting and its effectiveness in splitting incoming traffic.
 %---------------------------------------------------------------------------
 
-\section{Structure of the thesis}
-\label{sec:structure}
+
+Chapter 1 provides an overview of the thesis, establishing the context and problem statement. The chapter also outlines the structure of the subsequent chapters. Chapter 2 introduces Kubernetes concepts and points out current features of CNI plugins. Chapter 3 explains both egress and ingress scenarios, illustrating how different Container Network Interface plugins can affect each of the traffic management directions. Next, chapter 4 presents the implementation of both scenarios, along with a description of each tool used during the evaluation of CNI features. Chapter 5 compares the results gathered during the evaluation of CNI plugins and their implementations used in egress and ingress scenarios. Finally, Chapter 6 concludes the thesis by summarizing the key findings of the research. It also discusses how future work can evaluate the performance of CNI implementations in traffic engineering.
 
 
 

@@ -8,7 +8,7 @@ This chapter will introduce a concept of containerization, orchestration along w
 \section{Basics}
 \label{sec:basics}
 
-In this section two key Kubernetes concepts will be outlined.
+In this section two key Kubernetes concepts will be outlined: containerization and orchestrations, showing their roles and benefits in application deployments. These concepts are fundamental for managing modern large-scale environments containing distributed systems.
 
 \subsection{Containerization}
 \label{sec:containerization}
@@ -35,7 +35,7 @@ A container image is a set of files and configuration needed to run a container.
 
 Container orchestration is coordinated deploying, managing, networking, scaling, and monitoring containers process. It automates and manages whole container's lifecycle, there is no need to worrying about of deployed app, orchestration software like Kubernetes will take care of its availability \cite{RedhatContainerization}.
 
-The Kubernetes Authors says: "The name Kubernetes originates from Greek, meaning helmsman or pilot. K8s as an abbreviation results from counting the eight letters between the "K" and the "s"" \cite{KubernetesDocs}. K8s is an open-source orchestration platform capable of managing containers \cite{KubernetesDocs}. Key functionalities are \cite{KubernetesDocs}:
+K8s is an open-source orchestration platform capable of managing containers \cite{KubernetesDocs}. Key functionalities are \cite{KubernetesDocs}:
 
 \begin{itemize}
     \item Automated rollouts and rollbacks -- updates or downgrades version of deployed containers at controller rate, replacing containers incrementally
@@ -61,11 +61,11 @@ A Kubernetes cluster is a group of machines that run containers and provide all 
 \begin{figure}[tbh]
     \centering
     \includegraphics[width=1\columnwidth]{images/kubernetes-cluster-architecture.png}
-    \caption{Kubernetes Cluster Architecture \cite{KubernetesArch}}
+    \caption{Kubernetes Cluster Architecture \cite{KubernetesArch}\cite{CloudIcon}\cite{K8sIcons}\cite{EtcdIcon}\cite{LucidApp}.}
     \label{fig:k8s_arch}
 \end{figure}
 
-On figure~\ref{fig:k8s_arch} there is graphical representation of Kubernetes cluster. Not all components shown in the figure are mandatory for Kubernetes to work correctly. At the control plane part, \textit{\nameref{sec:cloudControllerManager}} might not be mandatory, in on-premises configurations where interacting with cloud provider is not needed. On the right side of figure in node representation is \textit{\nameref{sec:kubeProxy}} component, which is not mandatory as some networking plugins can provide own implementation of proxy \cite{KubernetesArch}. This is an example of "Designed for extensibility", where Kubernetes can acquire 3rd-party features without changing its source code \cite{KubernetesDocs}.
+In Figure~\ref{fig:k8s_arch} there is graphical representation of Kubernetes cluster. Not all components shown in the figure are mandatory for Kubernetes to work correctly. At the control plane part, \textit{\nameref{sec:cloudControllerManager}} might not be mandatory, in on-premises configurations where interacting with cloud provider is not needed. On the right side of figure in node representation is \textit{\nameref{sec:kubeProxy}} component, which is not mandatory as some networking plugins can provide own implementation of proxy \cite{KubernetesArch}. This is an example of "Designed for extensibility", where Kubernetes can acquire 3rd-party features without changing its source code \cite{KubernetesDocs}.
 
 
 %---------------------------------------------------------------------------
@@ -75,21 +75,21 @@ On figure~\ref{fig:k8s_arch} there is graphical representation of Kubernetes clu
 \subsection{Control plane}
 \label{sec:k8s_cplane}
 
-Control plane is like a brain in Kubernetes cluster. Interaction with cluster using kubectl tool to perform requests is handled by \textit{\nameref{sec:kubeApiServer}}. It is responsible for communication with worker nodes running pods, a smallest unit managed by K8s that has containers inside \cite{KubernetesArch}.
+Control plane is like a brain in Kubernetes cluster. Interaction with cluster using kubectl tool to perform requests is handled by \textit{\nameref{sec:kubeApiServer}}. It is responsible for communication with worker nodes running pods, the smallest unit managed by K8s that has containers inside \cite{KubernetesArch}.
 
 %---------------------------------------------------------------------------
 
 \subsubsection{cloud-controller-manager}
 \label{sec:cloudControllerManager}
 
-This component allows Kubernetes clusters to interact with cloud provider's API. It is combined with kube-controller-manager as single binary and can be replicated. This is the only component that talks to the cloud provider, separating other components from direct communication with the cloud. When running without cloud envirnoment this component is absent \cite{KubernetesArch}.
+This component allows Kubernetes clusters to interact with cloud provider's API. It is combined with kube-controller-manager as single binary and can be replicated. This is the only component that talks to the cloud provider, separating other components from direct communication with the cloud. When running without cloud environment this component is absent \cite{KubernetesArch}.
 
 %---------------------------------------------------------------------------
 
 \subsubsection{etcd}
 \label{sec:etcd}
 
-Etcd is an open-source distributed key-value store service often used in distribution systems. It is responsible for maintaining both the current state and its previous version in its persistent memory \cite{KubernetesArch}\cite{Etcd}.
+Etcd is an open-source distributed key-value store service often used in distributed systems. It is responsible for maintaining both the current state and its previous version in its persistent memory \cite{KubernetesArch}\cite{Etcd}.
 
 %---------------------------------------------------------------------------
 
@@ -160,7 +160,7 @@ The purpose of namespace object is to isolate groups of resources like pods, dep
 \subsubsection{Pods}
 \label{sec:pods}
 
-Pods are the smallest deployable objects in Kubernetes. It contains one or more containers, which can communicate with each other using localhost interface. Since they share IP addresses, they cannot use the same ports. It is useful when our service consists of two apps coupled together. For example, there is a pod which has two containers, one responsible for compiling a code, the second one is creating cache entry from compiled object and uploads to some data storage. It makes more sense, as sharing data among containers in a pod is easier than on node between pods. Scaling is simpler than replicating one pod instead of two. Moreover, communication between apps happens using localhost, in scenario where there are two pods with one container, ClusterIP \textit{\nameref{svc}} is needed. However, the most common approach is to run one container per pod, where pod is just managing wrapper for containerized app. Also, rather than creating pod directly it is more common to use workload resource like \textit{\nameref{deployment}} \cite{KubernetesPods}. 
+Pods are the smallest deployable objects in Kubernetes. They contain one or more containers, which can communicate with each other using localhost interface. Because they share IP addresses, they cannot use the same ports. It is useful when our service consists of two applications coupled together. For example, there is a pod which has two containers, one responsible for compiling code, the second one is creating a cache entry from compiled object and uploading it to some data storage. It is more logical to share data among containers in a pod than on node between pods, as it is easier. Scaling is simpler, as it involves replicating a single pod instead of managing two separate pods. Moreover, communication between applications happens using the localhost interface. In scenario where there are two pods, each with one container, ClusterIP \textit{\nameref{svc}} is needed. However, the most common approach is to run one container per pod, where a pod is just managing wrapper for containerized application. Also, rather than creating pod directly it is more common to use workload resource like \textit{\nameref{deployment}} \cite{KubernetesPods}. 
 
 
 \subsubsection{ReplicaSet}
@@ -177,13 +177,13 @@ Deployment is a higher-level abstraction over \textit{\nameref{replicaset}}, tha
 \subsubsection{DaemonSet}
 \label{daemonset}
 
-Running pods using DaemonSet guarantee that every node will have a copy of desired pod (if resource requirements are met etc.). It can automatically add or remove pods if the number of nodes changes. The typical usage is creating monitoring pod on every node \cite{KubernetesDaemonSet}. 
+Running pods using DaemonSet guarantees that every node will have a copy of the desired pod (if resource requirements are met etc.). It can automatically add or remove pods if the number of nodes changes. The typical usage is creating monitoring pod on every node \cite{KubernetesDaemonSet}. 
 
 
 \subsubsection{StatefulSet}
 \label{statefulset}
 
-StatefulSet unlike \textit{\nameref{deployment}} is stateful. It saves an identity of each pod and if e.g., some persistent storage is assigned to specific e.g., database pod, when it dies, Kubernetes will recreate pod on the same node as it was previously \cite{KubernetesStatefulSet}.
+StatefulSet, unlike a \textit{\nameref{deployment}}, is stateful. It saves an identity of each pod and if e.g., some persistent storage is assigned to specific e.g., database pod, when it dies, Kubernetes will recreate the pod on the same node as before \cite{KubernetesStatefulSet}.
 
 \subsubsection{Job}
 \label{job}
@@ -192,7 +192,7 @@ Runs pod that does one task and exists. Kubernetes will retry execution if pod f
 
 \subsubsection{CronJob}
 \label{cronjob}
-Behaviors like \textit{\nameref{job}} but can regularly run every given time for tasks like database backups or log rotation \cite{KubernetesCronJob}. 
+Behaves like \textit{\nameref{job}} but can regularly run at specified intervals for tasks like database backups or log rotation \cite{KubernetesCronJob}. 
 
 \subsubsection{Service}
 \label{svc}
@@ -261,18 +261,18 @@ The functionalities of Gateway API are so wide, that the Kubernetes authors use 
 \begin{figure}[tbh]
     \centering
     \includegraphics[width=0.7\columnwidth]{images/gateway-api-resource-model.png}
-    \caption{Gateway API roles-oriented resource model \cite{KubernetesGatewayAPI}}
+    \caption{Gateway API roles-oriented resource model \cite{LucidApp}\cite{KubernetesGatewayAPI}\cite{PersonIcon}.}
     \label{fig:gatewayApiResourceModel}
 \end{figure}
 
 The model focuses on 3 separate groups of people who interact with a cluster on various levels. 
 
-On a top of figure~\ref{fig:gatewayApiResourceModel} there are infrastructure providers, who provide GatewayClass resource. They are responsible for the overall multiple clusters, rather than ensuring developers can access pods correctly \cite{KubernetesGatewayAPI}. The Gateway API creators provide a clear overview of what GatewayClass is: "This resource represents a class of Gateways that can be instantiated.". It defines specific types of load balancing implementations and provides clear explanation of capabilities available in Kubernetes resource model. The functionality is like \textit{\nameref{ingress}} \cite{KubernetesGatewayAPI} \cite{KubernetesGatewayClass}. There can be more than one GatewayClasss created. \cite{KubernetesGatewayAPI}. 
+On a top of Figure~\ref{fig:gatewayApiResourceModel} there are infrastructure providers, who provide GatewayClass resource. They are responsible for the overall multiple clusters, rather than ensuring developers can access pods correctly \cite{KubernetesGatewayAPI}. The GatewayClass resource is a class of Gateway which can be created. It defines specific types of load balancing implementations and provides clear explanation of capabilities available in Kubernetes resource model. The functionality is like \textit{\nameref{ingress}} \cite{KubernetesGatewayAPI} \cite{KubernetesGatewayClass}. There can be more than one GatewayClasss created. \cite{KubernetesGatewayAPI}. 
 
 
-Cluster operators are in the middle of figure~\ref{fig:gatewayApiResourceModel}, they make sure that cluster meets requirements for several users. As maintainers define Gateway resource, some load balancing system is provisioned by GatewayClasss. Gateway resource defines specific instance which will handle incoming traffic. Allows defining specific protocol, port or allowed resources to route inbound traffic \cite{KubernetesGatewayAPI} \cite{KubernetesGateway}.
+Cluster operators are in the middle of Figure~\ref{fig:gatewayApiResourceModel}, they make sure that cluster meets requirements for several users. As maintainers define Gateway resource, some load balancing system is provisioned by GatewayClasss. Gateway resource defines specific instance which will handle incoming traffic. Allows defining specific protocol, port or allowed resources to route inbound traffic \cite{KubernetesGatewayAPI} \cite{KubernetesGateway}.
 
-End users specified on Gateway API resource model on~\ref{fig:gatewayApiResourceModel} figure are application developers. They focus on serving applications to the clients by creating a resource named HTTPRoute. The resource defines HTTP routing from defined gateway to end API objects like service. It can to split traffic using "weight" as a key, which represents the percentage of the total traffic to be routed. GRPCRoute is similar, but operates on different protocols. \cite{KubernetesGatewayAPI} \cite{KubernetesHTTPRoute}. 
+End users specified on Gateway API resource model in Figure~\ref{fig:gatewayApiResourceModel} are application developers. They focus on serving applications to the clients by creating a resource named HTTPRoute. The resource defines HTTP routing from defined gateway to end API objects like service. It can to split traffic using "weight" as a key, which represents the percentage of the total traffic to be routed. GRPCRoute is similar, but operates on different protocols. \cite{KubernetesGatewayAPI} \cite{KubernetesHTTPRoute}. 
 
 
 
@@ -326,12 +326,12 @@ Antrea is an open-source CNI plugin which is built on Open vSwitch which require
 
 Cilium, open-source CNI which uses eBPF (extended Barkeley Packer Filter) for packet processing, security and deep observability using Hubble \cite{CiliumOverview}. Some environments may not be suitable because Cilium requires a kernel version of 5.4 or higher \cite{CiliumInstall}. eBPF is a technology that allows running defined programs, with custom logic inside operating system kernel in privileged context without need of any kernel source code changes or loading modules. Lack of switching between kernel and user space, which reduces latency \cite{eBPF}. 
 
-As seen on figure~\ref{fig:ebpf_routing}, the whole point of eBPF networking is skipping overhead that comes from iptables. Moreover, eBPF implements hash tables for storing routing policies, which time complexity is O(log n), compared to iptables array O(n). It makes clear that large-scale clusters will benefit from using eBPF \cite{IsovalentHash}. 
+Figure~\ref{fig:ebpf_routing}, shows standard container networking on the left side and Cilium eBPF container networking on the right. The whole point of eBPF networking is skipping overhead that comes from iptables. Moreover, eBPF implements hash tables for storing routing policies, which time complexity is O(log n), compared to iptables array O(n). It makes clear that large-scale clusters will benefit from using eBPF \cite{IsovalentHash}. 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\columnwidth]{images/ebpf_hostrouting.png}
-    \caption{Cilium eBPF host-routing \cite{CiliumCNIBenchmark}}
+    \caption{Cilium eBPF host-routing \cite{K8sIcons}\cite{LucidApp}\cite{CiliumCNIBenchmark}.}
     \label{fig:ebpf_routing}
 \end{figure}
 
