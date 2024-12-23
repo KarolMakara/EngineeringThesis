@@ -96,7 +96,7 @@ Kind (Kubernetes in Docker) is a tool for creating local Kubernetes clusters. It
 \subsubsection{Grafana K6}
 \label{sec:grafana}
 
-Grafana k6 is an open-source load testing tool designed to simulate virtual users interacting with specified endpoints. The test configurations are written in JavaScript using the k6 library, allowing for the creation of detailed performance tests to evaluate system behavior under load.
+Grafana K6 is an open-source load testing tool designed to simulate virtual users interacting with specified endpoints. The test configurations are written in JavaScript using the k6 library, allowing for the creation of detailed performance tests to evaluate system behavior under load.
 MetalLB
 
 \subsubsection{MetalLB}
@@ -210,15 +210,7 @@ The playbook from listing~\ref{lst:antreaEgressPlaybook} produces following infr
   \label{fig:antreaEgressScenarioArch}
 \end{figure}
 
-The Kubernetes cluster, as shown in Figure~\ref{fig:antreaEgressScenarioArch}, is provisioned on a personal computer using Kind and configured with Ansible and Terraform. The cluster consists of three nodes: a control plane, a worker node, and an egress gateway, all of which are part of the Docker network. When the role terraform\_run\_egress\_iperf starts execution and the created Iperf3 pod is ready, the test begins. The client, using the TCP protocol, sends data to the server (outside the cluster), which is routed through the egress gateway. The Iperf3 server detects that the traffic is coming from the egress gateway node (it sees the IP address of the egress gateway node as the source), because the traffic from the pod is SNATed.
-
-The Iperf3 client sends data packets using the TCP protocol, and after receiving acknowledgment from the server, the networking metrics are stored in memory. At the end of the test, a JSON file containing the gathered data is saved inside the pod. This file is saved on a volume shared with the host (personal laptop), ensuring that the data remains accessible after the test ends and the pod is terminated. Meanwhile, the Node Exporter continuously scrapes the metrics, which are pulled by Prometheus into its database. After the measurement is complete, the unformatted data is downloaded from Prometheus and saved as a CSV file.
-
-
-%---------------------------------------------------------------------------
-
-
-The playbook for Cilium is similar to the one used to create the egress scenario with the Antrea CNI. The Ansible roles are designed to be reusable across different playbooks. The only differences are the CNI installation, the deployment of the Egress Gateway, and in Cilium, the desired node is labeled with egress-node=true \cite{CiliumEgressGateway}. The infrastructure can be seen in Figure~\ref{fig:ciliumEgressGatewayScenarioArch}. The Iperf3 pod starts generating traffic, which is encapsulated and sent to the egress gateway. The gateway performs IP address translation and forwards the data to the Iperf3 server outside the cluster.
+The Kubernetes cluster, as shown in Figure~\ref{fig:antreaEgressScenarioArch}, is provisioned on a personal computer using Kind and configured with Ansible and Terraform. The cluster consists of three nodes: a control plane, a worker node, and an egress gateway, all of which are part of the Docker network. When the role terraform\_run\_egress\_iperf starts execution and the created Iperf3 pod is ready, the test begins. The client, using the TCP protocol, sends data to the server (outside the cluster), which is routed through the egress gateway. The Iperf3 server detects that the traffic is coming from the egress gateway node (it sees the IP address of the egress gateway node as the source), because the traffic from the pod is SNATed.The Iperf3 client sends data packets using the TCP protocol, and after receiving acknowledgment from the server, the networking metrics are stored in memory. At the end of the test, a JSON file containing the gathered data is saved inside the pod. This file is saved on a volume shared with the host (personal laptop), ensuring that the data remains accessible after the test ends and the pod is terminated. Meanwhile, the Node Exporter continuously scrapes the metrics, which are pulled by Prometheus into its database. After the measurement is complete, the unformatted data is downloaded from Prometheus and saved as a CSV file. 
 
 \begin{figure}[H]
   \centering
@@ -226,12 +218,16 @@ The playbook for Cilium is similar to the one used to create the egress scenario
   \caption{Cilium Egress Scenario infrastructure \cite{K8sIcons}\cite{LucidApp}\cite{CiliumEgressGateway}\cite{CiliumComponents}\cite{TerraformIcon}\cite{AnsibleIcon}\cite{KindIcon}\cite{DockerIcon}.}
   \label{fig:ciliumEgressGatewayScenarioArch}
 \end{figure}
+
+The playbook for Cilium is similar to the one used to create the egress scenario with the Antrea CNI. The Ansible roles are designed to be reusable across different playbooks. The only differences are the CNI installation, the deployment of the Egress Gateway, and in Cilium, the desired node is labeled with egress-node=true \cite{CiliumEgressGateway}. The infrastructure can be seen in Figure~\ref{fig:ciliumEgressGatewayScenarioArch}. The Iperf3 pod starts generating traffic, which is encapsulated and sent to the egress gateway. The gateway performs IP address translation and forwards the data to the Iperf3 server outside the cluster.
+
+
 %---------------------------------------------------------------------------
 
 \section{Ingress scenario implementation}
 \label{sec:ingressImpl}
 
-The ingress scenario evaluates the CPU and memory usage of the Antrea and Cilium Container Networking Plugins while using the Gateway API to handle weighted traffic routing. The experiment involves using the Gateway API to route 40\% of incoming requests to one pod and evaluating the accuracy of traffic splitting by two different Gateway APIs. The test setup includes the k6 load testing tool running outside the Kubernetes cluster, generating traffic towards the Gateway API. The simulated traffic has four intensity levels, determined by allocating different numbers of virtual users interacting with the Gateway API. These levels are one, ten, one hundred, and one thousand virtual users. The traffic is initiated using the k6 tool, which runs inside a container on a personal computer. The network generator performs HTTP requests to the Gateway API and saves the received responses, extracting the pod name to a text file (one per line). By compiling a list of responses containing the names of two pods, the accuracy of the Gateway API traffic splitting is calculated. CPU and memory usage are monitored with a Node Exporter throughout the test and retrieved at the end of the scenario.
+The ingress scenario evaluates the CPU and memory usage of the Antrea and Cilium Container Networking Plugins while using the Gateway API to handle weighted traffic routing. The experiment involves using the Gateway API to route 40\% of incoming requests to one pod and evaluating the accuracy of traffic splitting by two different Gateway APIs. The test setup includes the K6 load testing tool running outside the Kubernetes cluster, generating traffic towards the Gateway API. The simulated traffic has four intensity levels, determined by allocating different numbers of virtual users interacting with the Gateway API. These levels are one, ten, one hundred, and one thousand virtual users. The traffic is initiated using the K6 tool, which runs inside a container on a personal computer. The network generator performs HTTP requests to the Gateway API and saves the received responses, extracting the pod name to a text file (one per line). By compiling a list of responses containing the names of two pods, the accuracy of the Gateway API traffic splitting is calculated. CPU and memory usage are monitored with a Node Exporter throughout the test and retrieved at the end of the scenario.
 
 
 %---------------------------------------------------------------------------
@@ -350,7 +346,7 @@ Figure~\ref{fig:antreaIngressScenarioArch} shows the cluster created using the s
   \label{fig:ciliumIngressScenarioArch}
 \end{figure}
 
-Both test cases, shown in Figures~\ref{fig:antreaIngressScenarioArch} and~\ref{fig:ciliumIngressScenarioArch}, consist of two nodes, each running echo pods. The pods host an application designed to return their pod name when a request is made to the "/echo" endpoint. The Grafana K6 tool sends requests to the exposed Gateway API IP address and, in return, logs which pod responded to the request. This information is used to calculate the accuracy of traffic weighting in both configurations. The load balancer shown at the bottom of the figures exposes the Gateway API to a public IP address so that the k6 client, located on a personal computer, can perform the requests. It does not split the traffic; that is done by the Gateway API.
+Both test cases, shown in Figures~\ref{fig:antreaIngressScenarioArch} and~\ref{fig:ciliumIngressScenarioArch}, consist of two nodes, each running echo pods. The pods host an application designed to return their pod name when a request is made to the "/echo" endpoint. The Grafana K6 tool sends requests to the exposed Gateway API IP address and, in return, logs which pod responded to the request. This information is used to calculate the accuracy of traffic weighting in both configurations. The load balancer shown at the bottom of the figures exposes the Gateway API to a public IP address so that the K6 client, located on a personal computer, can perform the requests. It does not split the traffic; that is done by the Gateway API.
 
 The ingress scenario using the Cilium CNI plugin does not require the installation of NGINX Gateway Fabric, as it utilizes its own built-in implementation.
 
