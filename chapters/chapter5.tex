@@ -53,13 +53,13 @@ Figures~\ref{fig:cpu_avg} and~\ref{fig:memory_avg} show that resource utilizatio
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.35\textwidth}
+    \begin{subfigure}[b]{0.45\textwidth}
         \includegraphics[width=\textwidth]{plots/small/cpu_egress.png}
         \caption{}
         \label{fig:cpu_a}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.35\textwidth}
+    \begin{subfigure}[b]{0.45\textwidth}
         \includegraphics[width=\textwidth]{plots/small/cpu_base.png}
         \caption{}
         \label{fig:cpu_b}
@@ -67,13 +67,13 @@ Figures~\ref{fig:cpu_avg} and~\ref{fig:memory_avg} show that resource utilizatio
     
     \vspace{10pt}
     
-    \begin{subfigure}[b]{0.35\textwidth}
+    \begin{subfigure}[b]{0.45\textwidth}
         \includegraphics[width=\textwidth]{plots/small/cpu_antrea.png}
         \caption{}
         \label{fig:cpu_c}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.35\textwidth}
+    \begin{subfigure}[b]{0.45\textwidth}
         \includegraphics[width=\textwidth]{plots/small/cpu_cilium.png}
         \caption{}
         \label{fig:cpu_d}
@@ -82,32 +82,32 @@ Figures~\ref{fig:cpu_avg} and~\ref{fig:memory_avg} show that resource utilizatio
     \caption{CPU usage in all four test cases.}
     \label{fig:cpuFour}
 \end{figure}
-Figures~\ref{fig:cpu_a},\ref{fig:cpu_b},\ref{fig:memory_a}, and~\ref{fig:memory_b} compare the average CPU and memory usage between Cilium and Antrea CNI across all eight runs. These figures demonstrate how both container network interface plugins perform under the same test conditions, helping to evaluate which plugin consumes fewer resources. In only the second run did Antrea not use less CPU than Cilium.
-Figures~\ref{fig:cpu_c},\ref{fig:cpu_d},\ref{fig:memory_c}, and~\ref{fig:memory_d} highlight how using an egress gateway with each CNI plugin affects resource usage, compared to scenarios where an egress gateway is not used.
+Figures~\ref{fig:cpu_a},~\ref{fig:cpu_b},~\ref{fig:memory_a}, and~\ref{fig:memory_b} compare the average CPU and memory usage between Cilium and Antrea CNI across all eight runs. These figures demonstrate how both container network interface plugins perform under the same test conditions, helping to evaluate which plugin consumes fewer resources. In only the second run did Antrea not use less CPU than Cilium.
+Figures~\ref{fig:cpu_c},~\ref{fig:cpu_d},~\ref{fig:memory_c}, and~\ref{fig:memory_d} highlight how using an egress gateway with each CNI plugin affects resource usage, compared to scenarios where an egress gateway is not used.
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.35\textwidth}
-        \includegraphics[width=\textwidth]{plots/small/memory_egress.png}
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{plots/egress/memory_egress.png}
         \caption{}
         \label{fig:memory_a}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.35\textwidth}
-        \includegraphics[width=\textwidth]{plots/small/memory_base.png}
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{plots/egress/memory_base.png}
         \caption{}
         \label{fig:memory_b}
     \end{subfigure}
     
     \vspace{10pt}
     
-    \begin{subfigure}[b]{0.35\textwidth}
-        \includegraphics[width=\textwidth]{plots/small/memory_antrea.png}
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{plots/egress/memory_antrea.png}
         \caption{}
         \label{fig:memory_c}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.35\textwidth}
-        \includegraphics[width=\textwidth]{plots/small/memory_cilium.png}
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{plots/egress/memory_cilium.png}
         \caption{}
         \label{fig:memory_d}
     \end{subfigure}
@@ -160,20 +160,20 @@ Figures~\ref{fig:throughput_avg} and~\ref{fig:rtt_avg} provide an overall perfor
 
 
 
-Figures~\ref{fig:throughput_a},\ref{fig:throughput_b},\ref{fig:rtt_a}, and~\ref{fig:rtt_b} illustrate the average throughput and round-trip time across eight runs, comparing the performance of the networking plugins. Throughput with the Cilium egress gateway remains stable, hovering around 6.3 Gb/s, with tighter confidence intervals indicating greater stability. In every run, Antrea demonstrates an advantage in both data transfer rate and RTT.
-Figures~\ref{fig:throughput_c},\ref{fig:throughput_d},\ref{fig:rtt_c}, and~\ref{fig:rtt_d} compare the performance of the CNI plugins with and without the use of an egress gateway. They highlight whether using an egress gateway is beneficial, showing significant differences in throughput and round-trip time.
+Figures~\ref{fig:throughput_a},~\ref{fig:throughput_b},~\ref{fig:rtt_a}, and~\ref{fig:rtt_b} illustrate the average throughput and round-trip time across eight runs, comparing the performance of the networking plugins. Throughput with the Cilium egress gateway remains stable, hovering around 6.3 Gb/s, with tighter confidence intervals indicating greater stability. In every run, Antrea demonstrates an advantage in both data transfer rate and RTT.
+Figures~\ref{fig:throughput_c},~\ref{fig:throughput_d},~\ref{fig:rtt_c}, and~\ref{fig:rtt_d} compare the performance of the CNI plugins with and without the use of an egress gateway. They highlight whether using an egress gateway is beneficial, showing significant differences in throughput and round-trip time.
 
 
 \begin{figure}[H]
     \centering
     \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/small/throughput_egress.png}
+        \includegraphics[width=\textwidth]{plots/egress/throughput_egress.png}
         \caption{}
         \label{fig:throughput_a}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/small/throughput_base.png}
+        \includegraphics[width=\textwidth]{plots/egress/throughput_base.png}
         \caption{}
         \label{fig:throughput_b}
     \end{subfigure}
@@ -181,13 +181,13 @@ Figures~\ref{fig:throughput_c},\ref{fig:throughput_d},\ref{fig:rtt_c}, and~\ref{
     \vspace{10pt}
     
     \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/small/throughput_antrea.png}
+        \includegraphics[width=\textwidth]{plots/egress/throughput_antrea.png}
         \caption{}
         \label{fig:throughput_c}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/small/throughput_cilium.png}
+        \includegraphics[width=\textwidth]{plots/egress/throughput_cilium.png}
         \caption{}
         \label{fig:throughput_d}
     \end{subfigure}
@@ -199,13 +199,13 @@ Figures~\ref{fig:throughput_c},\ref{fig:throughput_d},\ref{fig:rtt_c}, and~\ref{
 \begin{figure}[H]
     \centering
     \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/small/rtt_egress.png}
+        \includegraphics[width=\textwidth]{plots/egress/rtt_egress.png}
         \caption{}
         \label{fig:rtt_a}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/small/rtt_base.png}
+        \includegraphics[width=\textwidth]{plots/egress/rtt_base.png}
         \caption{}
         \label{fig:rtt_b}
     \end{subfigure}
@@ -213,13 +213,13 @@ Figures~\ref{fig:throughput_c},\ref{fig:throughput_d},\ref{fig:rtt_c}, and~\ref{
     \vspace{10pt}
     
     \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/small/rtt_antrea.png}
+        \includegraphics[width=\textwidth]{plots/egress/rtt_antrea.png}
         \caption{}
         \label{fig:rtt_c}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/small/rtt_cilium.png}
+        \includegraphics[width=\textwidth]{plots/egress/rtt_cilium.png}
         \caption{}
         \label{fig:rtt_d}
     \end{subfigure}
@@ -254,7 +254,7 @@ This performance advantage of Antrea could be attributed to the fact that Cilium
     \label{fig:resource_cloud_avg}
 \end{figure}
 
-Comparing Figures~\ref{fig:resource_cloud_avg} and~\ref{fig:resource_local_avg}, it is evident that traffic management primarily impacts CPU usage rather than memory consumption, as memory usage shows smaller increases. In the cloud environment, Antrea demonstrates better resource efficiency, while in the local environment, Cilium consumes fewer resources. Antrea might use more CPU locally because there is an additional node, and the Gateway API NGINX pod is located on a different node (on the control plane) than the pod it forwards data to. This requires more resources to handle traffic across the cluster rather than within a single node.
+Comparing Figures~\ref{fig:resource_cloud_avg} and~\ref{fig:resource_local_avg}, it is evident that traffic management primarily impacts CPU usage rather than memory consumption, as memory usage shows egresser increases. In the cloud environment, Antrea demonstrates better resource efficiency, while in the local environment, Cilium consumes fewer resources. Antrea might use more CPU locally because there is an additional node, and the Gateway API NGINX pod is located on a different node (on the control plane) than the pod it forwards data to. This requires more resources to handle traffic across the cluster rather than within a single node.
 
 \begin{figure}[H]
     \centering
@@ -281,12 +281,12 @@ When comparing traffic weighting accuracy in Figure~\ref{fig:vus_avg} with an in
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.6\textwidth}
+    \begin{subfigure}[b]{0.8\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/vus_cloud_all.png}
         \caption{}
         \label{fig:vus_cloud_avg}
     \end{subfigure}
-    \begin{subfigure}[b]{0.6\textwidth}
+    \begin{subfigure}[b]{0.8\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/vus_local_all.png}
         \caption{}
         \label{fig:vus_local_avg}
@@ -337,12 +337,12 @@ Analyzing the plots in Figure~\ref{fig:avg_vus}, we observe overlapping confiden
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.48\textwidth}
+    \begin{subfigure}[b]{0.49\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/time_window_5_1vu_reference_cloud.png}
         \label{fig:reference_1vu}
         \caption{}
     \end{subfigure}
-    \begin{subfigure}[b]{0.48\textwidth}
+    \begin{subfigure}[b]{0.49\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/time_window_5_10vu_reference_cloud.png}
         \label{fig:reference_10vu}
         \caption{}
@@ -350,12 +350,12 @@ Analyzing the plots in Figure~\ref{fig:avg_vus}, we observe overlapping confiden
 
     \vspace{0.5cm}
 
-    \begin{subfigure}[b]{0.48\textwidth}
+    \begin{subfigure}[b]{0.49\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/time_window_5_100vu_reference_cloud.png}
         \label{fig:reference_100vu}
         \caption{}
     \end{subfigure}
-    \begin{subfigure}[b]{0.48\textwidth}
+    \begin{subfigure}[b]{0.49\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/time_window_5_1000vu_reference_cloud.png}
         \label{fig:reference_1000vu}
         \caption{}

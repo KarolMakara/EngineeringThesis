@@ -5,9 +5,9 @@ In modern Kubernetes networking, managing traffic flow into and out of a cluster
 \section{Egress scenario: routing outgoing traffic via Egress Gateway}
 \label{sec:egress}
 
-The egress gateway can play a key role in a cluster's security. It can enforce routing all outgoing connections initiated within labeled pods through the gateway node. The node can route all outgoing traffic through a security system to scan each packet for potential threats, ensuring that outgoing traffic only accesses secure services outside the cluster.
+The Egress Gateway can play a key role in a cluster's security. It can enforce routing all outgoing connections initiated within labeled pods through the gateway node. The node can route all outgoing traffic through a security system to scan each packet for potential threats, ensuring that outgoing traffic only accesses secure services outside the cluster.
 
-The IT department of a financial company manages Kubernetes clusters in their local laboratory. The infrastructure is used to create a production-ready, efficient, and secure environment for financial services, where handling sensitive data and adhering to strict regulatory standards is critical. Leaving unmonitored critical traffic leaving the cluster can create vulnerabilities, potentially exposing the system to data exfiltration from financial applications. They decided to analyze all outgoing traffic from financial services pods using intrusion detection system (IDS) software. However, they also provide services that do not require such robust security. Redirecting every request to the traffic analyzer would add unnecessary overhead to exposed applications and cause higher latency. Cluster operators decided to leverage an egress gateway to route all outgoing traffic from financial services into a security tool to monitor and analyze packets. However, end users started complaining that their applications were showing errors like "503 Service Unavailable." The IT administrators began troubleshooting and concluded that the egress gateway was acting as a bottleneck in the cluster. They started searching online for solutions and decided to create separate gateways for each deployment of their services \cite{CalicoEgressDeploy}. End users stopped complaining about poor service availability.
+To illustrate this concept, consider a scenario where the IT department of a financial company manages Kubernetes clusters in their local laboratory. The infrastructure is used to create a production-ready, efficient, and secure environment for financial services, where handling sensitive data and adhering to strict regulatory standards is critical. Leaving unmonitored critical traffic leaving the cluster can create vulnerabilities, potentially exposing the system to data exfiltration from financial applications. They decided to analyze all outgoing traffic from financial services pods using intrusion detection system (IDS) software. However, they also provide services that do not require such robust security. Redirecting every request to the traffic analyzer would add unnecessary overhead to exposed applications and cause higher latency. Cluster operators decided to leverage an egress gateway to route all outgoing traffic from financial services into a security tool to monitor and analyze packets. However, end users started complaining that their applications were showing errors like "503 Service Unavailable." The IT administrators began troubleshooting and concluded that the egress gateway was acting as a bottleneck in the cluster. They started searching online for solutions and decided to create separate gateways for each deployment of their services \cite{CalicoEgressDeploy}. End users stopped complaining about poor service availability.
 
 \subsection{Egress gateway in selected CNI plugins}
 \label{subsection:egressGateway}
@@ -18,37 +18,37 @@ Container Network Interface (CNI) plugins implement their own egress gateways, o
 \subsubsection{Antrea}
 \label{subsection:antreaEgress}
 
-The Antrea Egress CRD (Custom Resource Definition) API is a resource that controls how pods in a cluster access external services. This resource specifies which egress IP should be used by selected pods. When a pod communicates with an external network, the traffic is routed through the node that has the specified egress IP (egress gateway). The source IP address of the traffic is then translated to the configured IP address \cite{AntreaEgressArch}.
+The Antrea Egress CRD (\textit{Custom Resource Definition}) API is a resource that controls how pods in a cluster access external services. This resource specifies which egress IP should be used by selected pods. When a pod communicates with an external network, the traffic is routed through the node that has the specified egress IP (egress gateway). The source IP address of the traffic is then translated to the configured IP address \cite{AntreaDocs}.
 
 \begin{figure}[tbh]
     \centering
     \includegraphics[width=0.6\columnwidth]{images/antrea_overview.png}
-    \caption{Antrea Egress Architecture \cite{LucidApp}\cite{AntreaEgressArch}.}
+    \caption{Antrea Egress Architecture \cite{AntreaDocs}.}
     \label{fig:antreaEgressArch}
 \end{figure}
 
 
-Figure~\ref{fig:antreaEgressArch} shows the architecture of the communication flow when an egress gateway is configured in the Antrea CNI. When a pod running on a Kubernetes node tries to access an external service (assuming it is labeled to route its outbound traffic through the egress node), the traffic is tunneled (through OvS) to the gateway node, and the Antrea Agent performs SNAT. After translation, the next network peer that communicates with the egress gateway will see its IP as the source IP, instead of the IP address of the pod \cite{AntreaEgressArch} \cite{AntreaSNAT} \cite{AntreaArch}.
+Figure~\ref{fig:antreaEgressArch} shows the architecture of the communication flow when an egress gateway is configured in the Antrea CNI. When a pod running on a Kubernetes node tries to access an external service (assuming it is labeled to route its outbound traffic through the egress node), the traffic is tunneled (through OvS) to the gateway node, and the Antrea Agent performs SNAT. After translation, the next network peer that communicates with the egress gateway will see its IP as the source IP, instead of the IP address of the pod \cite{AntreaDocs}.
 
-Let's explain the egress configuration YAML from Listing~\ref{lst:yamlAntreaEgress} \cite{AntreaEgressArch}:
+Let's explain the egress configuration YAML from Listing~\ref{lst:yamlAntreaEgress} \cite{AntreaDocs}:
 \begin{itemize}
     \item Antrea allows matching the pods that route through the egress gateway based on two criteria:
 
     \begin{enumerate}
-        \item namespaceSelector -- specifies which pods within the specified namespace should redirect outbound traffic.
-        \item podSelector -- selects pods with the specified labels. For example, it can match pods labeled with role=web to redirect traffic.
+        \item \textit{namespaceSelector} -- specifies which pods within the specified namespace should redirect outbound traffic;
+        \item \textit{podSelector} -- selects pods with the specified labels. For example, it can match pods labeled with role=web to redirect traffic;
     \end{enumerate}
 
-    \item egressIP -- specifies SNAT IP address of an egress gateway, to which traffic is tunneled
-    \item externalIPPool -- name of externalIPPool resource which contains pool of IP addresses to allocate if egressIP is not set
+    \item \textit{egressIP} -- specifies SNAT IP address of an egress gateway, to which traffic is tunneled;
+    \item \textit{externalIPPool} -- name of \textit{externalIPPool} resource which contains pool of IP addresses to allocate if egressIP is not set.
 \end{itemize}
 
-It is possible to configure a failover egress gateway node using Antrea. To do this, egressIP and externalIPPool must be set (with egressIP being part of externalIPPool). When the current egress gateway stops working, another node within the externalIPPool will be selected. This infrastructure, with a failover service, is part of a high-availability setup for production environments (useful for the previously mentioned IT department) \cite{AntreaEgressArch}.
+It is possible to configure a failover egress gateway node using Antrea. To do this, \textit{egressIP} and \textit{externalIPPool} must be set (with \textit{egressIP} being part of \textit{externalIPPool}). When the current egress gateway stops working, another node within the \textit{externalIPPool} will be selected. This infrastructure, with a failover service, is part of a high-availability setup for production environments (useful, for example, for the IT department previously mentioned) \cite{AntreaDocs}.
 
 
 \begin{listing}[htb]
     \centering
-    \caption{Egress resource example \cite{AntreaEgressArch}.}
+    \caption{Egress resource example \cite{AntreaDocs}.}
     \begin{minted}[gobble=4, frame=single, linenos, fontsize=\scriptsize]{yaml}
     apiVersion: crd.antrea.io/v1alpha2
     kind: Egress
@@ -70,16 +70,16 @@ It is possible to configure a failover egress gateway node using Antrea. To do t
     \label{lst:yamlAntreaEgress}
 \end{listing}
 
-The ExternalIPPool resource from Listing~\ref{lst:yamlAntreaExternalIPPool} can be configured with the following fields \cite{AntreaEgressArch}:
+The \textit{ExternalIPPool} resource from Listing~\ref{lst:yamlAntreaExternalIPPool} can be configured with the following fields \cite{AntreaDocs}:
 
 \begin{itemize}
-    \item ipRanges -- IP pools range can be configured using a pair of IP (start and end), or by setting CIDR (Classless Inter-Domain Routing) range
-    \item nodeSelector -- will apply only on nodes specified by this field, e.g., nodes labeled with network-role: egress-gateway
+    \item \textit{ipRanges} -- IP pools range can be configured using a pair of IP (start and end), or by setting CIDR (Classless Inter-Domain Routing) range
+    \item \textit{nodeSelector} -- will apply only on nodes specified by this field, e.g., nodes labeled with network-role: egress-gateway
 \end{itemize}
 
 \begin{listing}[htb]
     \centering
-    \caption{ExternalIPPool resource example \cite{AntreaEgressArch}.}
+    \caption{\textit{ExternalIPPool} resource example \cite{AntreaDocs}.}
     \begin{minted}[gobble=4, frame=single, linenos, fontsize=\scriptsize]{yaml}
     apiVersion: crd.antrea.io/v1alpha2
     kind: ExternalIPPool
@@ -102,28 +102,28 @@ The ExternalIPPool resource from Listing~\ref{lst:yamlAntreaExternalIPPool} can 
 \subsubsection{Cilium}
 \label{subsection:ciliumEgress}
 
-To take advantage of Cilium's egress gateway features, eBPF masquerading must be enabled, and the node's kube-proxy component must be replaced with Cilium's implementation \cite{CiliumEgressGateway}. As shown in Figure~\ref{fig:ciliumEgressArch}, the Cilium agent injects routing information into eBPF maps within the kernel (relying on kernel support for eBPF features). Traffic from worker nodes is redirected to the egress gateway node, where it is SNATed and leaves the cluster. These routes, defined by Cilium policies configured in the control plane, ensure that every node is aware of which pods should redirect traffic to the designated egress node \cite{CiliumEgressGateway}. For node-to-node communication, Cilium encapsulates all traffic using UDP-based VXLAN or Geneve protocols \cite{CiliumRouting}.
+To take advantage of Cilium's egress gateway features, eBPF masquerading must be enabled, and the node's \textit{kube-proxy} component must be replaced with Cilium's implementation \cite{CiliumDocs}. As shown in Figure~\ref{fig:ciliumEgressArch}, the Cilium agent injects routing information into eBPF maps within the kernel (relying on kernel support for eBPF features). Traffic from worker nodes is redirected to the egress gateway node, where it is SNATed and leaves the cluster. These routes, defined by Cilium policies configured in the control plane, ensure that every node is aware of which pods should redirect traffic to the designated egress node \cite{CiliumDocs}. For node-to-node communication, Cilium encapsulates all traffic using UDP-based VXLAN or Geneve protocols \cite{CiliumDocs}.
 
 \begin{figure}[tbh]
     \centering
     \includegraphics[width=0.9\columnwidth]{images/cilium_egress.png}
-    \caption{Cilium Egress Architecture \cite{K8sIcons}\cite{LucidApp}\cite{CloudIcon2}\cite{CiliumEgressGatewayBlog}.}
+    \caption{Cilium Egress Architecture \cite{CiliumUseCases}.}
     \label{fig:ciliumEgressArch}
 \end{figure}
 
-Similar to Antrea egress resources, Cilium has its own CiliumEgressGatewayPolicy present on Listing~\ref{lst:yamlCiliumEgressGatewayPolicy} \cite{CiliumEgressGateway}:
+Similar to Antrea egress resources, Cilium has its own \textit{CiliumEgressGatewayPolicy} present in Listing~\ref{lst:yamlCiliumEgressGatewayPolicy} \cite{CiliumDocs}:
 
-Cilium allows matching the traffic that route through the egress gateway by \cite{CiliumEgressGateway}:
+Cilium allows matching the traffic that route through the egress gateway by \cite{CiliumDocs}:
 \begin{itemize}
-    \item podSelector -- matching pods based of used selector, like previous matching labels in Antrea, or by matching expressions (key operator, values). More than one podSelector can be used
-    \item destinationCIDRs -- an app in pod is requesting some external service, if this resource is match by defined CIDR, the request is routed to egress gateway. For 0.0.0.0/0 all traffic is outgoing by egress gateway. Setting excludedCIDRs is possible to exclude some IPs.
+    \item \textit{podSelector} -- matching pods based of used selector, like previous matching labels in Antrea, or by matching expressions (key operator, values). More than one \textit{podSelector} can be used
+    \item \textit{destinationCIDRs} -- an app in pod is requesting some external service, if this resource is match by defined CIDR, the request is routed to egress gateway. For 0.0.0.0/0 all traffic is outgoing by egress gateway. Setting \textit{excludedCIDRs} is possible to exclude some IPs.
 \end{itemize}
 
-Selecting an egress gateway can be done in three ways: by matching node labels, using IP address in egressIP field (as in Antrea) or by interface name \cite{CiliumEgressGateway}. 
+Selecting an egress gateway can be done in three ways: by matching node labels, using IP address in \textit{egressIP} field (as in Antrea) or by interface name \cite{CiliumDocs}. 
 
 \begin{listing}[htb]
     \centering
-    \caption{Egress resource example \cite{AntreaEgressArch}.}
+    \caption{Egress resource example \cite{AntreaDocs}.}
     \begin{minted}[gobble=4, frame=single, linenos, fontsize=\scriptsize]{yaml}
     apiVersion: cilium.io/v2
     kind: CiliumEgressGatewayPolicy
@@ -153,7 +153,7 @@ Selecting an egress gateway can be done in three ways: by matching node labels, 
 \end{listing}
 
 
-Both Antrea and Cilium allow us to configure an egress gateway in multiple ways. Cilium offers more flexibility in defining which traffic should be routed through the egress gateway. Unlike Antrea, Cilium can specify traffic by destination CIDR. While Cilium provides more capabilities for matching egress traffic, Antrea's implementation allows for the creation of a failover node, which will route traffic if the primary one fails. Creating a high-availability egress gateway in Cilium is possible only with the enterprise, paid version of the plugin. Additionally, Cilium leverages eBPF, which is designed for large-scale clusters \cite{CiliumOverview}. It is not clear which egress gateway CNI implementation is the best to use, as each has its advantages and drawbacks. In the next section, both gateways will be evaluated using networking tools in a local environment.
+Both Antrea and Cilium allow us to configure an egress gateway in multiple ways. Cilium offers more flexibility in defining which traffic should be routed through the egress gateway. Unlike Antrea, Cilium can specify traffic by destination CIDR. While Cilium provides more capabilities for matching egress traffic, Antrea's implementation allows for the creation of a failover node, which will route traffic if the primary one fails. Creating a high-availability egress gateway in Cilium is possible only with the enterprise, paid version of the plugin. Additionally, Cilium leverages eBPF, which is designed for large-scale clusters \cite{CiliumDocs}. It is not clear which egress gateway CNI implementation is the best to use, as each has its advantages and drawbacks. In the next section, both gateways will be evaluated using networking tools in a local environment.
 
 
 
@@ -161,7 +161,7 @@ Both Antrea and Cilium allow us to configure an egress gateway in multiple ways.
 \section{Ingress scenario: splitting incoming traffic via Gateway API}
 \label{sec:ingress}
 
-The Gateway API, as a successor to the Ingress object, provides enhanced features for traffic management and introduces a role-oriented approach to separate Kubernetes user and operator concerns. It supports traffic splitting, header modification, and URL rewriting. Additionally, the Gateway API supports key protocols such as HTTP, HTTPS, TCP, UDP, and gRPC. With its wide range of features, it can be used in various ways \cite{CiliumGatewayAPIBlog}.
+The Gateway API, as a successor to the Ingress object, provides enhanced features for traffic management and introduces a role-oriented approach to separate Kubernetes user and operator concerns. It supports traffic splitting, header modification, and URL rewriting. Additionally, the Gateway API supports key protocols such as HTTP, HTTPS, TCP, UDP, and gRPC. With its wide range of features, it can be used in various ways \cite{CiliumUseCases}.
 
 %---------------------------------------------------------------------------
 \subsubsection{Canary Deployment}
@@ -169,7 +169,7 @@ The Gateway API, as a successor to the Ingress object, provides enhanced feature
 
 Canary Deployment is one of the most common methods used to roll out a new application version to end users, ensuring that everything is working as expected before the full release. The core idea is to release new versions of software only to a small group of users, leaving most users unaware of the new release \cite{Canary}.
 
-This is where the traffic splitting feature of the Gateway API can be used \cite{CiliumTrafficSplitting}. There are typically five stages in the deployment process \cite{Canary}:
+This is where the traffic splitting feature of the Gateway API can be used \cite{CiliumDocs}. There are typically five stages in the deployment process \cite{Canary}:
 
 \begin{itemize}
     \item Initial state -- The stable version of the application is served.
@@ -195,7 +195,7 @@ A company is offering a weather API, but not all endpoints are publicly availabl
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\columnwidth]{images/ingress.png}
-    \caption{Example Kubernetes cluster with traffic mirroring \cite{KubernetesArch}\cite{K8sIcons}\cite{LucidApp}.}
+    \caption{Example Kubernetes cluster with traffic mirroring \cite{KubernetesDocs}.}
     \label{fig:mirroringImg}
 \end{figure}
 
@@ -212,18 +212,18 @@ Unfortunately, the Antrea plugin does not provide an implementation of the Gatew
 \subsubsection{Antrea + NGINX}
 \label{subsection:antreaIngress}
 
-Figure~\ref{fig:canaryAntreaImg} shows an example cluster where the Gateway API is configured to work in the canary stage. Antrea CNI is installed, and the antrea-ctrl and antrea-agent pods are deployed on the nodes. OvS tunneling among nodes is set up \cite{Antrea}. On the control plane node, the NGINX Gateway API is deployed as a pod \cite{NGINX}. This differs from Cilium, where the Gateway API is not run as a single pod \cite{CiliumGatewayAPI}. In this setup, traffic is processed by the NGINX Gateway API pod, while Antrea handles the networking stack, integrating with NGINX to manage traffic routing.
+Figure~\ref{fig:canaryAntreaImg} shows an example cluster where the Gateway API is configured to work in the canary stage. Antrea CNI is installed, and the antrea-ctrl and antrea-agent pods are deployed on the nodes. OvS tunneling among nodes is set up \cite{AntreaDocs}. On the control plane node, the NGINX Gateway API is deployed as a pod \cite{NGINX}. This differs from Cilium, where the Gateway API is not run as a single pod \cite{CiliumDocs}. In this setup, traffic is processed by the NGINX Gateway API pod, while Antrea handles the networking stack, integrating with NGINX to manage traffic routing.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\columnwidth]{images/antrea-nginx.png}
-    \caption{Example Kubernetes cluster with Antrea CNI and NGINX Gateway Fabric in canary stage of canary deployment \cite{KubernetesArch}\cite{K8sIcons}\cite{LucidApp}\cite{AntreaEgressArch}.}
+    \caption{Example Kubernetes cluster with Antrea CNI and NGINX Gateway Fabric in canary stage of canary deployment \cite{KubernetesDocs}\cite{AntreaDocs}.}
     \label{fig:canaryAntreaImg}
 \end{figure}
 
 \begin{listing}[htb]
     \centering
-    \caption{Egress resource example \cite{AntreaEgressArch}.}
+    \caption{Egress resource example \cite{AntreaDocs}.}
     \begin{minted}[gobble=4, frame=single, linenos, fontsize=\scriptsize]{yaml}
     apiVersion: gateway.networking.k8s.io/v1
     kind: HTTPRoute
@@ -254,12 +254,12 @@ Figure~\ref{fig:canaryAntreaImg} shows an example cluster where the Gateway API 
 \subsubsection{Cilium}
 \label{subsection:ciliumIngress}
 
-In Figure~\ref{fig:ciliumDataflow}, an example canary cluster stack using the Cilium plugin is presented. The arrows represent the real data traffic flow, while the dashed arrows indicate the configuration flow. The HTTPRoute resources are pulled by the cilium-agent, which prepares the configuration and injects it into the Envoy proxy and eBPF. When Envoy receives an incoming request, it understands the traffic-splitting ratio and decides whether to route the traffic to a local pod or to a different pod, as specified in the HTTPRoute configuration \cite{CiliumComponents}. The HTTPRoute resource for the Cilium Gateway API will look almost exactly the same as in Listing~\ref{lst:yamlAntreaIngressCanaryHTTPRoute}, with the only difference being the parentRefs name, which defines which Gateway is being used.
+In Figure~\ref{fig:ciliumDataflow}, an example canary cluster stack using the Cilium plugin is presented. The arrows represent the real data traffic flow, while the dashed arrows indicate the configuration flow. The HTTPRoute resources are pulled by the cilium-agent, which prepares the configuration and injects it into the Envoy proxy and eBPF. When Envoy receives an incoming request, it understands the traffic-splitting ratio and decides whether to route the traffic to a local pod or to a different pod, as specified in the HTTPRoute configuration \cite{CiliumDocs}. The HTTPRoute resource for the Cilium Gateway API will look almost exactly the same as in Listing~\ref{lst:yamlAntreaIngressCanaryHTTPRoute}, with the only difference being the parentRefs name, which defines which Gateway is being used.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\columnwidth]{images/cilium_dataflow.png}
-    \caption{Example Kubernetes cluster with Cilium CNI in canary stage of canary deployment \cite{K8sIcons}\cite{LucidApp}\cite{CiliumEgressGatewayBlog}.}
+    \caption{Example Kubernetes cluster with Cilium CNI in canary stage of canary deployment \cite{CiliumUseCases}.}
     \label{fig:ciliumDataflow}
 \end{figure}
 
