@@ -7,21 +7,23 @@ In this chapter, the test results for both ingress and egress scenarios will be 
 \section{Egress Scenario}
 \label{sec:egressComparison}
 
+In this section, a comparison of the Antrea and Cilium CNI plugins is presented, focusing on differences in networking metrics and resource consumption when using an egress gateway and when not.
+
 \subsubsection{Resource consumption}
 \label{sec:egressResoureComsumption}
 
 
 
-Figures~\ref{fig:cpu_avg} and~\ref{fig:memory_avg} show that resource utilization is lower when using an egress gateway compared to scenarios without redirecting outgoing packets via an additional node. This could be because all traffic management (routing table, NAT rules, and maps) is offloaded to the egress gateway. In this setup, the node running the Iperf3 pod does not need to evaluate routing decisions. Instead, it simply forwards all traffic to the egress gateway (where address translation occurs), allowing the node to allocate more CPU resources to the pod running the Iperf3 client. Without the egress gateway, the individual nodes are responsible for handling more operations, which can lead to higher resource usage. Figures~\ref{fig:cpu_all} and~\ref{fig:memory_all} show the results of all eight runs across the four test cases. The sixth run in Figure~\ref{fig:cpu_all}, during the Cilium egress gateway case, is an outlier and was excluded from the calculation of the total average (using a truncated mean). Overall, CPU usage is lower when the cluster uses Antrea networking. As for memory usage, Antrea consumes 10\% less memory when using the egress gateway and up to almost 20\% less when not using an additional node, compared to Cilium.
+Figures~\ref{fig:cpu_avg} and~\ref{fig:memory_avg} show that resource utilization is lower when using an egress gateway compared to scenarios without redirecting outgoing packets via an additional node. This could be because all traffic management (routing table, NAT rules, and maps) is offloaded to the egress gateway. In this setup, the node running the Iperf3 pod does not need to evaluate routing decisions. Instead, it simply forwards all traffic to the egress gateway (where address translation occurs), allowing the node to allocate more CPU resources to the pod running the Iperf3 client. Without the egress gateway, the individual nodes are responsible for handling more operations, which can lead to higher resource usage. Figures~\ref{fig:cpu_all} and~\ref{fig:memory_all} show the results of all eight runs across the four test cases. The sixth run in Figure~\ref{fig:cpu_all}, during the Cilium egress gateway case, is an outlier and was excluded from the calculation of the total average (using a truncated mean). Overall, CPU usage is lower when the cluster uses Antrea networking. As for memory usage, Antrea consumes 10\% less memory when using the egress gateway and up to almost 20\% less when not using an additional node, compared to Cilium. 
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.9\textwidth}
+    \begin{subfigure}[b]{1\textwidth}
         \includegraphics[width=\textwidth]{plots/egress/cpu_total_average.png}
         \caption{}
         \label{fig:cpu_avg}
     \end{subfigure}
-    \begin{subfigure}[b]{0.9\textwidth}
+    \begin{subfigure}[b]{1\textwidth}
         \includegraphics[width=\textwidth]{plots/egress/memory_total_average.png}
         \caption{}
         \label{fig:memory_avg}
@@ -34,12 +36,12 @@ Figures~\ref{fig:cpu_avg} and~\ref{fig:memory_avg} show that resource utilizatio
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.9\textwidth}
+    \begin{subfigure}[b]{1\textwidth}
         \includegraphics[width=\textwidth]{plots/egress/cpu_all.png}
         \caption{}
         \label{fig:cpu_all}
     \end{subfigure}
-    \begin{subfigure}[b]{0.9\textwidth}
+    \begin{subfigure}[b]{1\textwidth}
         \includegraphics[width=\textwidth]{plots/egress/memory_all.png}
         \caption{}
         \label{fig:memory_all}
@@ -50,71 +52,7 @@ Figures~\ref{fig:cpu_avg} and~\ref{fig:memory_avg} show that resource utilizatio
 \end{figure}
 
 
-
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/small/cpu_egress.png}
-        \caption{}
-        \label{fig:cpu_a}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/small/cpu_base.png}
-        \caption{}
-        \label{fig:cpu_b}
-    \end{subfigure}
-    
-    \vspace{10pt}
-    
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/small/cpu_antrea.png}
-        \caption{}
-        \label{fig:cpu_c}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/small/cpu_cilium.png}
-        \caption{}
-        \label{fig:cpu_d}
-    \end{subfigure}
-    
-    \caption{CPU usage in all four test cases.}
-    \label{fig:cpuFour}
-\end{figure}
-Figures~\ref{fig:cpu_a},~\ref{fig:cpu_b},~\ref{fig:memory_a}, and~\ref{fig:memory_b} compare the average CPU and memory usage between Cilium and Antrea CNI across all eight runs. These figures demonstrate how both container network interface plugins perform under the same test conditions, helping to evaluate which plugin consumes fewer resources. In only the second run did Antrea not use less CPU than Cilium.
-Figures~\ref{fig:cpu_c},~\ref{fig:cpu_d},~\ref{fig:memory_c}, and~\ref{fig:memory_d} highlight how using an egress gateway with each CNI plugin affects resource usage, compared to scenarios where an egress gateway is not used.
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/egress/memory_egress.png}
-        \caption{}
-        \label{fig:memory_a}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/egress/memory_base.png}
-        \caption{}
-        \label{fig:memory_b}
-    \end{subfigure}
-    
-    \vspace{10pt}
-    
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/egress/memory_antrea.png}
-        \caption{}
-        \label{fig:memory_c}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/egress/memory_cilium.png}
-        \caption{}
-        \label{fig:memory_d}
-    \end{subfigure}
-    
-    \caption{Memory usage in all four test cases.}
-    \label{fig:memoryFour}
-\end{figure}
+These figures compare the average CPU and memory usage between Cilium and Antrea CNI across all eight runs. Demonstrates how both container network interface plugins perform under the same test conditions, helping to evaluate which plugin consumes fewer resources. In only the second run did Antrea not use less CPU than Cilium. It also highlights how using an egress gateway with each CNI plugin affects resource usage, compared to scenarios where an egress gateway is not used.
 
 
 
@@ -125,12 +63,12 @@ Figures~\ref{fig:throughput_avg} and~\ref{fig:rtt_avg} provide an overall perfor
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.9\textwidth}
+    \begin{subfigure}[b]{1\textwidth}
         \includegraphics[width=\textwidth]{plots/egress/throughput_total_average.png}
         \caption{}
         \label{fig:throughput_avg}
     \end{subfigure}
-    \begin{subfigure}[b]{0.9\textwidth}
+    \begin{subfigure}[b]{1\textwidth}
         \includegraphics[width=\textwidth]{plots/egress/rtt_total_average.png}
         \caption{}
         \label{fig:rtt_avg}
@@ -142,12 +80,12 @@ Figures~\ref{fig:throughput_avg} and~\ref{fig:rtt_avg} provide an overall perfor
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.9\textwidth}
+    \begin{subfigure}[b]{1\textwidth}
         \includegraphics[width=\textwidth]{plots/egress/throughput_all.png}
         \caption{}
         \label{fig:throughput_all}
     \end{subfigure}
-    \begin{subfigure}[b]{0.9\textwidth}
+    \begin{subfigure}[b]{1\textwidth}
         \includegraphics[width=\textwidth]{plots/egress/rtt_all.png}
         \caption{}
         \label{fig:rtt_all}
@@ -160,78 +98,15 @@ Figures~\ref{fig:throughput_avg} and~\ref{fig:rtt_avg} provide an overall perfor
 
 
 
-Figures~\ref{fig:throughput_a},~\ref{fig:throughput_b},~\ref{fig:rtt_a}, and~\ref{fig:rtt_b} illustrate the average throughput and round-trip time across eight runs, comparing the performance of the networking plugins. Throughput with the Cilium egress gateway remains stable, hovering around 6.3 Gb/s, with tighter confidence intervals indicating greater stability. In every run, Antrea demonstrates an advantage in both data transfer rate and RTT.
-Figures~\ref{fig:throughput_c},~\ref{fig:throughput_d},~\ref{fig:rtt_c}, and~\ref{fig:rtt_d} compare the performance of the CNI plugins with and without the use of an egress gateway. They highlight whether using an egress gateway is beneficial, showing significant differences in throughput and round-trip time.
+Figures~\ref{fig:throughput_all} and~\ref{fig:rtt_all} illustrate the average throughput and round-trip time across eight runs, comparing the performance of the networking plugins. Throughput with the Cilium egress gateway remains stable, hovering around 6.3 Gb/s, with tighter confidence intervals indicating greater stability. In every run, Antrea demonstrates an advantage in both data transfer rate and RTT. It also compare the performance of the CNI plugins with and without the use of an egress gateway. They highlight whether using an egress gateway is beneficial, showing significant differences in throughput and round-trip time.
 
-
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/egress/throughput_egress.png}
-        \caption{}
-        \label{fig:throughput_a}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/egress/throughput_base.png}
-        \caption{}
-        \label{fig:throughput_b}
-    \end{subfigure}
-    
-    \vspace{10pt}
-    
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/egress/throughput_antrea.png}
-        \caption{}
-        \label{fig:throughput_c}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/egress/throughput_cilium.png}
-        \caption{}
-        \label{fig:throughput_d}
-    \end{subfigure}
-    
-    \caption{Throughput in all four test cases.}
-    \label{fig:throughFour}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/egress/rtt_egress.png}
-        \caption{}
-        \label{fig:rtt_a}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/egress/rtt_base.png}
-        \caption{}
-        \label{fig:rtt_b}
-    \end{subfigure}
-    
-    \vspace{10pt}
-    
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/egress/rtt_antrea.png}
-        \caption{}
-        \label{fig:rtt_c}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{plots/egress/rtt_cilium.png}
-        \caption{}
-        \label{fig:rtt_d}
-    \end{subfigure}
-    
-    \caption{Round Trip Time in all four test cases.}
-    \label{fig:rttFour}
-\end{figure}
 
 This performance advantage of Antrea could be attributed to the fact that Cilium uses eBPF, which was designed for large-scale clusters. Since the current cluster consists of only a few pods, eBPF features are not fully leveraged, and Antrea's networking simplicity results in better data rates.
 
 \section{Ingress Scenario}
 \label{sec:ingressComparison}
+
+This section presents a comparison of the Antrea and Cilium CNI plugins in ingress scenario. The tests were performed in both local and cloud environments to evaluate their performance.
 
 \subsubsection{Resource consumption}
 \label{sec:ingressResoureComsumption}
@@ -239,12 +114,12 @@ This performance advantage of Antrea could be attributed to the fact that Cilium
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.8\textwidth}
+    \begin{subfigure}[b]{1\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/cpu_cloud.png}
         \caption{}
         \label{fig:cpu_cloud_avg}
     \end{subfigure}
-    \begin{subfigure}[b]{0.8\textwidth}
+    \begin{subfigure}[b]{1\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/memory_cloud.png}
         \caption{}
         \label{fig:memory_cloud_avg}
@@ -258,12 +133,12 @@ Comparing Figures~\ref{fig:resource_cloud_avg} and~\ref{fig:resource_local_avg},
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.8\textwidth}
+    \begin{subfigure}[b]{1\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/cpu_local.png}
         \caption{}
         \label{fig:cpu_local_avg}
     \end{subfigure}
-    \begin{subfigure}[b]{0.8\textwidth}
+    \begin{subfigure}[b]{1\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/memory_local.png}
         \caption{}
         \label{fig:memory_local_avg}
@@ -281,18 +156,18 @@ When comparing traffic weighting accuracy in Figure~\ref{fig:vus_avg} with an in
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.8\textwidth}
+    \begin{subfigure}[b]{1\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/vus_cloud_all.png}
         \caption{}
         \label{fig:vus_cloud_avg}
     \end{subfigure}
-    \begin{subfigure}[b]{0.8\textwidth}
+    \begin{subfigure}[b]{1\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/vus_local_all.png}
         \caption{}
         \label{fig:vus_local_avg}
     \end{subfigure}
     
-    \caption{Average traffic splitting accuracy in ingress scenario with increasing virtual users (a) Cloud, (b) Local}
+    \caption{Average traffic splitting accuracy in ingress scenario with increasing virtual users (a) cloud, (b) local}
     \label{fig:vus_avg}
 \end{figure}
 
@@ -302,37 +177,38 @@ Analyzing the plots in Figure~\ref{fig:avg_vus}, we observe overlapping confiden
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[b]{0.8\textwidth}
+    \begin{subfigure}[b]{0.85\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/time_window_5_1vu_cloud.png}
         \label{fig:time_window_1vu}
     \end{subfigure}
 
-    \vspace{-0.1cm}
+    \vspace{-0.5cm}
 
-    \begin{subfigure}[b]{0.8\textwidth}
+    \begin{subfigure}[b]{0.85\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/time_window_5_10vu_cloud.png}
         \label{fig:time_window_10vu}
     \end{subfigure}
 
-    \vspace{-0.1cm}
+    \vspace{-0.5cm}
 
-    \begin{subfigure}[b]{0.8\textwidth}
+    \begin{subfigure}[b]{0.85\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/time_window_5_100vu_cloud.png}
         \label{fig:time_window_100vu}
     \end{subfigure}
 
-    \vspace{-0.1cm}
+    \vspace{-0.5cm}
 
-    \begin{subfigure}[b]{0.8\textwidth}
+    \begin{subfigure}[b]{0.85\textwidth}
         \includegraphics[width=\textwidth]{plots/traffic-splitting/time_window_5_1000vu_cloud.png}
         \label{fig:time_window_1000vu}
     \end{subfigure}
 
     \vspace{-0.3cm}
 
-    \caption{Average traffic splitting ratio in function of five second request time windows with increasing virtual users; one, ten, a hundred and a thousand}
+    \caption{Average traffic splitting ratio in function of five second request time windows with increasing virtual users; one, ten, a hundred and a thousand users}
     \label{fig:avg_vus}
 \end{figure}
+
 
 
 \begin{figure}[H]

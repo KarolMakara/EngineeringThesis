@@ -7,7 +7,7 @@ In modern Kubernetes networking, managing traffic flow into and out of a cluster
 
 The Egress Gateway can play a key role in a cluster's security. It can enforce routing all outgoing connections initiated within labeled pods through the gateway node. The node can route all outgoing traffic through a security system to scan each packet for potential threats, ensuring that outgoing traffic only accesses secure services outside the cluster.
 
-To illustrate this concept, consider a scenario where the IT department of a financial company manages Kubernetes clusters in their local laboratory. The infrastructure is used to create a production-ready, efficient, and secure environment for financial services, where handling sensitive data and adhering to strict regulatory standards is critical. Leaving unmonitored critical traffic leaving the cluster can create vulnerabilities, potentially exposing the system to data exfiltration from financial applications. They decided to analyze all outgoing traffic from financial services pods using intrusion detection system (IDS) software. However, they also provide services that do not require such robust security. Redirecting every request to the traffic analyzer would add unnecessary overhead to exposed applications and cause higher latency. Cluster operators decided to leverage an egress gateway to route all outgoing traffic from financial services into a security tool to monitor and analyze packets. However, end users started complaining that their applications were showing errors like "503 Service Unavailable." The IT administrators began troubleshooting and concluded that the egress gateway was acting as a bottleneck in the cluster. They started searching online for solutions and decided to create separate gateways for each deployment of their services \cite{CalicoEgressDeploy}. End users stopped complaining about poor service availability.
+To illustrate this concept, consider a scenario where the IT department of a financial company manages Kubernetes clusters in their local laboratory. The infrastructure is used to create a production-ready, efficient, and secure environment for financial services, where handling sensitive data and adhering to strict regulatory standards is critical. Leaving unmonitored critical traffic leaving the cluster can create vulnerabilities, potentially exposing the system to data exfiltration from financial applications. They decided to analyze all outgoing traffic from financial services pods using intrusion detection system (IDS) software. However, they also provide services that do not require such robust security. Redirecting every request to the traffic analyzer would add unnecessary overhead to exposed applications and cause higher latency. Cluster operators decided to leverage an egress gateway to route all outgoing traffic from financial services into a security tool to monitor and analyze packets. However, end users started complaining that their applications were showing errors like "503 Service Unavailable." The IT administrators began troubleshooting and concluded that the egress gateway was acting as a bottleneck in the cluster. They started searching online for solutions and decided to create separate gateways for each deployment of their services \cite{CalicoEgressDeploy}. As a result, end users stopped complaining about poor service availability.
 
 \subsection{Egress gateway in selected CNI plugins}
 \label{subsection:egressGateway}
@@ -73,8 +73,8 @@ It is possible to configure a failover egress gateway node using Antrea. To do t
 The \textit{ExternalIPPool} resource from Listing~\ref{lst:yamlAntreaExternalIPPool} can be configured with the following fields \cite{AntreaDocs}:
 
 \begin{itemize}
-    \item \textit{ipRanges} -- IP pools range can be configured using a pair of IP (start and end), or by setting CIDR (Classless Inter-Domain Routing) range
-    \item \textit{nodeSelector} -- will apply only on nodes specified by this field, e.g., nodes labeled with network-role: egress-gateway
+    \item \textit{ipRanges} -- IP pools range can be configured using a pair of IP (start and end), or by setting CIDR (Classless Inter-Domain Routing) range;
+    \item \textit{nodeSelector} -- will apply only on nodes specified by this field, e.g., nodes labeled with network-role: egress-gateway.
 \end{itemize}
 
 \begin{listing}[htb]
@@ -115,8 +115,8 @@ Similar to Antrea egress resources, Cilium has its own \textit{CiliumEgressGatew
 
 Cilium allows matching the traffic that route through the egress gateway by \cite{CiliumDocs}:
 \begin{itemize}
-    \item \textit{podSelector} -- matching pods based of used selector, like previous matching labels in Antrea, or by matching expressions (key operator, values). More than one \textit{podSelector} can be used
-    \item \textit{destinationCIDRs} -- an app in pod is requesting some external service, if this resource is match by defined CIDR, the request is routed to egress gateway. For 0.0.0.0/0 all traffic is outgoing by egress gateway. Setting \textit{excludedCIDRs} is possible to exclude some IPs.
+    \item \textit{podSelector} -- matching pods based of used selector, like previous matching labels in Antrea, or by matching expressions (key operator, values). More than one \textit{podSelector} can be used;
+    \item \textit{destinationCIDRs} -- an application in pod is requesting some external service, if this resource is match by defined CIDR, the request is routed to egress gateway. For 0.0.0.0/0 all traffic is outgoing by egress gateway. Setting \textit{excludedCIDRs} is possible to exclude some IPs.
 \end{itemize}
 
 Selecting an egress gateway can be done in three ways: by matching node labels, using IP address in \textit{egressIP} field (as in Antrea) or by interface name \cite{CiliumDocs}. 
@@ -189,15 +189,7 @@ The Gateway API is not designed for software deployment and does not have capabi
 \subsubsection{Traffic Mirroring with Gateway API}
 \label{subsubsection:mirroring}
 
-A company is offering a weather API, but not all endpoints are publicly available. Some features are secured and paid. Securing these paid interfaces is not as critical as securing more sensitive and confidential data. Recently, the company decided to start analyzing incoming traffic on these secured endpoints to ensure that only authorized requests are being handled. However, the company does not have the infrastructure capabilities to analyze all incoming traffic for these endpoints. As their services are HTTP-based inside a Kubernetes cluster, they can take advantage of the Gateway API’s traffic splitting feature. The security team decided to route 40\% of the incoming traffic to a traffic analyzer to evaluate whether and how requests might bypass the paywall. The cluster management team (acting as both infrastructure providers and cluster operators, according to the roles in the Gateway API model) decided to split the traffic using the Gateway API, as they need general usage of the API Gateway (since the company offers RESTful APIs). Pure traffic splitting is not sufficient in this case because all incoming traffic must be handled in response. The solution is to split 40\% of the traffic to a different Kubernetes service, mirror the traffic to the analyzer, and then route it back to the pod containing the application. While the cluster managers implement the second deployment to mirror requests to the traffic analyzer, the app developers created an HTTPRoute object with appropriate weights for each of the services. Figure~\ref{fig:mirroringImg} shows how the cluster infrastructure might look in this case.
-
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\columnwidth]{images/ingress.png}
-    \caption{Example Kubernetes cluster with traffic mirroring \cite{KubernetesDocs}.}
-    \label{fig:mirroringImg}
-\end{figure}
+Consider an example where a company is offering a weather API, but not all endpoints are publicly available. Some features are secured and paid. Securing these paid interfaces is not as critical as securing more sensitive and confidential data. Recently, the company decided to start analyzing incoming traffic on these secured endpoints to ensure that only authorized requests are being handled. However, the company does not have the infrastructure capabilities to analyze all incoming traffic for these endpoints. As their services are HTTP-based inside a Kubernetes cluster, they can take advantage of the Gateway API’s traffic splitting feature. The security team decided to route 40\% of the incoming traffic to a traffic analyzer to evaluate whether and how requests might bypass the paywall. The cluster management team (acting as both infrastructure providers and cluster operators, according to the roles in the Gateway API model) decided to split the traffic using the Gateway API, as they need general usage of the API Gateway (since the company offers RESTful APIs). Pure traffic splitting is not sufficient in this case because all incoming traffic must be handled in response. The solution is to split 40\% of the traffic to a different Kubernetes service, mirror the traffic to the analyzer, and then route it back to the pod containing the application. While the cluster managers implement the second deployment to mirror requests to the traffic analyzer, the app developers created an HTTPRoute object with appropriate weights for each of the services.
 
 %---------------------------------------------------------------------------
 
@@ -254,7 +246,7 @@ Figure~\ref{fig:canaryAntreaImg} shows an example cluster where the Gateway API 
 \subsubsection{Cilium}
 \label{subsection:ciliumIngress}
 
-In Figure~\ref{fig:ciliumDataflow}, an example canary cluster stack using the Cilium plugin is presented. The arrows represent the real data traffic flow, while the dashed arrows indicate the configuration flow. The HTTPRoute resources are pulled by the cilium-agent, which prepares the configuration and injects it into the Envoy proxy and eBPF. When Envoy receives an incoming request, it understands the traffic-splitting ratio and decides whether to route the traffic to a local pod or to a different pod, as specified in the HTTPRoute configuration \cite{CiliumDocs}. The HTTPRoute resource for the Cilium Gateway API will look almost exactly the same as in Listing~\ref{lst:yamlAntreaIngressCanaryHTTPRoute}, with the only difference being the parentRefs name, which defines which Gateway is being used.
+In Figure~\ref{fig:ciliumDataflow}, an example canary cluster stack using the Cilium plugin is presented. The arrows represent the real data traffic flow, while the dashed arrows indicate the configuration flow. The HTTPRoute resources are pulled by the \textit{cilium-agent}, which prepares the configuration and injects it into the Envoy proxy and eBPF. When Envoy receives an incoming request, it understands the traffic-splitting ratio and decides whether to route the traffic to a local pod or to a different pod, as specified in the HTTPRoute configuration \cite{CiliumDocs}. The HTTPRoute resource for the Cilium Gateway API will look almost exactly the same as in Listing~\ref{lst:yamlAntreaIngressCanaryHTTPRoute}, with the only difference being the parentRefs name, which defines which Gateway is being used.
 
 \begin{figure}[H]
     \centering
