@@ -1,22 +1,16 @@
 ---
-- name: Create antrea ingress scenario with gateway api
+- name: Create antrea egress scenario without egress gateway
   hosts: "{{ target | default('localhost') }}"
   vars_files:
     - ./vars/antrea.yml
     - ./vars/common.yml
+    - ./vars/egress_no_gateway.yml
     - ./vars/local.yml
-    - ./vars/traffic_splitting.yml
 
   roles:
     - create_kind_cluster
     - install_antrea
     - wait_until_antrea_installed
-    - install_gateway_crd
-    - install_nginx_gateway
-    - register_nodes
-    - install_metallb
-    - deploy_antrea_gateway_api_scenario
     - monitoring
-    - register_gateway_api_ip
-    - run_k6
+    - terraform_run_egress_iperf
     - scrap_prometheus_data

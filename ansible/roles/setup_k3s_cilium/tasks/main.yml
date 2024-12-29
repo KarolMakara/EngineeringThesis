@@ -1,5 +1,0 @@
----
-- name: Install specific version of Cilium CLI
-  command: cilium install --version 1.16.2 {{ EXTRA_OPTS }}
-  # environment:
-  #   KUBECONFIG: ~/.kube/config

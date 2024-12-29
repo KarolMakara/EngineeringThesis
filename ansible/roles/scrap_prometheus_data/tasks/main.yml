@@ -8,10 +8,6 @@
   when: env_type == "local"
   register: addr
 
-- name: Set address
-  set_fact: address="{{ addr.stdout }}"
-  when: addr.changed
-
 - name: Get prometheus address
   shell: echo "$(kubectl get svc -n monitoring prometheus-public | awk '{ print $4 }' | tail -n 1):9090"
   when: env_type == "cloud"
@@ -19,7 +15,6 @@
 
 - name: Set address
   set_fact: address="{{ addr.stdout }}"
-  when: addr.changed
 
 - name: Inject node ip to template
   template:

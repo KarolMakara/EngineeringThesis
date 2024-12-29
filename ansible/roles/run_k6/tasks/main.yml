@@ -1,0 +1,56 @@
+- name: Get current dir for volume mount
+  set_fact:
+    current_dir: "{{ lookup('pipe', 'pwd') }}"
+
+- name: Set current date for directory naming
+  set_fact:
+    current_date: "{{ lookup('pipe', 'date +%Y-%m-%d_%H-%M-%S') }}"
+
+- name: Set current date for directory naming
+  set_fact:
+    test_dir: "{{ current_date }}-{{ cni_name }}-{{ number_of_vusers }}"
+
+- name: Inject ip pool to template
+  template:
+    src: roles/run_k6/templates/test.js.j2
+    dest: roles/run_k6/templates/test.js
+
+- name: Create directory with current date
+  file:
+    path: "roles/run_k6/templates/{{ test_dir }}"
+    state: directory
+    mode: '0777'
+
+- name: Create and truncate output file with permissions inside dated directory
+  shell: |
+    touch roles/run_k6/templates/{{ test_dir }}/output.out
+    truncate -s 0 roles/run_k6/templates/{{ test_dir }}/output.out
+    chmod 777 roles/run_k6/templates/{{ test_dir }}/output.out
+
+- name: Log curr time for scraping
+  shell: date -u +"%Y-%m-%dT%H:%M:%SZ"
+  register: start_run
+
+- name: Run k6 test
+  shell: >
+    docker run -v {{ current_dir }}/roles/run_k6/templates:/app
+    --name 0x5f3759df
+    --network kind --rm grafana/k6 run /app/test.js
+    --console-output /app/{{ test_dir }}/output.out
+    > roles/run_k6/templates/{{ test_dir }}/out.log
+
+- name: Log curr time for scraping
+  shell: date -u +"%Y-%m-%dT%H:%M:%SZ"
+  register: end_run
+
+- name: Save curr_ratio to CSV after test
+  shell: |
+    python3 roles/run_k6/templates/save_ratio_to_csv.py \
+      --log_path roles/run_k6/templates/{{ test_dir }}/output.out \
+      --output_csv roles/run_k6/templates/{{ test_dir }}/current_ratio.csv
+  args:
+    executable: /bin/bash
+
+- name: Register test dir
+  command: echo "roles/run_k6/templates/{{ test_dir }}"
+  register: test_dir

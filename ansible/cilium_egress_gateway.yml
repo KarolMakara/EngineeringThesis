@@ -1,21 +1,20 @@
 ---
-- name: Create antrea ingress scenario with gateway api
+- name: Create cilium egress scenario with egress gateway
   hosts: "{{ target | default('localhost') }}"
   vars_files:
     - ./vars/cilium.yml
     - ./vars/common.yml
+    - ./vars/egress_gateway.yml
     - ./vars/local.yml
-    - ./vars/traffic_splitting.yml
 
   roles:
     - create_kind_cluster
-    - install_gateway_crd 
     - install_cilium_with_helm
     - wait_for_cilium_install
-    - install_metallb
-    - register_nodes
-    - register_gateway_api_ip
-    - deploy_cilium_gateway_api_scenario
+    - set_egress_node
+    - get_ip_for_egress_node
+    - deploy_cilium_egress_gateway
     - monitoring
-    - run_k6
+    - terraform_run_egress_iperf
     - scrap_prometheus_data
+

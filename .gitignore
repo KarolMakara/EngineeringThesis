@@ -9,3 +9,8 @@ ansible/ANSIBLE_ENV/pyvenv.cfg
 **/.terraform*
 statexec
 cluster_network.cfg
+ansible/roles/run_k6/templates/2024*
+ansible/roles/run_k6/templates/plot_output.py
+ansible/roles/run_k6/templates/save_ratio_to_csv.py
+ansible/roles/run_k6/templates/test.js
+ansible/roles/run_k6/templates/output*

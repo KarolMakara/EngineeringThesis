@@ -8,18 +8,30 @@
     dest: /tmp/monitoring.yml.j2
   vars:
     prometheus_config: "{{ prom_config.stdout }}"
+  when: env_type == "local"
+
+- name: Fillup config from template
+  template:
+    src: roles/monitoring_cloud/templates/prometheus_config_map.yml.j2
+    dest: roles/monitoring_cloud/templates/prometheus.yml
+  vars:
+    prometheus_config: "{{ prom_config.stdout }}"
+  when: env_type == "cloud"
 
 - name: Get ip base
   shell: kubectl get nodes -o wide | grep control-plane | awk '{ print $6 }'  | tail -n 1
   register: ip_1
+  when: env_type == "local"
 
 - name: Get ip base
   shell: kubectl get nodes -o wide | grep worker | grep -v worker2 | awk '{ print $6 }'  | tail -n 1
   register: ip_2
+  when: env_type == "local"
 
 - name: Get ip base
   shell: kubectl get nodes -o wide | grep worker2 | awk '{ print $6 }'  | tail -n 1
   register: ip_3
+  when: env_type == "local"
 
 - name: Fillup config from template
   template:
@@ -29,12 +41,25 @@
     ip_addr_1: "{{ ip_1.stdout }}"
     ip_addr_2: "{{ ip_2.stdout }}"
     ip_addr_3: "{{ ip_3.stdout }}"
+  when: env_type == "local"
 
 - name: Load configmap with dashboards and victoria metrics using terraform
   shell: terraform -chdir="roles/monitoring/templates/terraform" apply -auto-approve
+  when: env_type == "local"
+
+- name: Load configmap with dashboards and victoria metrics using terraform
+  shell: terraform -chdir="roles/monitoring_cloud/templates/terraform" apply -auto-approve
+  when: env_type == "cloud"
+
 
 - name: Create yaml
   shell: cat roles/monitoring/templates/monitoring.yml > /tmp/monitoring.yml
+  when: env_type == "local"
+
+- name: Create yaml
+  shell: cat roles/monitoring_cloud/templates/monitoring.yml > /tmp/monitoring.yml
+  when: env_type == "cloud"
+
 
 - name: Append prometheus
   shell: cat /tmp/config_map.yml >> /tmp/monitoring.yml
