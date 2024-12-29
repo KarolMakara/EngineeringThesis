@@ -14,3 +14,11 @@
 
 - name: Set kube config
   command: az aks get-credentials --resource-group {{ resource_group.stdout }} --name {{ cluster_name.stdout }} --overwrite-existing
+
+- name: Register first node
+  shell: kubectl get nodes | grep -v ROLES | grep -v "control-plane" | head -n 1 | awk '{ print $1 }'
+  register: k_node_1
+
+- name: Register second node
+  shell: kubectl get nodes | grep -v ROLES | grep -v "control-plane" | tail -n 1 | awk '{ print $1 }'
+  register: k_node_2

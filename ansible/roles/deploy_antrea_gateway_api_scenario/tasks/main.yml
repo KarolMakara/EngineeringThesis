@@ -1,12 +1,4 @@
 ---
-- name: Show NODE_1 IP
-  debug:
-    msg: "NODE_1 IP: {{ k_node_1.stdout }}"
-
-- name: Show NODE_2 IP
-  debug:
-    msg: "NODE_2 IP: {{ k_node_2.stdout }}"
-
 - name: Inject node ip to template
   template:
     src: ../terraform/antrea_traffic_splitting/echo1.tf.j2

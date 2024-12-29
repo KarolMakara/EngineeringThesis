@@ -3,18 +3,14 @@
   set_fact:
     current_dir: "{{ lookup('pipe', 'pwd') }}"
 
-# - name: Get prometheus address
-#   shell: echo "$(kubectl get node -o wide | grep control-plane | awk '{ print $6 }' | tail -n 1):30909"
-#   when: env_type == "local"
-#   register: addr
-
-# - name: Set address
-#   set_fact: address="{{ addr.stdout }}"
-#   when: addr.changed
+- name: Get prometheus address
+  shell: echo "$(kubectl get node -o wide | grep control-plane | awk '{ print $6 }' | tail -n 1):30909"
+  when: env_type == "local"
+  register: addr
 
 - name: Get prometheus address
   shell: echo "$(kubectl get svc -n monitoring prometheus-public | awk '{ print $4 }' | tail -n 1):9090"
-  when: env_type == "azure"
+  when: env_type == "cloud"
   register: addr
 
 - name: Set address
